@@ -14,6 +14,7 @@
 (check-expect (findMin (binomialheap less-than? (list 1 2 3 4))) 1)
 (check-expect (findMin (binomialheap less-than? (list 1 2 3 0))) 0)
 (check-expect (findMin (binomialheap less-than? (list 1 2 -3 4))) -3)
+(check-error (findMin (binomialheap less-than? (list))) "Heap is empty : findMin")
 
 (check-expect (sorted-list (deleteMin (binomialheap less-than? (list 1 2 3 4)))) 
               (list 2 3 4))
@@ -21,6 +22,7 @@
               (list 1 2 3))
 (check-expect (sorted-list (deleteMin (binomialheap less-than? (list 1 2 -3 4)))) 
               (list 1 2 4))
+(check-error (deleteMin (binomialheap less-than? (list))) "Heap is empty : deleteMin")
 
 (check-expect (sorted-list (deleteMin (binomialheap less-than? (list 1)))) (list))
 (check-expect (sorted-list (deleteMin (binomialheap less-than? (list 1 -2 -3 -4)))) 

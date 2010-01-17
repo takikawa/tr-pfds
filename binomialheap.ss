@@ -90,7 +90,7 @@
 (: findMin : (All (A) ((Heap A) -> A)))
 (define (findMin heap)
   (cond
-    [(null? (Heap-trees heap)) (error "Heap is empty" 'findMin)]
+    [(null? (Heap-trees heap)) (error "Heap is empty :" 'findMin)]
     [(null? (cdr (Heap-trees heap))) (Node-val (car (Heap-trees heap)))]
     [else (let ([x (root (car (Heap-trees heap)))]
                 [y (findMin (make-Heap (Heap-comparer heap) (cdr (Heap-trees heap))))])
@@ -100,7 +100,7 @@
 (: deleteMin : (All (A) ((Heap A) -> (Heap A))))
 (define (deleteMin heap)
   (if (null? (Heap-trees heap))
-      (error "Heap is empty" 'deleteMin)
+      (error "Heap is empty :" 'deleteMin)
       (letrec: 
        ([getMin : (All (A) ((Heap A) -> (Heap A))) 
                 (lambda (intheap)
