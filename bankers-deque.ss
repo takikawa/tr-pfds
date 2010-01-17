@@ -2,8 +2,8 @@
 
 (require "stream.ss")
 
-(provide Deque dq-empty? dq-cons dq-head dq-tail
-         deque dq-snoc dq-last dq-init)
+(provide dq-empty? empty dq-cons dq-head dq-tail
+         deque dq-snoc dq-last dq-init deque->list)
          
 ;; A Banker's Queue (Maintains length of front >= length of rear)
 
@@ -38,7 +38,7 @@
 ;; Maintains invariant lenf <= inv-c * lenr
 (: maintainF : (All (A) ((Deque A) -> (Deque A))))
 (define (maintainF deq)
-  (let*: ([new-lenf : Integer (round (/ (+ (Deque-lenf deq) (Deque-lenr deq)) 2))]
+  (let*: ([new-lenf : Integer (arithmetic-shift (+ (Deque-lenf deq) (Deque-lenr deq)) -1)]
           [new-lenr : Integer (- (+ (Deque-lenf deq) (Deque-lenr deq)) new-lenf)]
           [newF : (Stream A) (take new-lenf (Deque-front deq))]
           [newR : (Stream A) (stream-append (Deque-rear deq) 
@@ -50,7 +50,7 @@
 ;; Maintains invariant lenr <= inv-c * lenf
 (: maintainR : (All (A) ((Deque A) -> (Deque A))))
 (define (maintainR deq)
-  (let*: ([new-lenf : Integer (round (/ (+ (Deque-lenf deq) (Deque-lenr deq)) 2))]
+  (let*: ([new-lenf : Integer (arithmetic-shift (+ (Deque-lenf deq) (Deque-lenr deq)) -1)]
           [new-lenr : Integer (- (+ (Deque-lenf deq) (Deque-lenr deq)) new-lenf)]
           [newR : (Stream A) (take (ann new-lenr Integer) (Deque-rear deq))]
           [newF : (Stream A) (stream-append (Deque-front deq) 
@@ -115,64 +115,16 @@
                                       (stream-cdr (Deque-rear deq))
                                       (sub1 (Deque-lenr deq))))]))
 
+(: deque->list : (All (A) ((Deque A) -> (Listof A))))
+(define (deque->list deq)
+  (: helper : (All (A) ((Deque A) (Listof A) -> (Listof A))))
+  (define (helper intdeq accu)
+    (if (dq-empty? intdeq)
+        accu
+        (helper (dq-init intdeq) (cons (dq-last intdeq) accu))))
+  (helper deq null))
+
 ;; A Deque constructor with the given element
 (: deque : (All (A) ((Listof A) -> (Deque A))))
 (define (deque lst)
   (foldl (inst dq-snoc A) empty lst))
-
-
-;------------------------------------------------------------------------
-; Checks if the given two deques are equal. (Defined for tests)
-(: check-eq? : (All (A) ((Deque A) (Deque A) -> Boolean)))
-(define check-eq?
-  (lambda (que1 que2)
-    (and (andmap equal? 
-                 (stream->list (Deque-front que1)) 
-                 (stream->list (Deque-front que2)))
-         (andmap equal? 
-                 (stream->list (Deque-rear que1)) 
-                 (stream->list (Deque-rear que2))))))
-
-(and 
- (eq? (dq-empty? empty) #t)
- (eq? (dq-empty? (deque (list 1 2 3))) #f)
- 
- (eq? (dq-head (deque (list 1 2 3))) 1)
- (eq? (dq-head (deque (list 5 6 2 3))) 5)
- 
- (eq? (dq-last (deque (list 1 2 3))) 3)
- (eq? (dq-last (deque (list 5 6 2 8))) 8)
- 
- (check-eq? (dq-tail (deque (list 1 2 3))) 
-            (deque (list 2 3)))
- (check-eq? (dq-tail (deque (list 1 2 3 5 7 8)))
-            (deque (list 2 3 5 7 8)))
- 
- (check-eq? (dq-init (deque (list 1 2 3))) 
-            (deque (list 1 2)))
- (check-eq? (dq-init (deque (list 1 2 3 5 7 8)))
-            (deque (list 1 2 3 5 7)))
- 
- (check-eq? (dq-snoc 1 empty) (deque (list 1)))
- (check-eq? (dq-snoc 4 (deque (list 1 2))) 
-            (deque (list 1 2 4)))
- 
- (check-eq? (deque null) empty)
- (check-eq? (deque (list 1 2 3))
-            (make-Deque (stream '(1)) 1 (stream '(3 2)) 2))
- (check-eq? (deque (list 1))
-            (make-Deque null-stream 0 (stream '(1)) 1))
- (check-eq? (deque (list 1 2 3 4))
-            (make-Deque (stream '(1)) 1 (stream '(4 3 2)) 3))
- (check-eq? (deque (list 1 2 3 4 5))
-            (make-Deque (stream '(1 2)) 2 (stream '(5 4 3)) 3))
- (check-eq? (deque (list 1 2 3 4 5 6))
-            (make-Deque (stream '(1 2)) 2 (stream '(6 5 4 3)) 4))
- (check-eq? (deque (list 1 2 3 4 5 6 7))
-            (make-Deque (stream '(1 2)) 2 (stream '(7 6 5 4 3)) 5))
- (check-eq? (deque (list 1 2 3 4 5 6 7 8))
-            (make-Deque (stream '(1 2 3 4)) 4 (stream '(8 7 6 5)) 4))
- 
- ;; Problem in check-eq?
- (check-eq? (deque (list '(1) '(2 2) '(3 4) '(5 6 7) '(5))) 
-            (make-Deque (stream (list '(1) '(2 2))) 2 (stream (list '(5) '(5 6 7) '(3 4))) 3)))

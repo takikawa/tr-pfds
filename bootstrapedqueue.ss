@@ -1,11 +1,11 @@
 #lang typed-scheme
 
+(provide empty null-bsqueue? enqueue head tail)
+ 
 (require scheme/promise)
 
-(define-type-alias EL (All (A) (U A (Listof (Promise (Listof A))))))
-
 (define-struct: (A) Queue ([F : (Listof A)]
-                           [M : (BSQueue )]
+                           [M : (BSQueue (Promise (Listof A)))]
                            [LenFM : Integer]
                            [R : (Listof A)]
                            [LenR : Integer]))
@@ -16,7 +16,7 @@
 
 (define-type-alias BSQueue (All (A) (U EmptyBSQueue (Queue A))))
 
-(: null-bsqueue : (All (A) ((BSQueue A) -> Boolean)))
+(: null-bsqueue? : (All (A) ((BSQueue A) -> Boolean)))
 (define (null-bsqueue bsq)
   (EmptyBSQueue? bsq))
 

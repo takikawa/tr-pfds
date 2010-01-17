@@ -8,6 +8,4 @@
 
 (define-type-alias VList (All (A) (U Mt (List A))))
 
-
-(define empty (make-Mt))
-(define fab (make-List (empty 1 1 (list 1))))
+;(make-List ((make-Mt ()) 1 1 (list 1)))
