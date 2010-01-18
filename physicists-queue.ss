@@ -2,10 +2,7 @@
 
 (require scheme/promise)
 
-(provide pq-enqueue 
-         pq-empty? 
-         pq-head 
-         pq-tail pqueue)
+(provide empty empty? enqueue head tail queue->list pqueue)
 
 ;; Physicists Queue
 ;; Maintains invariant lenr <= lenf
@@ -21,9 +18,9 @@
 (define empty (make-PQueue '() (delay '()) 0 '() 0))
 
 ;; Checks if the given PQueue is empty
-(: pq-empty? : (All (A) ((PQueue A) -> Boolean)))
-(define (pq-empty? que)
-  (eq? (PQueue-lenf que) 0))
+(: empty? : (All (A) ((PQueue A) -> Boolean)))
+(define (empty? que)
+  (= (PQueue-lenf que) 0))
 
 
 ;; Maintains "preF" invariant (preF in not not null when front is not null)
@@ -57,8 +54,8 @@
 
 
 ;; Enqueues an item into the list
-(: pq-enqueue (All (A) (A (PQueue A) -> (PQueue A))))
-(define (pq-enqueue item que)
+(: enqueue (All (A) (A (PQueue A) -> (PQueue A))))
+(define (enqueue item que)
   (internal-queue (make-PQueue (PQueue-preF que)
                                (PQueue-front que)
                                (PQueue-lenf que)
@@ -67,45 +64,30 @@
 
 
 ;; Returns the first element in the queue if non empty. Else raises an error
-(: pq-head (All (A) ((PQueue A) -> A)))
-(define (pq-head que)
-  (if (pq-empty? que)
-      (error "PQueue is empty" 'head)
+(: head (All (A) ((PQueue A) -> A)))
+(define (head que)
+  (if (empty? que)
+      (error "Queue is empty :" 'head)
       (car (PQueue-preF que))))
 
 
 ;; Removes the first element in the queue and returns the rest
-(: pq-tail (All (A) ((PQueue A) -> (PQueue A))))
-(define (pq-tail que)
-  (if (pq-empty? que)
-      (error "PQueue is empty" 'head)
+(: tail (All (A) ((PQueue A) -> (PQueue A))))
+(define (tail que)
+  (if (empty? que)
+      (error "Queue is empty :" 'tail)
       (internal-queue (make-PQueue (cdr (PQueue-preF que))
                                    (delay (cdr (force (PQueue-front que))))
                                    (sub1 (PQueue-lenf que))
                                    (PQueue-rear que)
                                    (PQueue-lenr que)))))
 
-;; A PQueue constructor with the given elements
-;(: pqueue (All (A) ((Listof A) -> (PQueue A))))
-;(define (pqueue lst)
-;  (if (null? lst)
-;      empty
-;      (foldl pq-enqueue empty lst)))
-
-;(: pqueue (All (A) (A A * -> (PQueue A))))
-;(define (pqueue fst . lst)
-;  (if (null? fst)
-;      empty
-;      (foldl pq-enqueue (pq-enqueue fst empty) lst)))
-
-
-;(: pqueue (All (A) (A * -> (PQueue A))))
-;(define (pqueue . lst)
-;  (if (null? lst)
-;      empty
-;      (foldl pq-enqueue (pq-enqueue (car lst) empty) (cdr lst))))
-
+(: queue->list : (All (A) ((PQueue A) -> (Listof A))))
+(define (queue->list que)
+  (if (empty? que)
+      null
+      (cons (head que) (queue->list (tail que)))))
 
 (: pqueue (All (A) ((Listof A) -> (PQueue A))))
 (define (pqueue items)
-  (foldl (inst pq-enqueue A) empty items))
+  (foldl (inst enqueue A) empty items))
