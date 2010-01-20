@@ -16,7 +16,7 @@
 (define inv-c 2)
 
 (define empty (make-RTDeque (stream null) 0 (stream null)
-                                 (stream null) 0 (stream null)))
+                            (stream null) 0 (stream null)))
 
 
 (: empty? : (All (A) ((RTDeque A) -> Boolean)))
@@ -61,39 +61,39 @@
 ;; 2. lenr <= inv-c * lenf
 (: internal-RTDeque : (All (A) ((RTDeque A) -> (RTDeque A))))
 (define (internal-RTDeque que)
-  (cond 
-    [(> (RTDeque-lenf que) (add1 (* (RTDeque-lenr que) inv-c))) (maintainR que)]
-    [(> (RTDeque-lenr que) (add1 (* (RTDeque-lenf que) inv-c))) (maintainF que)]
-    [else que]))
+  (let ([lenf (RTDeque-lenf que)]
+        [lenr (RTDeque-lenr que)])
+    (cond 
+      [(> lenf (add1 (* lenr inv-c))) (maintainR que)]
+      [(> lenr (add1 (* lenf inv-c))) (maintainF que)]
+      [else que])))
 
 
 ;; Maintains invariant lenf <= inv-c * lenr
 (: maintainR : (All (A) ((RTDeque A) -> (RTDeque A))))
 (define (maintainR rtdq)
-  (let*: ([new-lenf : Integer (arithmetic-shift (+ (RTDeque-lenf rtdq) 
-                                                   (RTDeque-lenr rtdq)) -1)]
-          [new-lenr : Integer (- (+ (RTDeque-lenf rtdq) 
-                                    (RTDeque-lenr rtdq)) 
-                                 new-lenf)]
-          [newF : (Stream A) (take new-lenf (RTDeque-front rtdq))]
-          [newR : (Stream A) (rotateDrop (RTDeque-rear rtdq) 
-                                         new-lenf
-                                         (RTDeque-front rtdq))])
+  (let*: ([lenf : Integer (RTDeque-lenf rtdq)]
+          [lenr : Integer (RTDeque-lenr rtdq)]
+          [front : (Stream A) (RTDeque-front rtdq)]
+          [rear : (Stream A) (RTDeque-rear rtdq)]
+          [new-lenf : Integer (arithmetic-shift (+ lenf lenr) -1)]
+          [new-lenr : Integer (- (+ lenf lenr) new-lenf)]
+          [newF : (Stream A) (take new-lenf front)]
+          [newR : (Stream A) (rotateDrop rear new-lenf front)])
          (make-RTDeque newF new-lenf newF newR new-lenr newR)))
 
 
 ;; Maintains invariant lenr <= inv-c * lenf
 (: maintainF : (All (A) ((RTDeque A) -> (RTDeque A))))
 (define (maintainF rtdq)
-  (let*: ([new-lenf : Integer (arithmetic-shift  (+ (RTDeque-lenf rtdq) 
-                                                    (RTDeque-lenr rtdq)) -1)]
-          [new-lenr : Integer (- (+ (RTDeque-lenf rtdq) 
-                                    (RTDeque-lenr rtdq)) 
-                                 new-lenf)]
-          [newF : (Stream A)  (rotateDrop (RTDeque-front rtdq)
-                                          new-lenr
-                                          (RTDeque-rear rtdq))]
-          [newR : (Stream A) (take new-lenr (RTDeque-rear rtdq))])
+  (let*: ([lenf : Integer (RTDeque-lenf rtdq)]
+          [lenr : Integer (RTDeque-lenr rtdq)]
+          [front : (Stream A) (RTDeque-front rtdq)]
+          [rear : (Stream A) (RTDeque-rear rtdq)]
+          [new-lenf : Integer (arithmetic-shift  (+ lenf lenr) -1)]
+          [new-lenr : Integer (- (+ lenf lenr) new-lenf)]
+          [newF : (Stream A)  (rotateDrop front new-lenr rear)]
+          [newR : (Stream A) (take new-lenr rear)])
          (make-RTDeque newF new-lenf newF newR new-lenr newR)))
 
 
