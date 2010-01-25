@@ -1,5 +1,8 @@
 #lang typed-scheme
 
+(provide skew-ralist skew-ralist->list empty? ralist-cons
+         empty head tail lookup update drop)
+
 (define-struct: (A) Leaf ([fst : A]))
 (define-struct: (A) Node ([fst : A]
                           [lft : (Tree A)] 
@@ -10,19 +13,7 @@
 
 (define-type-alias RAList (All (A) (Listof (Root A))))
 
-;(define empty-tree (make-Leaf null))
-;
-;(define-struct: Null-RaList ([Null : Any]))
-;
-;(define null-ralist (make-Null-RaList ""))
-
-;(define One 1)
-;(define Zero 0)
-
-;(: isTreEmpty? : (Tree -> Boolean))
-;(define (isTreEmpty? tre)
-;  (eq? empty-tree tre))
-
+(define empty null)
 
 (: empty? : (All (A) ((RAList A) -> Boolean)))
 (define (empty? sralist)
@@ -32,8 +23,8 @@
 (define (getWeight root)
   (Root-weight root))
 
-(: skewral-cons : (All (A) (A (RAList A) -> (RAList A))))
-(define (skewral-cons elem sralist)
+(: ralist-cons : (All (A) (A (RAList A) -> (RAList A))))
+(define (ralist-cons elem sralist)
   (if (or (null? sralist) (null? (cdr sralist)))
       (cons (make-Root 1 (make-Leaf elem)) sralist)
       (let ([wgt1 (getWeight (car sralist))]
@@ -45,25 +36,11 @@
                                         (Root-fst (car (cdr sralist)))))
                   (cdr (cdr sralist)))
             (cons (make-Root 1 (make-Leaf elem)) sralist)))))
-;
-;(: get-fst : (All (A) ((RAList A) -> (Tree A))))
-;(define (get-fst ralist )
-;  (if (Null-RaList? ralist)
-;      (error "Cannot access first" 'ralist-cons)
-;      (Root-fst ralist)))
-;
-;
-;(: get-rst : (All (A) ((RAList A) -> (RAList A))))
-;(define (get-rst ralist )
-;  (if (Null-RaList? ralist)
-;      (error "Cannot access rest" 'ralist-cons)
-;      (Root-rst ralist)))
-;
-;
+
 (: head : (All (A) ((RAList A) -> A)))
 (define (head sralist)
   (if (null? sralist) 
-      (error "List is empty" 'head)
+      (error "List is empty :" 'head)
       (let ([fst (Root-fst (car sralist))])
         (if (Leaf? fst) 
             (Leaf-fst fst)
@@ -73,9 +50,9 @@
 (: tail : (All (A) ((RAList A) -> (RAList A))))
 (define (tail sralist)
   (if (null? sralist)
-      (error "List is empty" 'tail)
+      (error "List is empty :" 'tail)
       (let* ([fst (Root-fst (car sralist))]
-             [wgt (round (/ (getWeight (car sralist)) 2))])
+             [wgt (arithmetic-shift (getWeight (car sralist)) -1)])
         (if (Leaf? fst) 
             (cdr sralist) 
             (list* (make-Root wgt (Node-lft fst))
@@ -91,7 +68,7 @@
           [(and (Node? tre) (<= pos new-wgt))
            (tree-lookup new-wgt (Node-lft tre) (sub1 pos))]
           [(Node? tre) (tree-lookup new-wgt (Node-rgt tre) (- pos 1 new-wgt))]
-          [else (error "Index out of bound" 'tree-lookup)])))
+          [else (error "Index out of bound :" 'tree-lookup)])))
 
 
 (: tree-update : (All (A) (Integer (Tree A) Integer A -> (Tree A))))
@@ -106,13 +83,13 @@
           [(Node? tre)
            (make-Node (Node-fst tre) (Node-lft tre) 
                       (tree-update new-wgt (Node-rgt tre) (- pos 1 new-wgt) elem))]
-          [else (error "Index out of bound" 'tree-lookup)])))
+          [else (error "Index out of bound :" 'tree-lookup)])))
 
 
 (: lookup : (All (A) ((RAList A) Integer -> A)))
 (define (lookup sralist pos)
   (cond
-    [(null? sralist) (error "Index out of bound" 'lookup)]
+    [(null? sralist) (error "Index out of bound :" 'lookup)]
     [(< pos (getWeight (car sralist)))
      (tree-lookup (getWeight (car sralist)) (Root-fst (car sralist)) pos)]
     [else (lookup (cdr sralist) (- pos (getWeight (car sralist))))]))
@@ -121,7 +98,7 @@
 (: update : (All (A) ((RAList A) Integer A -> (RAList A))))
 (define (update sralist pos elem)
   (cond
-    [(null? sralist) (error "List is empty" 'update)]
+    [(null? sralist) (error "Index out of bound :" 'update)]
     [(< pos (getWeight (car sralist)))
      (cons (make-Root (getWeight (car sralist)) 
                       (tree-update (getWeight (car sralist))
@@ -131,34 +108,44 @@
                 (update (cdr sralist)
                         (- pos (getWeight (car sralist))) elem))]))
 
-;(: tree-drop : (All (A) (Integer (Tree A) Integer (RAList A) -> (RAList A))))
-;(define (tree-drop size tre pos ralist)
-;  (let ([newsize (round (/ size 2))]) 
-;    (cond 
-;      [(zero? pos) (make-Root size tre ralist)]
-;      [(and (Leaf? tre) (eq? pos 1)) ralist]
-;      [(and (Node? tre) (<= pos newsize)) 
-;       (tree-drop newsize 
-;                  (Node-lft tre) (- pos 1) 
-;                  (make-Root newsize (Node-rgt tre) ralist))]
-;      [(and (Node? tre) (> pos newsize)) 
-;       (tree-drop newsize 
-;                  (Node-rgt tre) (- pos 1 newsize) 
-;                  ralist)]
-;      [else (error "Index out of bound" 'tree-drop)])))
-;
-;
-;(: drop : (All (A) ((RAList A) Integer -> (RAList A))))
-;(define (drop ralist pos)
-;  (cond
-;    [(zero? pos) ralist]
-;    [(and (Root? ralist) (< pos (Root-size ralist))) 
-;     (tree-drop (Root-size ralist) (Root-fst ralist) pos (Root-rst ralist))]
-;    [(and (Root? ralist) (>= pos (Root-size ralist))) 
-;     (drop  (Root-rst ralist) (- pos (Root-size ralist)))]
-;    [else (error "Index out of bound" 'drop)]))
+(: tree-drop : (All (A) (Integer (Tree A) Integer (RAList A) -> (RAList A))))
+(define (tree-drop size tre pos ralist)
+  (let ([newsize (arithmetic-shift size -1)])
+    (cond 
+      [(zero? pos) (cons (make-Root size tre) ralist)]
+      [(and (Leaf? tre) (= pos 1)) ralist]
+      [(and (Node? tre) (<= pos newsize)) 
+       (tree-drop newsize 
+                  (Node-lft tre) (- pos 1) 
+                  (cons (make-Root newsize (Node-rgt tre)) ralist))]
+      [(and (Node? tre) (> pos newsize)) 
+       (tree-drop newsize 
+                  (Node-rgt tre) (- pos 1 newsize) 
+                  ralist)]
+      [else (error "Index out of bound :" 'tree-drop)])))
+
+
+(: drop : (All (A) ((RAList A) Integer -> (RAList A))))
+(define (drop ralist pos)
+  (cond
+    [(zero? pos) ralist]
+    [(null? ralist) (error "Index out of bound :" 'drop)]
+    [else (drop-helper (car ralist) (cdr ralist) pos)]))
+
+(: drop-helper : (All (A) ((Root A) (RAList A) Integer -> (RAList A))))
+(define (drop-helper root rest pos)
+  (let ([size (Root-weight root)]
+        [tree (Root-fst root)])
+  (if (< pos size)
+      (tree-drop size tree pos rest)
+      (drop rest (- pos size)))))
+
+(: skew-ralist->list : (All (A) ((RAList A) -> (Listof A))))
+(define (skew-ralist->list ralist)
+  (if (empty? ralist)
+      null
+      (cons (head ralist) (skew-ralist->list (tail ralist)))))
 
 (: skew-ralist : (All (A) ((Listof A) -> (RAList A))))
 (define (skew-ralist lst)
-  (foldr (inst skewral-cons A) null lst))
-
+  (foldr (inst ralist-cons A) null lst))
