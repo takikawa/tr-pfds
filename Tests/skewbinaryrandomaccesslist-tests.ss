@@ -55,4 +55,7 @@
 (check-error (drop (skew-ralist (list)) -1)
              "Index out of bound : drop")
 
+(check-expect (length (skew-ralist (list 1 2 3))) 3)
+(check-expect (length (skew-ralist (list 1 2 3 10 12))) 5)
+(check-expect (length (skew-ralist (list))) 0)
 (test)
