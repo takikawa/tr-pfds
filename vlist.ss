@@ -8,23 +8,23 @@
 
 (define-type-alias Block (All (A) (U Mt (Base A))))
 
-(define-struct: (A) List ([offset : Integer]
-                          [base : (Base A)]
-                          [size : Integer]))
+(define-struct: (A) VList ([offset : Integer]
+                           [base : (Base A)]
+                           [size : Integer]))
 
-(define-type-alias VList (All (A) (List A)))
+;(define-type-alias VList (All (A) (List A)))
 
-(define empty-vlist (make-List 0 (make-Base (make-Mt) 0 empty 1) 0))
+(define empty-vlist (make-VList 0 (make-Base (make-Mt) 0 empty 1) 0))
 
 (: isempty? : (All (A) ((VList A) -> Boolean)))
 (define (isempty? vlist)
-  (zero? (List-size vlist)))
+  (zero? (VList-size vlist)))
 
 (: add-elem : (All (A) (A (VList A) -> (VList A))))
 (define (add-elem elem vlst)
-  (let* ([offset (List-offset vlst)]
-         [size (List-size vlst)]
-         [base (List-base vlst)]
+  (let* ([offset (VList-offset vlst)]
+         [size (VList-size vlst)]
+         [base (VList-base vlst)]
          [prevbase (Base-prevbase base)]
          [prevoffset (Base-prevoffset base)]
          [lst (Base-elems base)]
@@ -32,13 +32,13 @@
          [newoffset (add1 offset)]
          [lsthan (< offset basesize)])
     (if lsthan 
-        (make-List newoffset 
+        (make-VList newoffset 
                    (make-Base prevbase 
                               prevoffset
                               (ralist-cons elem lst)
                               basesize)
                    (add1 size))
-        (make-List 1 
+        (make-VList 1 
                    (make-Base base 
                               offset
                               (ralist-cons elem empty)
@@ -47,9 +47,9 @@
 
 (: first : (All (A) ((VList A) -> A)))
 (define (first vlst)
-  (let ([offset (List-offset vlst)]
-        [size (List-size vlst)]
-        [base (List-base vlst)])
+  (let ([offset (VList-offset vlst)]
+        [size (VList-size vlst)]
+        [base (VList-base vlst)])
     (if (< (sub1 offset) size)
         (head (Base-elems base))
         (error "List is empty :" 'first))))
@@ -58,7 +58,7 @@
 (define (last vlst)
   (if (zero? (size vlst))
       (error "List is empty :" 'last)
-      (last-helper (List-base vlst))))
+      (last-helper (VList-base vlst))))
 
 (: last-helper : (All (A) ((Base A) -> A)))
 (define (last-helper base)
@@ -69,56 +69,56 @@
 
 (: rest : (All (A) ((VList A) -> (VList A))))
 (define (rest vlst)
-  (let* ([offset (List-offset vlst)]
-         [size (List-size vlst)]
-         [base (List-base vlst)]
+  (let* ([offset (VList-offset vlst)]
+         [size (VList-size vlst)]
+         [base (VList-base vlst)]
          [len (Base-size base)]
          [prev (Base-prevbase base)])
     (cond 
       [(and (zero? len) (zero? offset)) (error "List is empty :" 'rest)]
-      [(> offset 1) (make-List (sub1 offset) 
+      [(> offset 1) (make-VList (sub1 offset) 
                                (make-Base (Base-prevbase base)
                                           (Base-prevoffset base)
                                           (tail (Base-elems base))
                                           (Base-size base)) 
                                (sub1 size))]
-      [(Base? prev) (make-List (Base-prevoffset base) prev (sub1 size))]
+      [(Base? prev) (make-VList (Base-prevoffset base) prev (sub1 size))]
       [else empty-vlist])))
         
 
 (: size : (All (A) ((VList A) -> Integer)))
 (define (size vlst)
-  (List-size vlst))
+  (VList-size vlst))
 
 (: vlist->list : (All (A) ((VList A) -> (Listof A))))
 (define (vlist->list vlist)
-  (if (zero? (List-size vlist))
+  (if (zero? (VList-size vlist))
       null
       (cons (first vlist) (vlist->list (rest vlist)))))
 
 (: get : (All (A) (Integer (VList A) -> A)))
 (define (get index vlist)
   (cond
-    [(> index (sub1 (List-size vlist))) (error "Index out of bound :" 'get)]
+    [(> index (sub1 (VList-size vlist))) (error "Index out of bound :" 'get)]
     [(zero? index) (first vlist)]
     [else (get-helper index vlist)]))
 
 (: get-helper : (All (A) (Integer (VList A) -> A)))
 (define (get-helper index vlist)
-  (let* ([base (List-base vlist)]
-         [offset (List-offset vlist)]
+  (let* ([base (VList-base vlist)]
+         [offset (VList-offset vlist)]
          [prev (Base-prevbase base)]
          [prevoffset (Base-prevoffset base)])
     (if (and (> index (sub1 offset)) (Base? prev))
         (get-helper (- index offset) 
-                    (make-List prevoffset prev (List-size vlist)))
+                    (make-VList prevoffset prev (VList-size vlist)))
         (lookup (Base-elems base) index))))
       
 (: reverse : (All (A) ((VList A) -> (VList A))))
 (define (reverse vlist)
   (: reverse-helper : (All (A) ((VList A) (VList A) -> (VList A))))
   (define (reverse-helper inner-vl accum)
-    (if (zero? (List-size inner-vl))
+    (if (zero? (VList-size inner-vl))
         accum
         (reverse-helper (rest inner-vl) (add-elem (first inner-vl) accum))))
   (reverse-helper vlist empty-vlist))
@@ -150,7 +150,8 @@
 ;                  (func (first lst) base)
 ;                  (rest lst))]))
 
-(: vfoldl : (All (C A B ...) ((C A B ... -> C) C (VList A) (VList B) ... B -> C)))
+(: vfoldl : 
+   (All (C A B ...) ((C A B ... -> C) C (VList A) (VList B) ... B -> C)))
 (define (vfoldl func base fst . rst)
   (if (or (isempty? fst) (ormap isempty? rst))
       base
@@ -160,7 +161,8 @@
              (rest fst)
              (map rest rst))))
 
-(: vfoldr : (All (C A B ...) ((C A B ... -> C) C (VList A) (VList B) ... B -> C)))
+(: vfoldr : 
+   (All (C A B ...) ((C A B ... -> C) C (VList A) (VList B) ... B -> C)))
 (define (vfoldr func base fst . rst)
   (if (or (isempty? fst) (ormap isempty? rst))
       base

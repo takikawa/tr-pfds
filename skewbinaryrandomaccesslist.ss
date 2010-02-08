@@ -68,7 +68,7 @@
           [(and (Node? tre) (<= pos new-wgt))
            (tree-lookup new-wgt (Node-lft tre) (sub1 pos))]
           [(Node? tre) (tree-lookup new-wgt (Node-rgt tre) (- pos 1 new-wgt))]
-          [else (error "Index out of bound :" 'tree-lookup)])))
+          [else (error "Index out of bound :" 'lookup)])))
 
 
 (: tree-update : (All (A) (Integer (Tree A) Integer A -> (Tree A))))
@@ -83,7 +83,7 @@
           [(Node? tre)
            (make-Node (Node-fst tre) (Node-lft tre) 
                       (tree-update new-wgt (Node-rgt tre) (- pos 1 new-wgt) elem))]
-          [else (error "Index out of bound :" 'tree-lookup)])))
+          [else (error "Index out of bound :" 'update)])))
 
 
 (: lookup : (All (A) ((RAList A) Integer -> A)))
