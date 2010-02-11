@@ -12,7 +12,7 @@
 (check-expect (queue->list (tail (queue (list 4 5 2 3))))
               (list 5 2 3))
 (check-expect (queue->list (tail (queue (list 1)))) null)
-(check-error (tail (queue (list))) "Queue is empty : head")
+(check-error (tail (queue (list))) "Queue is empty : tail")
 
 (check-expect (queue->list (enqueue 1 empty)) (list 1))
 (check-expect (queue->list (enqueue 1 (queue (list 1 2 3)))) (list 1 2 3 1))

@@ -14,11 +14,13 @@
 (check-error (dq-last (deque (list))) "Deque is empty : dq-last")
 
 (check-expect (deque->list (dq-tail (deque (list 1 2 3)))) (list 2 3))
-(check-expect (deque->list (dq-tail (deque (list 1 2 3 5 7 8)))) (list 2 3 5 7 8))
+(check-expect (deque->list (dq-tail (deque (list 1 2 3 5 7 8)))) 
+              (list 2 3 5 7 8))
 (check-error (dq-tail (deque (list))) "Deque is empty : dq-tail")
 
 (check-expect (deque->list (dq-init (deque (list 1 2 3)))) (list 1 2))
-(check-expect (deque->list (dq-init (deque (list 1 2 3 5 7 8)))) (list 1 2 3 5 7))
+(check-expect (deque->list (dq-init (deque (list 1 2 3 5 7 8)))) 
+              (list 1 2 3 5 7))
 (check-error (dq-init (deque (list))) "Deque is empty : dq-init")
 
 (check-expect (deque->list (dq-snoc 1 empty)) (list 1))
