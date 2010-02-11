@@ -1,6 +1,7 @@
 #lang typed-scheme
 
-(provide rtqueue rtqueue->list empty empty? head tail enqueue RealTimeQueue)
+(provide rtqueue rtqueue->list empty empty? 
+         head tail enqueue RealTimeQueue list->rtqueue)
 
 (require "stream.ss")
 
@@ -23,9 +24,10 @@
   (let ([carrer (car rer)])
     (if (empty-stream? frnt)
         (stream-cons carrer accum)
-        (stream-cons (stream-car frnt) (rotate (stream-cdr frnt) 
-                                               (cdr rer) 
-                                               (stream-cons carrer accum))))))
+        (stream-cons (stream-car frnt) 
+                     (rotate (stream-cdr frnt) 
+                             (cdr rer) 
+                             (stream-cons carrer accum))))))
 
 (: internal-rtqueue : (All (A) ((RTQueue A) -> (RTQueue A))))
 (define (internal-rtqueue rtq)
@@ -66,6 +68,10 @@
       null
       (cons (head rtq) (rtqueue->list (tail rtq)))))
 
-(: rtqueue : (All (A) ((Listof A) -> (RTQueue A))))
-(define (rtqueue lst)
+(: list->rtqueue : (All (A) ((Listof A) -> (RTQueue A))))
+(define (list->rtqueue lst)
+  (foldl (inst enqueue A) empty lst))
+
+(: rtqueue : (All (A) (A * -> (RTQueue A))))
+(define (rtqueue . lst)
   (foldl (inst enqueue A) empty lst))

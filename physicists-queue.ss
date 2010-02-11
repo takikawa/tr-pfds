@@ -2,7 +2,7 @@
 
 (require scheme/promise)
 
-(provide empty empty? enqueue head tail queue->list pqueue)
+(provide empty empty? enqueue head tail queue->list pqueue list->pqueue)
 
 ;; Physicists Queue
 ;; Maintains invariant lenr <= lenf
@@ -24,7 +24,7 @@
 
 
 ;; Maintains "preF" invariant (preF in not not null when front is not null)
-(: check-preF-inv (All (A) ((PQueue A) -> (PQueue A))))
+(: check-preF-inv : (All (A) ((PQueue A) -> (PQueue A))))
 (define (check-preF-inv que)
   (if (null? (PQueue-preF que))
       (make-PQueue (force (PQueue-front que))
@@ -36,25 +36,26 @@
 
 
 ;; Maintains lenr <= lenf invariant
-(: check-len-inv (All (A) ((PQueue A) -> (PQueue A))))
+(: check-len-inv : (All (A) ((PQueue A) -> (PQueue A))))
 (define (check-len-inv que)
-  (if (>= (PQueue-lenf que) (PQueue-lenr que))
-      que
-      (let ([newpref (force (PQueue-front que))])
-        (make-PQueue (force (PQueue-front que))
-                     (delay (append (force (PQueue-front que)) (reverse (PQueue-rear que))))
-                     (+ (PQueue-lenf que) (PQueue-lenr que))
-                     null
-                     0))))
+  (let ([lenf (PQueue-lenf que)]
+        [lenr (PQueue-lenr que)])
+    (if (>= lenf lenr)
+        que
+        (let* ([front (PQueue-front que)]
+               [newpref (force front)]
+               [rear (PQueue-rear que)]
+               [newf (delay (append newpref (reverse rear)))])
+          (make-PQueue newpref newf (+ lenf lenr) null 0)))))
 
 ;; Maintains queue invariants
-(: internal-queue (All (A) ((PQueue A) -> (PQueue A))))
+(: internal-queue : (All (A) ((PQueue A) -> (PQueue A))))
 (define (internal-queue que)
   (check-preF-inv (check-len-inv que)))
 
 
 ;; Enqueues an item into the list
-(: enqueue (All (A) (A (PQueue A) -> (PQueue A))))
+(: enqueue : (All (A) (A (PQueue A) -> (PQueue A))))
 (define (enqueue item que)
   (internal-queue (make-PQueue (PQueue-preF que)
                                (PQueue-front que)
@@ -64,7 +65,7 @@
 
 
 ;; Returns the first element in the queue if non empty. Else raises an error
-(: head (All (A) ((PQueue A) -> A)))
+(: head : (All (A) ((PQueue A) -> A)))
 (define (head que)
   (if (empty? que)
       (error "Queue is empty :" 'head)
@@ -72,7 +73,7 @@
 
 
 ;; Removes the first element in the queue and returns the rest
-(: tail (All (A) ((PQueue A) -> (PQueue A))))
+(: tail : (All (A) ((PQueue A) -> (PQueue A))))
 (define (tail que)
   (if (empty? que)
       (error "Queue is empty :" 'tail)
@@ -88,6 +89,13 @@
       null
       (cons (head que) (queue->list (tail que)))))
 
-(: pqueue (All (A) ((Listof A) -> (PQueue A))))
-(define (pqueue items)
+(: list->pqueue : (All (A) ((Listof A) -> (PQueue A))))
+(define (list->pqueue items)
   (foldl (inst enqueue A) empty items))
+
+(: pqueue : (All (A) (A A * -> (PQueue A))))
+(define (pqueue item . items)
+  (let ([first (enqueue item empty)])
+    (if (null? items)
+        first
+        (foldl (inst enqueue A) first items))))

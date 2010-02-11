@@ -21,16 +21,16 @@
                     comparer)]))
 
 (: is-empty? : (All (A) ((PairingHeap A) -> Boolean)))
-(define (is-empty? lheap)
-  (Mt? (PairingHeap-heap lheap)))
+(define (is-empty? pheap)
+  (Mt? (PairingHeap-heap pheap)))
 
 
 (: insert : (All (A) (A (PairingHeap A) -> (PairingHeap A))))
-(define (insert elem lheap)
-  (let ([comparer (PairingHeap-comparer lheap)])
+(define (insert elem pheap)
+  (let ([comparer (PairingHeap-comparer pheap)])
     (make-PairingHeap comparer
                       (in-merge (make-Tree elem null) 
-                                (PairingHeap-heap lheap)
+                                (PairingHeap-heap pheap)
                                 comparer))))
 
 (: merge : (All (A) ((PairingHeap A) (PairingHeap A) -> (PairingHeap A))))
@@ -61,37 +61,35 @@
         (make-Tree tr2-elm (cons tree1 tr2-heaps)))))
 
 (: find-min : (All (A) ((PairingHeap A) -> A)))
-(define (find-min lheap)
-  (let ([heap (PairingHeap-heap lheap)]
-        [comparer (PairingHeap-comparer lheap)])
+(define (find-min pheap)
+  (let ([heap (PairingHeap-heap pheap)]
+        [comparer (PairingHeap-comparer pheap)])
     (if (Mt? heap)
         (error "Heap is empty :" 'find-min)
         (Tree-elem heap))))
 
 (: delete-min : (All (A) ((PairingHeap A) -> (PairingHeap A))))
-(define (delete-min lheap)
-  (let ([heap (PairingHeap-heap lheap)]
-        [comparer (PairingHeap-comparer lheap)])
+(define (delete-min pheap)
+  (let ([heap (PairingHeap-heap pheap)]
+        [comparer (PairingHeap-comparer pheap)])
     (if (Mt? heap)
         (error "Heap is empty :" 'delete-min)
         (make-PairingHeap comparer
                           (merge-pairs (Tree-heaps heap) comparer)))))
 
 (: get-sorted-list : (All (A) ((PairingHeap A) -> (Listof A))))
-(define (get-sorted-list lheap)
+(define (get-sorted-list pheap)
   (: helper : (All (A) ((PairingHeap A) (Listof A) -> (Listof A))))
   (define (helper inheap lst)
     (let ([heap (PairingHeap-heap inheap)])
       (if (Mt? heap)
           lst
           (helper (delete-min inheap) (cons (find-min inheap) lst)))))
-  (helper lheap null))
+  (helper pheap null))
 
-(: pairingheap : (All (A) ((Listof A) (A A -> Boolean) -> (PairingHeap A))))
-(define (pairingheap lst comparer)
-  (if (null? lst)
-      (error "At least one element expected in the input list" 'leftistheap)
-      (foldl (inst insert A) 
-             (make-PairingHeap comparer 
-                               (make-Tree (car lst) null))
-             (cdr lst))))
+(: pairingheap : (All (A) ((A A -> Boolean) A A * -> (PairingHeap A))))
+(define (pairingheap comparer fst . rst)
+  (let ([first (make-PairingHeap comparer (make-Tree fst null))])
+    (if (null? rst)
+        first
+        (foldl (inst insert A) first rst))))

@@ -15,8 +15,8 @@
 
 (define inv-c 2)
 
-(define empty (make-RTDeque (stream null) 0 (stream null)
-                            (stream null) 0 (stream null)))
+(define empty (make-RTDeque null-stream 0 null-stream
+                            null-stream 0 null-stream))
 
 
 (: empty? : (All (A) ((RTDeque A) -> Boolean)))
@@ -72,29 +72,29 @@
 ;; Maintains invariant lenf <= inv-c * lenr
 (: maintainR : (All (A) ((RTDeque A) -> (RTDeque A))))
 (define (maintainR rtdq)
-  (let*: ([lenf : Integer (RTDeque-lenf rtdq)]
-          [lenr : Integer (RTDeque-lenr rtdq)]
-          [front : (Stream A) (RTDeque-front rtdq)]
-          [rear : (Stream A) (RTDeque-rear rtdq)]
-          [new-lenf : Integer (arithmetic-shift (+ lenf lenr) -1)]
-          [new-lenr : Integer (- (+ lenf lenr) new-lenf)]
-          [newF : (Stream A) (take new-lenf front)]
-          [newR : (Stream A) (rotateDrop rear new-lenf front)])
-         (make-RTDeque newF new-lenf newF newR new-lenr newR)))
+  (let* ([lenf (RTDeque-lenf rtdq)]
+         [lenr (RTDeque-lenr rtdq)]
+         [front (RTDeque-front rtdq)]
+         [rear (RTDeque-rear rtdq)]
+         [new-lenf (arithmetic-shift (+ lenf lenr) -1)]
+         [new-lenr (- (+ lenf lenr) new-lenf)]
+         [newF (take new-lenf front)]
+         [newR (rotateDrop rear new-lenf front)])
+    (make-RTDeque newF new-lenf newF newR new-lenr newR)))
 
 
 ;; Maintains invariant lenr <= inv-c * lenf
 (: maintainF : (All (A) ((RTDeque A) -> (RTDeque A))))
 (define (maintainF rtdq)
-  (let*: ([lenf : Integer (RTDeque-lenf rtdq)]
-          [lenr : Integer (RTDeque-lenr rtdq)]
-          [front : (Stream A) (RTDeque-front rtdq)]
-          [rear : (Stream A) (RTDeque-rear rtdq)]
-          [new-lenf : Integer (arithmetic-shift  (+ lenf lenr) -1)]
-          [new-lenr : Integer (- (+ lenf lenr) new-lenf)]
-          [newF : (Stream A)  (rotateDrop front new-lenr rear)]
-          [newR : (Stream A) (take new-lenr rear)])
-         (make-RTDeque newF new-lenf newF newR new-lenr newR)))
+  (let* ([lenf (RTDeque-lenf rtdq)]
+          [lenr (RTDeque-lenr rtdq)]
+          [front (RTDeque-front rtdq)]
+          [rear (RTDeque-rear rtdq)]
+          [new-lenf (arithmetic-shift  (+ lenf lenr) -1)]
+          [new-lenr (- (+ lenf lenr) new-lenf)]
+          [newF (rotateDrop front new-lenr rear)]
+          [newR (take new-lenr rear)])
+    (make-RTDeque newF new-lenf newF newR new-lenr newR)))
 
 
 ;; Pushes an element into the RTDeque at the front end
@@ -121,45 +121,55 @@
 ;; Retrieves the head element of the queue
 (: head : (All (A) ((RTDeque A) -> A)))
 (define (head rtdq)
-  (cond 
-    [(empty? rtdq) (error "Deque is empty :" 'head)]
-    [(empty-stream? (RTDeque-front rtdq)) (stream-car (RTDeque-rear rtdq))]
-    [else (stream-car (RTDeque-front rtdq))]))
+  (if (empty? rtdq) 
+      (error "Deque is empty :" 'head)
+      (let ([front (RTDeque-front rtdq)])
+        (if (empty-stream? front) 
+            (stream-car (RTDeque-rear rtdq))
+            (stream-car front)))))
 
 
 ;; Retrieves the last element of the queue
 (: last : (All (A) ((RTDeque A) -> A)))
 (define (last rtdq)
-  (cond 
-    [(empty? rtdq) (error "Deque is empty :" 'last)]
-    [(empty-stream? (RTDeque-rear rtdq)) (stream-car (RTDeque-front rtdq))]
-    [else (stream-car (RTDeque-rear rtdq))]))
+  (if (empty? rtdq) 
+      (error "Deque is empty :" 'last)
+      (let ([rear (RTDeque-rear rtdq)])
+        (if (empty-stream? rear) 
+            (stream-car (RTDeque-front rtdq))
+            (stream-car rear)))))
 
 ;; RTDequeue operation. Removes the head and returns the rest of the queue
 (: tail : (All (A) ((RTDeque A) -> (RTDeque A))))
 (define (tail rtdq)
-  (cond 
-    [(empty? rtdq) (error "Deque is empty :" 'tail)]
-    [(empty-stream? (RTDeque-front rtdq)) empty]
-    [else (internal-RTDeque (make-RTDeque (stream-cdr (RTDeque-front rtdq)) 
-                                          (sub1 (RTDeque-lenf rtdq))
-                                          (exec-two (RTDeque-scdulF rtdq))
-                                          (RTDeque-rear rtdq)
-                                          (RTDeque-lenr rtdq)
-                                          (exec-two (RTDeque-scdulR rtdq))))]))
+  (if (empty? rtdq) 
+      (error "Deque is empty :" 'tail)
+      (let ([front (RTDeque-front rtdq)])
+        (if (empty-stream? front) 
+            empty
+            (internal-RTDeque (make-RTDeque (stream-cdr front) 
+                                            (sub1 (RTDeque-lenf rtdq))
+                                            (exec-two (RTDeque-scdulF rtdq))
+                                            (RTDeque-rear rtdq)
+                                            (RTDeque-lenr rtdq)
+                                            (exec-two 
+                                             (RTDeque-scdulR rtdq))))))))
 
 ;; Removes the last and returns the RTDeque without the last
 (: init : (All (A) ((RTDeque A) -> (RTDeque A))))
 (define (init rtdq)
-  (cond 
-    [(empty? rtdq) (error "Deque is empty :" 'init)]
-    [(empty-stream? (RTDeque-rear rtdq)) empty]
-    [else (internal-RTDeque (make-RTDeque (RTDeque-front rtdq)
-                                          (RTDeque-lenf rtdq)
-                                          (exec-two (RTDeque-scdulF rtdq))
-                                          (stream-cdr (RTDeque-rear rtdq))
-                                          (sub1 (RTDeque-lenr rtdq))
-                                          (exec-two (RTDeque-scdulR rtdq))))]))
+  (if (empty? rtdq) 
+      (error "Deque is empty :" 'init)
+      (let ([rear (RTDeque-rear rtdq)])
+        (if (empty-stream? rear)
+            empty
+            (internal-RTDeque (make-RTDeque (RTDeque-front rtdq)
+                                            (RTDeque-lenf rtdq)
+                                            (exec-two (RTDeque-scdulF rtdq))
+                                            (stream-cdr rear)
+                                            (sub1 (RTDeque-lenr rtdq))
+                                            (exec-two 
+                                             (RTDeque-scdulR rtdq))))))))
 
 (: rtdeque->list : (All (A) ((RTDeque A) -> (Listof A))))
 (define (rtdeque->list dque)
@@ -168,7 +178,13 @@
       (cons (last dque) (rtdeque->list (init dque)))))
 
 
-;; A RTDeque constructor with the given element
-(: rtdeque : (All (A) ((Listof A) -> (RTDeque A))))
-(define (rtdeque lst)
+(: list->rtdeque : (All (A) ((Listof A) -> (RTDeque A))))
+(define (list->rtdeque lst)
   (foldl (inst enqueue A) empty lst))
+
+;; A RTDeque constructor
+(: rtdeque : (All (A) (A * -> (RTDeque A))))
+(define (rtdeque . lst)
+  (if (null? lst)
+      empty
+      (foldl (inst enqueue A) empty lst)))
