@@ -1,5 +1,9 @@
 #lang typed-scheme
+
+(provide catenable-list empty? clist->list head tail CatenableList
+         merge cl-cons cl-snoc empty)
 (require scheme/promise)
+
 (require (prefix-in rtq: "realtimequeue.ss"))
 
 (define-struct: EmptyList ())
@@ -7,11 +11,11 @@
 (define-struct: (A) List ([elem : A]
                           [ques : (rtq:RealTimeQueue (Promise (List A)))]))
 
-(define-type-alias Cat (All (A) (U (List A) EmptyList)))
+(define-type-alias CatenableList (All (A) (U (List A) EmptyList)))
 
 (define empty (make-EmptyList))
 
-(: empty? : (All (A) ((Cat A) -> Boolean)))
+(: empty? : (All (A) ((CatenableList A) -> Boolean)))
 (define (empty? cat)
   (EmptyList? cat))
 
@@ -28,7 +32,7 @@
         hd
         (link hd (delay (link-all tl))))))
 
-(: merge : (All (A) ((Cat A) (Cat A) -> (Cat A))))
+(: merge : (All (A) ((CatenableList A) (CatenableList A) -> (CatenableList A))))
 (define (merge cat1 cat2)
   (cond
     [(EmptyList? cat1) cat2]
@@ -36,38 +40,38 @@
     [else (link cat1 (delay cat2))]))
 
 
-(: cl-cons : (All (A) (A (Cat A) -> (Cat A))))
+(: cl-cons : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (cl-cons elem cat)
   (merge (make-List elem rtq:empty) cat))
 
-(: cl-snoc : (All (A) (A (Cat A) -> (Cat A))))
+(: cl-snoc : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (cl-snoc elem cat)
   (merge cat (make-List elem rtq:empty)))
 
-(: head : (All (A) ((Cat A) -> A)))
+(: head : (All (A) ((CatenableList A) -> A)))
 (define (head cat)
   (if (EmptyList? cat)
       (error "List is empty :" 'head)
       (List-elem cat)))
 
-(: tail : (All (A) ((Cat A) -> (Cat A))))
+(: tail : (All (A) ((CatenableList A) -> (CatenableList A))))
 (define (tail cat)
   (if (EmptyList? cat) 
       (error "List is empty :" 'tail)
       (tail-helper cat)))
 
-(: tail-helper : (All (A) ((List A) -> (Cat A))))
+(: tail-helper : (All (A) ((List A) -> (CatenableList A))))
 (define (tail-helper cat)
   (let ([ques (List-ques cat)])
     (if (rtq:empty? ques) 
         empty
         (link-all ques))))
 
-(: catenable-list : (All (A) ((Listof A) -> (Cat A))))
-(define (catenable-list lst)
+(: catenable-list : (All (A) (A * -> (CatenableList A))))
+(define (catenable-list . lst)
   (foldr (inst cl-cons A) empty lst))
 
-(: clist->list : (All (A) ((Cat A) -> (Listof A))))
+(: clist->list : (All (A) ((CatenableList A) -> (Listof A))))
 (define (clist->list cat)
   (if (EmptyList? cat)
       null

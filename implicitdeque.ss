@@ -1,11 +1,11 @@
 #lang typed-scheme
 
 (provide empty empty? head tail last init 
-         enqueue snoc deque->list implicit-deque)
+         enqueue snoc deque->list deque)
 
 (require scheme/promise)
 
-(define-struct: Zero ([Null : Any]))
+(define-struct: Zero ())
 (define-struct: (A) One ([elem : A]))
 (define-struct: (A) Two ([fst : A] 
                          [snd : A]))
@@ -21,7 +21,7 @@
 
 (define-type-alias ImplDeque (All (A) (U (Shallow A) (Deep A))))
 
-(define empty (make-Shallow (make-Zero "")))
+(define empty (make-Shallow (make-Zero)))
 
 (: empty? : (All (A) ((ImplDeque A) -> Boolean)))
 (define (empty? que)
@@ -61,7 +61,7 @@
 (define (dtail d)
   (cond
     [(Zero? d) (error "Queue is empty :" 'tail)]
-    [(One? d) (make-Zero "")]
+    [(One? d) (make-Zero)]
     [(Two? d) (make-One (Two-snd d))]
     [else (make-Two (Three-snd d) (Three-trd d))]))
 
@@ -69,7 +69,7 @@
 (define (dinit d)
   (cond
     [(Zero? d) (error "Queue is empty :" 'init)]
-    [(One? d) (make-Zero "")]
+    [(One? d) (make-Zero)]
     [(Two? d) (make-One (Two-fst d))]
     [else (make-Two (Three-fst d) (Three-snd d))]))
 
@@ -156,10 +156,16 @@
 
 (: tail : (All (A) ((ImplDeque A) -> (ImplDeque A))))
 (define (tail deque)
-  (cond
-    [(Shallow? deque) (make-Shallow (dtail (Shallow-elem deque)))]
-    [(One? (Deep-F deque)) (tailOne deque)]
-    [else (make-Deep (dtail (Deep-F deque)) (Deep-M deque) (Deep-R deque))]))
+  (if (Shallow? deque) 
+      (make-Shallow (dtail (Shallow-elem deque)))
+      (tail-help deque)))
+
+(: tail-help : (All (A) ((Deep A) -> (ImplDeque A))))
+(define (tail-help deque)
+  (let ([front (Deep-F deque)])
+    (if (One? front) 
+        (tailOne deque)
+        (make-Deep (dtail front) (Deep-M deque) (Deep-R deque)))))
 
 (: initOne : (All (A) ((Deep A) -> (ImplDeque A))))
 (define (initOne deque)
@@ -176,10 +182,16 @@
 
 (: init : (All (A) ((ImplDeque A) -> (ImplDeque A))))
 (define (init deque)
-  (cond
-    [(Shallow? deque) (make-Shallow (dinit (Shallow-elem deque)))]
-    [(One? (Deep-R deque)) (initOne deque)]
-    [else (make-Deep (Deep-F deque) (Deep-M deque) (dinit (Deep-R deque)))]))
+  (if (Shallow? deque) 
+      (make-Shallow (dinit (Shallow-elem deque)))
+      (init-help deque)))
+
+(: init-help : (All (A) ((Deep A) -> (ImplDeque A))))
+(define (init-help deque)
+  (let ([rear (Deep-R deque)])
+    (if (One? rear) 
+        (initOne deque)
+        (make-Deep (Deep-F deque) (Deep-M deque) (dinit rear)))))
 
 
 (: deque->list : (All (A) ((ImplDeque A) -> (Listof A))))
@@ -189,6 +201,8 @@
       (cons (last que) (deque->list (init que)))))
 
 
-(: implicit-deque : (All (A) ((Listof A) -> (ImplDeque A))))
-(define (implicit-deque lst)
-  (foldl (inst enqueue A) (make-Shallow (make-Zero "")) lst))
+(: deque : (All (A) (A * -> (ImplDeque A))))
+(define (deque . lst)
+  (if (null? lst)
+      empty
+      (foldl (inst enqueue A) empty lst)))

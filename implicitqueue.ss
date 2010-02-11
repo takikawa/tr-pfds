@@ -3,7 +3,7 @@
 (provide empty empty? enqueue head tail queue->list implicit-queue)
 (require scheme/promise)
 
-(define-struct: (A) Zero ([Null : Any]))
+(define-struct: Zero ())
 (define-struct: (A) One ([elem : A]))
 (define-struct: (A) Two ([fst : A]
                          [snd : A]))
@@ -16,7 +16,7 @@
 
 (define-type-alias ImplQueue (All (A) (U (Shallow A) (Deep A))))
 
-(define empty (make-Shallow (make-Zero "")))
+(define empty (make-Shallow (make-Zero)))
 
 (: empty? : (All (A) ((ImplQueue A) -> Boolean)))
 (define (empty? que)
@@ -34,9 +34,8 @@
     (if (Zero? shelem)
         (make-Shallow (make-One elem))
         (make-Deep (make-Two (One-elem shelem) elem)
-                   (delay (cons (make-Shallow (make-Zero ""))
-                                (make-Shallow (make-Zero ""))))
-                   (make-Zero "")))))
+                   (delay (cons empty empty))
+                   (make-Zero)))))
 
 (: enqueueD : (All (A) (A (Deep A) -> (ImplQueue A))))
 (define (enqueueD elem dpq)
@@ -49,7 +48,7 @@
           (make-Deep (Deep-F dpq)
                      (delay (cons (enqueue (One-elem rear) (car forced-mid))
                                   (enqueue elem (cdr forced-mid))))
-                     (make-Zero ""))))))
+                     (make-Zero))))))
 
 
 (: head : (All (A) ((ImplQueue A) -> A)))
@@ -83,7 +82,7 @@
   (let ([elem (Shallow-elem shq)])
     (if (Zero? elem)
         (error "Queue is empty :" 'tail)
-        (make-Shallow (make-Zero "")))))
+        (make-Shallow (make-Zero)))))
 
 (: tailD : (All (A) ((Deep A) -> (ImplQueue A))))
 (define (tailD dpq)
@@ -111,6 +110,6 @@
       null
       (cons (head que) (queue->list (tail que)))))
 
-(: implicit-queue : (All (A) ((Listof A) -> (ImplQueue A))))
-(define (implicit-queue lst)
-  (foldl (inst enqueue A) (make-Shallow (make-Zero "")) lst))
+(: implicit-queue : (All (A) (A * -> (ImplQueue A))))
+(define (implicit-queue . lst)
+  (foldl (inst enqueue A) (make-Shallow (make-Zero)) lst))

@@ -67,6 +67,8 @@
       (cons (head que) (queue->list (tail que)))))
 
 ;; A Queue constructor with the given element
-(: queue : (All (A) ((Listof A) -> (Queue A))))
-(define (queue lst)
-  (foldl (inst enqueue A) empty lst))
+(: queue : (All (A) (A * -> (Queue A))))
+(define (queue . lst)
+  (if (null? lst)
+      empty
+      (foldl (inst enqueue A) empty lst)))

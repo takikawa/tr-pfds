@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (require (prefix-in rtq: "realtimequeue.ss"))
-(provide empty null-bsqueue? enqueue head tail)
+(provide empty empty? enqueue head tail bsqueue bsqueue->list)
  
 (require scheme/promise)
 
@@ -11,26 +11,28 @@
                            [R : (Listof A)]
                            [LenR : Integer]))
 
-(define-struct: EmptyBSQueue ([Null : Any]))
+(define-struct: EmptyBSQueue ())
 
-(define empty (make-EmptyBSQueue ""))
+(define empty (make-EmptyBSQueue))
 
 (define-type-alias BSQueue (All (A) (U EmptyBSQueue (Queue A))))
 
-(: null-bsqueue? : (All (A) ((BSQueue A) -> Boolean)))
-(define (null-bsqueue? bsq)
+(: empty? : (All (A) ((BSQueue A) -> Boolean)))
+(define (empty? bsq)
   (EmptyBSQueue? bsq))
 
 
 (: queue : (All (A) ((Queue A) -> (BSQueue A))))
 (define (queue bsq)
-    (cond
-      [(<= (Queue-LenR bsq) (Queue-LenFM bsq)) (checkF bsq)]
-      [else (checkF (make-Queue (Queue-F bsq) 
-                                (rtq:enqueue (delay (reverse (Queue-R bsq))) 
+  (let ([lenr (Queue-LenR bsq)]
+        [lenfm (Queue-LenFM bsq)])
+    (if (<= lenr lenfm) 
+        (checkF bsq)
+        (checkF (make-Queue (Queue-F bsq) 
+                            (rtq:enqueue (delay (reverse (Queue-R bsq))) 
                                          (Queue-M bsq)) 
-                                (+ (Queue-LenFM bsq) (Queue-LenR bsq)) 
-                                null 0))]))
+                            (+ lenfm lenr) 
+                            null 0)))))
 
 (: enqueue : (All (A) (A (BSQueue A) -> (BSQueue A))))
 (define (enqueue elem bsq)
@@ -61,14 +63,17 @@
 
 (: checkF : (All (A) ((Queue A) -> (BSQueue A))))
 (define (checkF que)
-  (cond 
-    [(and (null? (Queue-F que)) (rtq:empty? (Queue-M que))) empty]
-    [(null? (Queue-F que)) (make-Queue (force (rtq:head (Queue-M que)))
-                                       (rtq:tail (Queue-M que))
-                                       (Queue-LenFM que)
-                                       (Queue-R que)
-                                       (Queue-LenR que))]
-    [else que]))
+  (let* ([front (Queue-F que)]
+         [f-null? (null? front)]
+         [mid (Queue-M que)])
+    (cond 
+      [(and f-null? (rtq:empty? mid)) empty]
+      [f-null? (make-Queue (force (rtq:head mid))
+                           (rtq:tail mid)
+                           (Queue-LenFM que)
+                           (Queue-R que)
+                           (Queue-LenR que))]
+      [else que])))
 
 (: bsqueue->list : (All (A) ((BSQueue A) -> (Listof A))))
 (define (bsqueue->list bsq)
@@ -76,6 +81,6 @@
       null
       (cons (head bsq) (bsqueue->list (tail bsq))))) 
 
-(: bsqueue : (All (A) ((Listof A) -> (BSQueue A))))
-(define (bsqueue lst)
+(: bsqueue : (All (A) (A * -> (BSQueue A))))
+(define (bsqueue . lst)
   (foldl (inst enqueue A) empty lst))
