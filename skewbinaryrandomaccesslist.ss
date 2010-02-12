@@ -61,29 +61,44 @@
 
 (: tree-lookup : (All (A) (Integer (Tree A) Integer -> A)))
 (define (tree-lookup wgt tre pos)
-  (let: ([new-wgt : Integer (arithmetic-shift wgt -1)])
-        (cond
-          [(and (Leaf? tre) (eq? pos 0)) (Leaf-fst tre)]
-          [(and (Node? tre) (eq? pos 0)) (Node-fst tre)]
-          [(and (Node? tre) (<= pos new-wgt))
-           (tree-lookup new-wgt (Node-lft tre) (sub1 pos))]
-          [(Node? tre) (tree-lookup new-wgt (Node-rgt tre) (- pos 1 new-wgt))]
-          [else (error "Index out of bound :" 'lookup)])))
+  (let ([new-wgt (arithmetic-shift wgt -1)]
+        [pos0? (zero? pos)])
+    (cond
+      [(and (Leaf? tre) pos0?) (Leaf-fst tre)]
+      [(Node? tre) (tl-help new-wgt tre pos pos0?)]
+      [else (error "Index out of bound :" 'lookup)])))
 
+
+(: tl-help : (All (A) (Integer (Node A) Integer Boolean -> A)))
+(define (tl-help new-wgt tre pos pos0?)
+  (cond
+    [pos0? (Node-fst tre)]
+    [(<= pos new-wgt)
+     (tree-lookup new-wgt (Node-lft tre) (sub1 pos))]
+    [else (tree-lookup new-wgt (Node-rgt tre) (- pos 1 new-wgt))]))
 
 (: tree-update : (All (A) (Integer (Tree A) Integer A -> (Tree A))))
 (define (tree-update wgt tre pos elem)
-  (let: ([new-wgt : Integer (arithmetic-shift wgt -1)])
-        (cond
-          [(and (Leaf? tre) (eq? pos 0)) (make-Leaf elem)]
-          [(and (Node? tre) (eq? pos 0)) (make-Node elem (Node-lft tre) (Node-rgt tre))]
-          [(and (Node? tre) (<= pos new-wgt))
-           (make-Node (Node-fst tre) (tree-update new-wgt (Node-lft tre) (sub1 pos) elem) 
-                      (Node-rgt tre))]
-          [(Node? tre)
-           (make-Node (Node-fst tre) (Node-lft tre) 
-                      (tree-update new-wgt (Node-rgt tre) (- pos 1 new-wgt) elem))]
-          [else (error "Index out of bound :" 'update)])))
+  (let ([new-wgt (arithmetic-shift wgt -1)]
+        [pos0? (zero? pos)])
+    (cond
+      [(and (Leaf? tre) pos0?) (make-Leaf elem)]
+      [(Node? tre) (tu-help new-wgt tre pos pos0? elem)]
+      [else (error "Index out of bound :" 'update)])))
+
+
+(: tu-help : (All (A) (Integer (Node A) Integer Boolean A -> (Tree A))))
+(define (tu-help new-wgt tre pos pos0? elem)
+  (let ([lft (Node-lft tre)]
+        [rgt (Node-rgt tre)]
+        [fst (Node-fst tre)])
+    (cond
+      [pos0? (make-Node elem lft rgt)]
+      [(<= pos new-wgt) (make-Node fst 
+                                   (tree-update new-wgt lft (sub1 pos) elem)
+                                   rgt)]
+      [else (make-Node fst lft (tree-update new-wgt rgt 
+                                            (- pos 1 new-wgt) elem))])))
 
 
 (: lookup : (All (A) ((RAList A) Integer -> A)))
@@ -155,6 +170,6 @@
       null
       (cons (head ralist) (skew-ralist->list (tail ralist)))))
 
-(: skew-ralist : (All (A) ((Listof A) -> (RAList A))))
-(define (skew-ralist lst)
+(: skew-ralist : (All (A) (A * -> (RAList A))))
+(define (skew-ralist . lst)
   (foldr (inst ralist-cons A) null lst))
