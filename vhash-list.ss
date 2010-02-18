@@ -28,7 +28,9 @@
         (get key vlst)
         #f)
       (add-elem key value vlst)
-      (error (format "Duplicate key: ~a already exists in the hash-list :" key) 'add-elem)))
+      (error 
+       (format "Duplicate key: ~a already exists in the hash-list :" key) 
+       'add-elem)))
 
 (: not-error? : Any -> Any)
 (define (not-error? res)
