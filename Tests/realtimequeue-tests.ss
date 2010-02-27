@@ -23,4 +23,7 @@
 (check-expect (rtqueue->list (enqueue 10 (rtqueue 20))) 
               (list 20 10))
 
+(check-expect (rtqueue->list (apply rtqueue (build-list 100 (λ(x) x))))
+              (build-list 100 (λ(x) x)))
+
 (test)
