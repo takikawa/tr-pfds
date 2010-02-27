@@ -3,10 +3,10 @@
 (provide rtqueue rtqueue->list empty empty? 
          head tail enqueue RealTimeQueue list->rtqueue)
 
-(require "stream.ss")
+(require "stream1.ss")
 
 (define-struct: (A) RTQueue
-  ([front : (Stream A)]   
+  ([front : (Stream A)]
    [rear  : (Listof A)]
    [scdul : (Stream A)]))
 
@@ -24,27 +24,24 @@
   (let ([carrer (car rer)])
     (if (empty-stream? frnt)
         (stream-cons carrer accum)
-        (stream-cons (stream-car frnt) 
+        (stream-cons (stream-car frnt)
                      (rotate (stream-cdr frnt) 
                              (cdr rer) 
                              (stream-cons carrer accum))))))
 
-(: internal-rtqueue : (All (A) ((RTQueue A) -> (RTQueue A))))
-(define (internal-rtqueue rtq)
-  (let ([front (RTQueue-front rtq)]
-        [rear (RTQueue-rear rtq)]
-        [schdl (RTQueue-scdul rtq)])
-    (if (empty-stream? schdl)
-        (let ([newf (rotate front rear schdl)])
-          (make-RTQueue newf null newf))
-        (make-RTQueue front rear (stream-cdr schdl)))))
+(: internal-rtqueue : (All (A) ((Stream A) (Listof A) (Stream A) -> (RTQueue A))))
+(define (internal-rtqueue front rear schdl)
+  (if (empty-stream? schdl)
+      (let ([newf (rotate front rear schdl)])
+        (make-RTQueue newf null newf))
+      (make-RTQueue front rear (stream-cdr schdl))))
 
 
 (: enqueue : (All (A) (A (RTQueue A) -> (RTQueue A))))
 (define (enqueue elem rtq)
-  (internal-rtqueue (make-RTQueue (RTQueue-front rtq)
-                                  (cons elem (RTQueue-rear rtq))
-                                  (RTQueue-scdul rtq))))
+  (internal-rtqueue (RTQueue-front rtq)
+                    (cons elem (RTQueue-rear rtq))
+                    (RTQueue-scdul rtq)))
 
 
 (: head : (All (A) ((RTQueue A) -> A)))
@@ -58,9 +55,9 @@
 (define (tail rtq)
   (if (empty? rtq)
       (error "Queue is empty :" 'tail)
-      (internal-rtqueue (make-RTQueue (stream-cdr (RTQueue-front rtq)) 
-                                      (RTQueue-rear rtq) 
-                                      (RTQueue-scdul rtq)))))
+      (internal-rtqueue (stream-cdr (RTQueue-front rtq)) 
+                        (RTQueue-rear rtq) 
+                        (RTQueue-scdul rtq))))
 
 (: rtqueue->list : (All (A) ((RTQueue A) -> (Listof A))))
 (define (rtqueue->list rtq)

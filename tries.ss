@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide empty lookup bind build make-trie trie Trie)
+(provide empty lookup bind make-trie trie Trie)
 
 (define-type-alias (Key A) (Listof A))
 

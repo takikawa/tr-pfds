@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/scheme
 (require "skewbinaryrandomaccesslist.ss")
 (define-struct: (A) Base ([prevbase : (Block A)]
                           [prevoffset : Integer]
@@ -48,10 +48,9 @@
 (: first : (All (A) ((VList A) -> A)))
 (define (first vlst)
   (let ([offset (VList-offset vlst)]
-        [size (VList-size vlst)]
-        [base (VList-base vlst)])
+        [size (VList-size vlst)])
     (if (< (sub1 offset) size)
-        (head (Base-elems base))
+        (head (Base-elems (VList-base vlst)))
         (error "List is empty :" 'first))))
 
 (: last : (All (A) ((VList A) -> A)))
@@ -72,10 +71,9 @@
   (let* ([offset (VList-offset vlst)]
          [size (VList-size vlst)]
          [base (VList-base vlst)]
-         [len (Base-size base)]
          [prev (Base-prevbase base)])
     (cond 
-      [(and (zero? len) (zero? offset)) (error "List is empty :" 'rest)]
+      [(and (zero? (Base-size base)) (zero? offset)) (error "List is empty :" 'rest)]
       [(> offset 1) (make-VList (sub1 offset) 
                                (make-Base (Base-prevbase base)
                                           (Base-prevoffset base)
@@ -84,7 +82,7 @@
                                (sub1 size))]
       [(Base? prev) (make-VList (Base-prevoffset base) prev (sub1 size))]
       [else empty-vlist])))
-        
+
 
 (: size : (All (A) ((VList A) -> Integer)))
 (define (size vlst)
@@ -107,11 +105,10 @@
 (define (get-helper index vlist)
   (let* ([base (VList-base vlist)]
          [offset (VList-offset vlist)]
-         [prev (Base-prevbase base)]
-         [prevoffset (Base-prevoffset base)])
+         [prev (Base-prevbase base)])
     (if (and (> index (sub1 offset)) (Base? prev))
         (get-helper (- index offset) 
-                    (make-VList prevoffset prev (VList-size vlist)))
+                    (make-VList (Base-prevoffset base) prev (VList-size vlist)))
         (lookup (Base-elems base) index))))
       
 (: reverse : (All (A) ((VList A) -> (VList A))))

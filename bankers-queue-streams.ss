@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(require "stream.ss")
+(require "stream3.ss")
 
 (provide Queue empty empty? enqueue head tail queue queue->list)
          
@@ -24,24 +24,22 @@
 
 
 ;; A Pseudo-constructor. Maintains the invariant lenf >= lenr
-(: internal-queue : (All (A) ((Queue A) -> (Queue A))))
-(define (internal-queue que)
-  (let ([lenf (Queue-lenf que)]
-        [lenr (Queue-lenr que)])
-    (if (>= lenf lenr)
-        que
-        (make-Queue (stream-append (Queue-front que)
-                                   (stream-reverse (Queue-rear que)))
-                    (+ lenf lenr)
-                    null-stream ZERO))))
+(: internal-queue : 
+   (All (A) ((Stream A) Integer (Stream A) Integer -> (Queue A))))
+(define (internal-queue front lenf rear lenr)
+  (if (>= lenf lenr)
+      (make-Queue front lenf rear lenr)
+      (make-Queue (stream-append front (stream-reverse rear))
+                  (+ lenf lenr)
+                  null-stream ZERO)))
 
 ;; Pushes an element into the queue
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))
 (define (enqueue elem que)
-  (internal-queue (make-Queue (Queue-front que) 
-                              (Queue-lenf que) 
-                              (stream-cons elem (Queue-rear que))
-                              (add1 (Queue-lenr que)))))
+  (internal-queue (Queue-front que) 
+                  (Queue-lenf que) 
+                  (stream-cons elem (Queue-rear que))
+                  (add1 (Queue-lenr que))))
 
 ;; Retrieves the head element of the queue
 (: head : (All (A) ((Queue A) -> A)))
@@ -55,20 +53,24 @@
 (define (tail que)
   (if (empty? que)
       (error "Queue is empty :" 'tail)
-      (internal-queue (make-Queue (stream-cdr (Queue-front que))
-                                  (sub1 (Queue-lenf que))
-                                  (Queue-rear que)
-                                  (Queue-lenr que)))))
+      (internal-queue (stream-cdr (Queue-front que))
+                      (sub1 (Queue-lenf que))
+                      (Queue-rear que)
+                      (Queue-lenr que))))
 
 (: queue->list : (All (A) ((Queue A) -> (Listof A))))
 (define (queue->list que)
-  (if (empty? que)
+  (if (zero? (Queue-lenf que))
       null
       (cons (head que) (queue->list (tail que)))))
 
 ;; A Queue constructor with the given element
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
-  (if (null? lst)
-      empty
-      (foldl (inst enqueue A) empty lst)))
+  (foldl (inst enqueue A) empty lst))
+
+(define v (time (build-list 10000000 (λ(x) x))))
+;(define lst (time (build-list1 1 40000)))
+;;(define v (time (build-list 10000000 (λ(x) x))))
+(define que (time (apply queue v)))
+;(define k (time (queue->list que)))

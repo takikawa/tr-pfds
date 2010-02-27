@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide empty empty? head tail last init 
-         enqueue snoc deque->list deque)
+         enqueue-front enqueue deque->list deque)
 
 (require scheme/promise)
 
@@ -34,8 +34,8 @@
     [(One? d1) (make-Two elem (One-elem d1))]
     [else (make-Three elem (Two-fst d1) (Two-snd d1))]))
 
-(: dsnoc :(All (A) (A (D1 A) -> (D A))))
-(define (dsnoc elem d1)
+(: denqueue :(All (A) (A (D1 A) -> (D A))))
+(define (denqueue elem d1)
   (cond
     [(Zero? d1) (make-One elem)]
     [(One? d1) (make-Two (One-elem d1) elem)]
@@ -73,8 +73,8 @@
     [(Two? d) (make-One (Two-fst d))]
     [else (make-Two (Three-fst d) (Three-snd d))]))
 
-(: enqueueS : (All (A) (A (Shallow A) -> (ImplDeque A))))
-(define (enqueueS elem shq)
+(: enqueue-fS : (All (A) (A (Shallow A) -> (ImplDeque A))))
+(define (enqueue-fS elem shq)
   (let ([d (Shallow-elem shq)])
     (if (Three? d) 
         (make-Deep (make-Two elem (Three-fst d)) 
@@ -82,52 +82,54 @@
                    (make-Two (Three-snd d) (Three-trd d)))
         (make-Shallow (dcons elem d)))))
 
-(: enqueueD : (All (A) (A (Deep A) -> (ImplDeque A))))
-(define (enqueueD elem dpq)
+
+(: enqueueS : (All (A) (A (Shallow A) -> (ImplDeque A))))
+(define (enqueueS elem shq)
+  (let ([d (Shallow-elem shq)])
+    (if (Three? d) 
+        (make-Deep (make-Two (Three-fst d) (Three-snd d)) 
+                   (delay (cons empty empty)) 
+                   (make-Two (Three-trd d) elem))
+        (make-Shallow (denqueue elem d)))))
+
+(: enqueue-fD : (All (A) (A (Deep A) -> (ImplDeque A))))
+(define (enqueue-fD elem dpq)
   (let ([d (Deep-F dpq)])
     (if (Three? d)
         (let* ([forced-mid (force (Deep-M dpq))]
                [fst (car forced-mid)]
                [snd (cdr forced-mid)])
           (make-Deep (make-Two elem (Three-fst d)) 
-                     (delay (cons (enqueue (Three-snd d) fst) 
-                                  (enqueue (Three-trd d) snd)))
+                     (delay (cons (enqueue-front (Three-snd d) fst) 
+                                  (enqueue-front (Three-trd d) snd)))
                      (Deep-R dpq)))
         (make-Deep (dcons elem d) (Deep-M dpq) (Deep-R dpq)))))
 
-(: enqueue : (All (A) (A (ImplDeque A) -> (ImplDeque A))))
-(define (enqueue elem d)
-  (cond
-    [(Shallow? d) (enqueueS elem d)]
-    [else (enqueueD elem d)]))
-
-
-(: snocS : (All (A) (A (Shallow A) -> (ImplDeque A))))
-(define (snocS elem shq)
-  (let ([d (Shallow-elem shq)])
-    (if (Three? d) 
-        (make-Deep (make-Two (Three-fst d) (Three-snd d)) 
-                   (delay (cons empty empty)) 
-                   (make-Two (Three-trd d) elem))
-        (make-Shallow (dsnoc elem d)))))
-
-(: snocD : (All (A) (A (Deep A) -> (ImplDeque A))))
-(define (snocD elem dpq)
-  (let ([d (Deep-F dpq)])
+(: enqueueD : (All (A) (A (Deep A) -> (ImplDeque A))))
+(define (enqueueD elem dpq)
+  (let ([d (Deep-R dpq)])
     (if (Three? d)
         (let* ([forced-mid (force (Deep-M dpq))]
                [fst (car forced-mid)]
                [snd (cdr forced-mid)])
-          (make-Deep (make-Two (Three-fst d) (Three-snd d)) 
-                     (delay (cons (snoc (Three-trd d) fst) (snoc elem snd)))
-                     (Deep-R dpq)))
-        (make-Deep (dsnoc elem d) (Deep-M dpq) (Deep-R dpq)))))
+          (make-Deep (Deep-F dpq) 
+                     (delay (cons (enqueue (Three-fst d) fst) 
+                                  (enqueue (Three-snd d) snd)))
+                     (make-Two (Three-trd d) elem)))
+        (make-Deep (Deep-F dpq) (Deep-M dpq) (denqueue elem d)))))
 
-(: snoc : (All (A) (A (ImplDeque A) -> (ImplDeque A))))
-(define (snoc elem d)
+(: enqueue-front : (All (A) (A (ImplDeque A) -> (ImplDeque A))))
+(define (enqueue-front elem d)
   (if (Shallow? d) 
-      (snocS elem d)
-      (snocD elem d)))
+      (enqueue-fS elem d)
+      (enqueue-fD elem d)))
+
+
+(: enqueue : (All (A) (A (ImplDeque A) -> (ImplDeque A))))
+(define (enqueue elem d)
+  (if (Shallow? d) 
+      (enqueueS elem d)
+      (enqueueD elem d)))
 
 (: head : (All (A) ((ImplDeque A) -> A)))
 (define (head deque)
@@ -198,11 +200,9 @@
 (define (deque->list que)
   (if (empty? que)
       null
-      (cons (last que) (deque->list (init que)))))
+      (cons (head que) (deque->list (tail que)))))
 
 
 (: deque : (All (A) (A * -> (ImplDeque A))))
 (define (deque . lst)
-  (if (null? lst)
-      empty
-      (foldl (inst enqueue A) empty lst)))
+  (foldl (inst enqueue A) empty lst))

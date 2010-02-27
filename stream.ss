@@ -8,88 +8,108 @@
 
 (define-struct: Mt ())
 
-(define-struct: (A) InStream 
-  ([elem  : (Promise (Pair A (Stream A)))]))
+(define-struct: (A) InStream ([fst : A] 
+                              [rst : (Stream A)]))
 
-(define-type-alias (Stream A) (U Mt (InStream A)))
+(define-type-alias (StreamCell A) (U Mt (InStream A)))
 
-(define null-stream (make-Mt))
+(define-type-alias (Stream A) (Promise (StreamCell A)))
 
+(define null-stream (delay (make-Mt)))
 
-(: force-stream : (All (A) ((InStream A) -> (Pair A (Stream A)))))
+(: force-stream : (All (A) ((Stream A) -> (StreamCell A))))
 (define (force-stream strem)
-  (force (InStream-elem strem)))
+  (force strem))
 
 (: empty-stream? : (All (A) ((Stream A) -> Boolean)))
 (define (empty-stream? strem)
-  (Mt? strem))
+  (Mt? (force strem)))
 
 (: stream-cons : (All (A) (A (Stream A) -> (Stream A))))
 (define (stream-cons elem strem)
-  (make-InStream (delay (cons elem strem))))
+  (delay (make-InStream elem strem)))
 
 (: stream-car : (All (A) ((Stream A) -> A)))
 (define (stream-car strem)
-  (if (Mt? strem)
-      (error "Stream is empty :" 'stream-car)
-      (car (force-stream strem))))
+  (let ([instr (force strem)])
+    (if (Mt? instr)
+        (error "Stream is empty :" 'stream-car)
+        (InStream-fst instr))))
 
 
 (: stream-cdr : (All (A) ((Stream A) -> (Stream A))))
 (define (stream-cdr strem)
-  (if (Mt? strem)
-      (error "Stream is empty :" 'stream-cdr)  
-      (cdr (force-stream strem))))
+  (let ([instr (force strem)])
+    (if (Mt? instr)
+        (error "Stream is empty :" 'stream-cdr)  
+        (InStream-rst instr))))
 
 (: drop : (All (A) (Integer (Stream A) -> (Stream A))))
 (define (drop num strem)
-  (cond 
-    [(= num 0) strem]
-    [(Mt? strem) (error "Not enough elements to drop :" 'drop)]
-    [else  (drop (sub1 num) (cdr (force-stream strem)))]))
+  (if (zero? num) 
+      strem
+      (let ([instr (force strem)]) 
+        (if (Mt? instr) 
+            (error "Not enough elements to drop :" 'drop)
+            (drop (sub1 num) (InStream-rst instr))))))
 
 (: take : (All (A) (Integer (Stream A) -> (Stream A))))
-(define (take num strem)
-  (if (or (= num 0) (Mt? strem))
-      null-stream
-      (let ([forced (force-stream strem)])
-        (stream-cons (car forced) 
-                     (take (sub1 num) (cdr forced))))))
+(define (take num in-strem)
+  (if (zero? num)
+      in-strem
+      (let ([forced (force in-strem)])
+        (if (Mt? forced)
+            (error "Not enough elements to take :" 'take)
+            (delay (make-InStream (InStream-fst forced)
+                                  (take (sub1 num) (InStream-rst forced))))))))
 
 
 (: stream-append : (All (A) ((Stream A) (Stream A) -> (Stream A))))
-(define (stream-append strem1 strem2)
-  (cond 
-    [(Mt? strem1) strem2]
-    [(Mt? strem2) strem1]
-    [else (let ([forcd1 (force-stream strem1)])
-            (make-InStream 
-             (delay (cons (car forcd1) 
-                          (stream-append (cdr forcd1) strem2)))))]))
+(define (stream-append in-strem1 in-strem2) 
+  (: local : (All (A) ((Stream A) (Stream A) -> (Stream A))))
+  (define (local strem1 strem2)
+    (let ([forcd (force-stream strem1)])
+    (if (Mt? forcd)
+        strem2
+        (delay (make-InStream (InStream-fst forcd)
+                              (stream-append (InStream-rst forcd) strem2))))))
+  (if (Mt? (force in-strem2)) 
+      in-strem1
+      (local in-strem1 in-strem2)))
 
+
+;(: stream-reverse : (All (A) ((Stream A) -> (Stream A))))
+;(define (stream-reverse strem)
+;  (: rev : ((Stream A) (Pair A (Stream A)) -> (Stream A)))
+;  (define (rev int-strem accum)
+;    (let ([str (make-InStream (delay accum))])
+;      (if (Mt? int-strem)
+;          str
+;          (let ([forcd (force-stream int-strem)])
+;            (rev (cdr forcd) (cons (car forcd) str))))))
+;  (if (Mt? strem)
+;        strem
+;        (rev (stream-cdr strem) (cons (stream-car strem) null-stream))))
 
 (: stream-reverse : (All (A) ((Stream A) -> (Stream A))))
 (define (stream-reverse strem)
   (: rev : ((Stream A) (Stream A) -> (Stream A)))
   (define (rev int-strem accum)
-    (if (Mt? int-strem)
-        accum
-        (let ([forcd (force-stream int-strem)])
-          (rev (cdr forcd)
-               (stream-cons (car forcd) accum)))))
+    (let ([forcd (force int-strem)])
+      (if (Mt? forcd)
+          accum
+          (rev (InStream-rst forcd)
+               (delay (make-InStream (InStream-fst forcd) accum))))))
   (rev strem null-stream))
-
 
 (: stream->list : (All (A) ((Stream A) -> (Listof A))))
 (define (stream->list strem)
-  (if (Mt? strem)
-      null
-      (let ([forcd (force-stream strem)])
-        (cons (car forcd) (stream->list (cdr forcd))))))
+  (let ([forcd (force-stream strem)])
+    (if (Mt? forcd)
+        null
+        (cons (InStream-fst forcd) 
+              (stream->list (InStream-rst forcd))))))
 
-(: stream : (All (A) (A A * -> (Stream A))))
-(define (stream elem . elems)
-  (let ([first (make-InStream (delay (cons elem null-stream)))])
-    (if (null? elems)
-        first
-        (foldr (inst stream-cons A) null-stream (cons elem elems)))))
+(: stream : (All (A) (A * -> (Stream A))))
+(define (stream . elems)
+  (foldr (inst stream-cons A) null-stream elems))

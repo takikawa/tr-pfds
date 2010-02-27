@@ -24,9 +24,9 @@
 
 (: enqueue : (All (A) (A (ImplQueue A) -> (ImplQueue A))))
 (define (enqueue elem que)
-  (cond
-    [(Shallow? que) (enqueueS elem que)]
-    [else (enqueueD elem que)]))
+  (if (Shallow? que) 
+      (enqueueS elem que)
+      (enqueueD elem que)))
 
 (: enqueueS : (All (A) (A (Shallow A) -> (ImplQueue A))))
 (define (enqueueS elem shq)
@@ -53,9 +53,9 @@
 
 (: head : (All (A) ((ImplQueue A) -> A)))
 (define (head que)
-  (cond
-    [(Shallow? que) (headS que)]
-    [else (headD que)]))
+  (if (Shallow? que)
+      (headS que)
+      (headD que)))
 
 (: headS : (All (A) ((Shallow A) -> A)))
 (define (headS shq)
@@ -73,9 +73,9 @@
 
 (: tail : (All (A) ((ImplQueue A) -> (ImplQueue A))))
 (define (tail que)
-  (cond
-    [(Shallow? que) (tailS que)]
-    [else (tailD que)]))
+  (if (Shallow? que) 
+      (tailS que)
+      (tailD que)))
 
 (: tailS : (All (A) ((Shallow A) -> (ImplQueue A))))
 (define (tailS shq)
@@ -87,22 +87,21 @@
 (: tailD : (All (A) ((Deep A) -> (ImplQueue A))))
 (define (tailD dpq)
   (let ([front (Deep-F dpq)])
-    (cond 
-      [(Two? front) 
-       (make-Deep (make-One (Two-snd front)) (Deep-M dpq) (Deep-R dpq))]
-      [else (tailD-helper dpq)])))
+    (if (Two? front) 
+        (make-Deep (make-One (Two-snd front)) (Deep-M dpq) (Deep-R dpq))
+        (tailD-helper dpq))))
 
 (: tailD-helper : (All (A) ((Deep A) -> (ImplQueue A))))
 (define (tailD-helper dpq)
   (let* ([forced-mid (force (Deep-M dpq))]
-         [carm (car forced-mid)]
-         [cdrm (cdr forced-mid)])
-    (cond
-      [(empty? carm) (make-Shallow (Deep-R dpq))]
-      [else (let ([fst (head carm)]
-                  [snd (head cdrm)]
-                  [new-mid (delay (cons (tail carm) (tail cdrm)))])
-              (make-Deep (make-Two fst snd) new-mid (Deep-R dpq)))])))
+         [carm (car forced-mid)])
+    (if (empty? carm) 
+        (make-Shallow (Deep-R dpq))
+        (let* ([cdrm (cdr forced-mid)]
+               [fst (head carm)]
+               [snd (head cdrm)]
+               [new-mid (delay (cons (tail carm) (tail cdrm)))])
+          (make-Deep (make-Two fst snd) new-mid (Deep-R dpq))))))
 
 (: queue->list : (All (A) ((ImplQueue A) -> (Listof A))))
 (define (queue->list que)
@@ -113,3 +112,10 @@
 (: implicit-queue : (All (A) (A * -> (ImplQueue A))))
 (define (implicit-queue . lst)
   (foldl (inst enqueue A) (make-Shallow (make-Zero)) lst))
+
+
+(define v (time (build-list 1000000 (λ(x) x))))
+;(define lst (time (build-list1 1 40000)))
+;;(define v (time (build-list 10000000 (λ(x) x))))
+(define que (time (apply implicit-queue v)))
+;(define k (time (queue->list que)))
