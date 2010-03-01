@@ -1,5 +1,7 @@
 #lang typed-scheme
 
+(provide pairingheap merge insert find-min delete-min sorted-list)
+
 (define-struct: Mt ())
 (define-struct: (A) Tree ([elem : A]
                           [heaps : (Listof (Heap A))]))
@@ -20,8 +22,8 @@
                     (merge-pairs (cddr lst) comparer) 
                     comparer)]))
 
-(: is-empty? : (All (A) ((PairingHeap A) -> Boolean)))
-(define (is-empty? pheap)
+(: empty? : (All (A) ((PairingHeap A) -> Boolean)))
+(define (empty? pheap)
   (Mt? (PairingHeap-heap pheap)))
 
 
@@ -77,19 +79,13 @@
         (make-PairingHeap comparer
                           (merge-pairs (Tree-heaps heap) comparer)))))
 
-(: get-sorted-list : (All (A) ((PairingHeap A) -> (Listof A))))
-(define (get-sorted-list pheap)
-  (: helper : (All (A) ((PairingHeap A) (Listof A) -> (Listof A))))
-  (define (helper inheap lst)
-    (let ([heap (PairingHeap-heap inheap)])
-      (if (Mt? heap)
-          lst
-          (helper (delete-min inheap) (cons (find-min inheap) lst)))))
-  (helper pheap null))
+(: sorted-list : (All (A) ((PairingHeap A) -> (Listof A))))
+(define (sorted-list pheap)
+  (if (Mt? (PairingHeap-heap pheap))
+      null
+      (cons (find-min pheap) (sorted-list (delete-min pheap)))))
 
-(: pairingheap : (All (A) ((A A -> Boolean) A A * -> (PairingHeap A))))
-(define (pairingheap comparer fst . rst)
-  (let ([first (make-PairingHeap comparer (make-Tree fst null))])
-    (if (null? rst)
-        first
-        (foldl (inst insert A) first rst))))
+(: pairingheap : (All (A) ((A A -> Boolean) A * -> (PairingHeap A))))
+(define (pairingheap comparer . lst)
+  (let ([first ((inst make-PairingHeap A) comparer (make-Mt))])
+    (foldl (inst insert A) first lst)))

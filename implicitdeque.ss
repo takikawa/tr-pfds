@@ -1,9 +1,9 @@
 #lang typed-scheme
 
-(provide empty empty? head tail last init 
+(provide empty empty? head tail last init deque->rev-list
          enqueue-front enqueue deque->list deque)
 
-(require scheme/promise)
+(require scheme/promise scheme/match)
 
 (define-struct: Zero ())
 (define-struct: (A) One ([elem : A]))
@@ -27,173 +27,118 @@
 (define (empty? que)
   (and (Shallow? que) (Zero? (Shallow-elem que))))
 
-(: dcons :(All (A) (A (D1 A) -> (D A))))
-(define (dcons elem d1)
-  (cond
-    [(Zero? d1) (make-One elem)]
-    [(One? d1) (make-Two elem (One-elem d1))]
-    [else (make-Three elem (Two-fst d1) (Two-snd d1))]))
-
-(: denqueue :(All (A) (A (D1 A) -> (D A))))
-(define (denqueue elem d1)
-  (cond
-    [(Zero? d1) (make-One elem)]
-    [(One? d1) (make-Two (One-elem d1) elem)]
-    [else (make-Three (Two-fst d1) (Two-snd d1) elem)]))
-
-(: dhead :(All (A) ((D A) -> A)))
-(define (dhead d)
-  (cond
-    [(Zero? d) (error "Queue is empty :" 'head)]
-    [(One? d) (One-elem d)]
-    [(Two? d) (Two-fst d)]
-    [else (Three-fst d)]))
-
-(: dlast :(All (A) ((D A) -> A)))
-(define (dlast d)
-  (cond
-    [(Zero? d) (error "Queue is empty :" 'last)]
-    [(One? d) (One-elem d)]
-    [(Two? d) (Two-snd d)]
-    [else (Three-trd d)]))
-
-(: dtail :(All (A) ((D A) -> (D A))))
-(define (dtail d)
-  (cond
-    [(Zero? d) (error "Queue is empty :" 'tail)]
-    [(One? d) (make-Zero)]
-    [(Two? d) (make-One (Two-snd d))]
-    [else (make-Two (Three-snd d) (Three-trd d))]))
-
-(: dinit :(All (A) ((D A) -> (D A))))
-(define (dinit d)
-  (cond
-    [(Zero? d) (error "Queue is empty :" 'init)]
-    [(One? d) (make-Zero)]
-    [(Two? d) (make-One (Two-fst d))]
-    [else (make-Two (Three-fst d) (Three-snd d))]))
-
-(: enqueue-fS : (All (A) (A (Shallow A) -> (ImplDeque A))))
-(define (enqueue-fS elem shq)
-  (let ([d (Shallow-elem shq)])
-    (if (Three? d) 
-        (make-Deep (make-Two elem (Three-fst d)) 
-                   (delay (cons empty empty)) 
-                   (make-Two (Three-snd d) (Three-trd d)))
-        (make-Shallow (dcons elem d)))))
-
-
-(: enqueueS : (All (A) (A (Shallow A) -> (ImplDeque A))))
-(define (enqueueS elem shq)
-  (let ([d (Shallow-elem shq)])
-    (if (Three? d) 
-        (make-Deep (make-Two (Three-fst d) (Three-snd d)) 
-                   (delay (cons empty empty)) 
-                   (make-Two (Three-trd d) elem))
-        (make-Shallow (denqueue elem d)))))
-
-(: enqueue-fD : (All (A) (A (Deep A) -> (ImplDeque A))))
-(define (enqueue-fD elem dpq)
-  (let ([d (Deep-F dpq)])
-    (if (Three? d)
-        (let* ([forced-mid (force (Deep-M dpq))]
-               [fst (car forced-mid)]
-               [snd (cdr forced-mid)])
-          (make-Deep (make-Two elem (Three-fst d)) 
-                     (delay (cons (enqueue-front (Three-snd d) fst) 
-                                  (enqueue-front (Three-trd d) snd)))
-                     (Deep-R dpq)))
-        (make-Deep (dcons elem d) (Deep-M dpq) (Deep-R dpq)))))
-
-(: enqueueD : (All (A) (A (Deep A) -> (ImplDeque A))))
-(define (enqueueD elem dpq)
-  (let ([d (Deep-R dpq)])
-    (if (Three? d)
-        (let* ([forced-mid (force (Deep-M dpq))]
-               [fst (car forced-mid)]
-               [snd (cdr forced-mid)])
-          (make-Deep (Deep-F dpq) 
-                     (delay (cons (enqueue (Three-fst d) fst) 
-                                  (enqueue (Three-snd d) snd)))
-                     (make-Two (Three-trd d) elem)))
-        (make-Deep (Deep-F dpq) (Deep-M dpq) (denqueue elem d)))))
-
 (: enqueue-front : (All (A) (A (ImplDeque A) -> (ImplDeque A))))
-(define (enqueue-front elem d)
-  (if (Shallow? d) 
-      (enqueue-fS elem d)
-      (enqueue-fD elem d)))
-
+(define (enqueue-front elem que)
+  (match que    
+    [(struct Shallow ((struct Zero ()))) (make-Shallow (make-One elem))]
+    [(struct Shallow ((struct One (a)))) (make-Shallow (make-Two elem a))]
+    [(struct Shallow ((struct Two (a b)))) 
+     (make-Shallow (make-Three elem a b))]
+    [(struct Shallow ((struct Three (f s t))))
+     (make-Deep (make-Two elem f) (delay (cons empty empty)) (make-Two s t))]
+    [(struct Deep ((struct Zero ()) m r)) (make-Deep (make-One elem) m r)]
+    [(struct Deep ((struct One (a)) m r)) (make-Deep (make-Two elem a) m r)]
+    [(struct Deep ((struct Two (a b)) m r)) 
+     (make-Deep (make-Three elem a b) m r)]
+    [(struct Deep ((struct Three (f s t)) m r)) 
+     (let* ([forced-mid (force m)]
+            [fst (car forced-mid)]
+            [snd (cdr forced-mid)])
+          (make-Deep (make-Two elem f) 
+                     (delay (cons (enqueue-front s fst) (enqueue-front t snd)))
+                     r))]))
 
 (: enqueue : (All (A) (A (ImplDeque A) -> (ImplDeque A))))
-(define (enqueue elem d)
-  (if (Shallow? d) 
-      (enqueueS elem d)
-      (enqueueD elem d)))
+(define (enqueue elem que)
+  (match que    
+    [(struct Shallow ((struct Zero ()))) (make-Shallow (make-One elem))]
+    [(struct Shallow ((struct One (a)))) (make-Shallow (make-Two a elem))]
+    [(struct Shallow ((struct Two (a b)))) 
+     (make-Shallow (make-Three a b elem))]
+    [(struct Shallow ((struct Three (f s t))))
+     (make-Deep (make-Two f s) (delay (cons empty empty)) (make-Two t elem))]
+    [(struct Deep (f m (struct Zero ()))) (make-Deep f m (make-One elem))]
+    [(struct Deep (f m (struct One (a)))) (make-Deep f m (make-Two a elem))]
+    [(struct Deep (f m (struct Two (a b)))) 
+     (make-Deep f m (make-Three a b elem))]
+    [(struct Deep (fi m (struct Three (f s t)))) 
+     (let* ([forced-mid (force m)]
+            [fst (car forced-mid)]
+            [snd (cdr forced-mid)])
+          (make-Deep fi
+                     (delay (cons (enqueue f fst) (enqueue s snd)))
+                     (make-Two t elem)))]))
 
 (: head : (All (A) ((ImplDeque A) -> A)))
-(define (head deque)
-  (if (Shallow? deque)
-      (dhead (Shallow-elem deque))
-      (dhead (Deep-F deque))))
+(define (head que)
+  (match que    
+    [(struct Shallow ((struct Zero ()))) (error "Queue is empty :" 'head)]
+    [(struct Shallow ((struct One (f)))) f]
+    [(struct Shallow ((struct Two (f s)))) f]
+    [(struct Shallow ((struct Three (f s t)))) f]
+    [(struct Deep ((struct Zero ()) m r)) (error "Queue is empty :" 'head)]
+    [(struct Deep ((struct One (f)) m r)) f]
+    [(struct Deep ((struct Two (f s)) m r)) f]
+    [(struct Deep ((struct Three (f s t)) m r)) f]))
 
 (: last : (All (A) ((ImplDeque A) -> A)))
-(define (last deque)
-  (if (Shallow? deque)
-      (dlast (Shallow-elem deque))
-      (dlast (Deep-R deque))))
+(define (last que)
+  (match que    
+    [(struct Shallow ((struct Zero ()))) (error "Queue is empty :" 'last)]
+    [(struct Shallow ((struct One (f)))) f]
+    [(struct Shallow ((struct Two (f s)))) s]
+    [(struct Shallow ((struct Three (f s t)))) t]
+    [(struct Deep (f m (struct Zero ()))) (error "Queue is empty :" 'last)]
+    [(struct Deep (fi m (struct One (f)))) f]
+    [(struct Deep (fi m (struct Two (f s)))) s]
+    [(struct Deep (fi m (struct Three (f s t)))) t]))
 
-(: tailOne : (All (A) ((Deep A) -> (ImplDeque A))))
-(define (tailOne deque)
-  (let ([m (force (Deep-M deque))]
-        [r (Deep-R deque)])
-    (if (empty? (car m))
-        (make-Shallow r)
-        (let* ([carm (car m)]
-               [cdrm (cdr m)]
-               [fst (head carm)]
-               [snd (head cdrm)])
-          (make-Deep (make-Two fst snd) 
-                     (delay (cons (tail carm) (tail cdrm))) r)))))
 
 (: tail : (All (A) ((ImplDeque A) -> (ImplDeque A))))
-(define (tail deque)
-  (if (Shallow? deque) 
-      (make-Shallow (dtail (Shallow-elem deque)))
-      (tail-help deque)))
+(define (tail que)
+  (match que    
+    [(struct Shallow ((struct Zero ()))) (error "Queue is empty :" 'tail)]
+    [(struct Shallow ((struct One (_)))) (make-Shallow (make-Zero))]
+    [(struct Shallow ((struct Two (_ s)))) (make-Shallow (make-One s))]
+    [(struct Shallow ((struct Three (_ s t)))) (make-Shallow (make-Two s t))]
+    [(struct Deep ((struct Zero ()) m r)) (error "Queue is empty :" 'tail)]
+    [(struct Deep ((struct One (_)) mid r)) 
+     (let ([m (force mid)])
+       (if (empty? (car m))
+           (make-Shallow r)
+           (let* ([carm (car m)]
+                  [cdrm (cdr m)]
+                  [fst (head carm)]
+                  [snd (head cdrm)])
+             (make-Deep (make-Two fst snd) 
+                        (delay (cons (tail carm) (tail cdrm))) r))))]
+    [(struct Deep ((struct Two (_ s)) m r)) (make-Deep (make-One s) m r)]
+    [(struct Deep ((struct Three (_ s t)) m r)) 
+     (make-Deep (make-Two s t) m r)]))
 
-(: tail-help : (All (A) ((Deep A) -> (ImplDeque A))))
-(define (tail-help deque)
-  (let ([front (Deep-F deque)])
-    (if (One? front) 
-        (tailOne deque)
-        (make-Deep (dtail front) (Deep-M deque) (Deep-R deque)))))
-
-(: initOne : (All (A) ((Deep A) -> (ImplDeque A))))
-(define (initOne deque)
-  (let* ([m (force (Deep-M deque))]
-         [f (Deep-F deque)]
-         [carm (car m)])
-    (if (empty? carm)
-        (make-Shallow f)
-        (let* ([cdrm (cdr m)]
-               [fst (head carm)]
-               [snd (head cdrm)])
-          (make-Deep f (delay (cons (init carm) (init cdrm))) 
-                     (make-Two fst snd))))))
 
 (: init : (All (A) ((ImplDeque A) -> (ImplDeque A))))
-(define (init deque)
-  (if (Shallow? deque) 
-      (make-Shallow (dinit (Shallow-elem deque)))
-      (init-help deque)))
-
-(: init-help : (All (A) ((Deep A) -> (ImplDeque A))))
-(define (init-help deque)
-  (let ([rear (Deep-R deque)])
-    (if (One? rear) 
-        (initOne deque)
-        (make-Deep (Deep-F deque) (Deep-M deque) (dinit rear)))))
+(define (init que)
+  (match que    
+    [(struct Shallow ((struct Zero ()))) (error "Queue is empty :" 'init)]
+    [(struct Shallow ((struct One (f)))) (make-Shallow (make-Zero))]
+    [(struct Shallow ((struct Two (f _)))) 
+     (make-Shallow (make-One f))]
+    [(struct Shallow ((struct Three (f s _)))) (make-Shallow (make-Two f s))]
+    [(struct Deep (f m (struct Zero ()))) (error "Queue is empty :" 'init)]
+    [(struct Deep (f mid (struct One (a)))) 
+     (let* ([m (force mid)]
+            [carm (car m)])
+       (if (empty? carm)
+           (make-Shallow f)
+           (let* ([cdrm (cdr m)]
+                  [fst (last carm)]
+                  [snd (last cdrm)])
+             (make-Deep f (delay (cons (init carm) (init cdrm))) 
+                        (make-Two fst snd)))))]
+    [(struct Deep (fi m (struct Two (f _)))) (make-Deep fi m (make-One f))]
+    [(struct Deep (fi m (struct Three (f s t)))) 
+     (make-Deep fi m (make-Two f s))]))
 
 
 (: deque->list : (All (A) ((ImplDeque A) -> (Listof A))))
@@ -202,6 +147,11 @@
       null
       (cons (head que) (deque->list (tail que)))))
 
+(: deque->rev-list : (All (A) ((ImplDeque A) -> (Listof A))))
+(define (deque->rev-list que)
+  (if (and (Shallow? que) (Zero? (Shallow-elem que)))
+      null
+      (cons (last que) (deque->rev-list (init que)))))
 
 (: deque : (All (A) (A * -> (ImplDeque A))))
 (define (deque . lst)

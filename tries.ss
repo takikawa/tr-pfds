@@ -1,7 +1,8 @@
 #lang typed-scheme
 
-(provide empty lookup bind make-trie trie Trie)
+(provide lookup bind make-trie trie Trie tries)
 
+(require scheme/match)
 (define-type-alias (Key A) (Listof A))
 
 (define-struct: Mt ())
@@ -68,26 +69,30 @@
         (cons ctr (local (add1 ctr) (cdr lstk)))))
   (local 1 lst))
 
-;; While creating the tree, (hash-ref hash fst-el) if throws error, build a new
-;; Trie for rest of the key go deeper into the trie
+;; While creating the tree, 
+;; if   (hash-ref hash k) throws an error, 
+;; then it means that that there is no entry for k. So build a new
+;;      Trie for rest of the key and create an entry for k. 
+;; else go deeper into the trie searching for the rest of the key.
+
 (: trie : 
    (All (K V) ((Trie K V) (Listof V) (Listof (Listof K)) -> (Trie K V))))
 (define (trie tri lstv lstk)
-  (if (or (null? lstv) (null? lstk))
-      tri
-      (let* ([fstv (car lstv)]
-             [rstv (cdr lstv)]
-             [fstk (car lstk)]
-             [rstk (cdr lstk)]
-             [rst-fstk (cdr fstk)]
-             [fst-el (car fstk)]
-             [hash (Trie-map tri)]
-             [opt (Trie-opt tri)]
+  (match (list lstv lstk)
+    [(list null null) tri]
+    [(list (cons v vs) (cons (cons k ks) rstk))
+      (let* ([hash (Trie-map tri)]
              [tree (ann (with-handlers ([exn:fail? (lambda (error?) 
-                                                     (build fstv rst-fstk))])
-                          (go-deep (hash-ref hash fst-el) rst-fstk fstv)) 
+                                                     (build v ks))])
+                          (go-deep (hash-ref hash k) ks v)) 
                         (Trie K V))])
-        (trie (make-Trie opt (hash-set hash fst-el tree)) rstv rstk))))
+        (trie (make-Trie (Trie-opt tri) (hash-set hash k tree))
+              vs rstk))]))
+
+(: tries : 
+   (All (K V) ((Listof V) (Listof (Listof K)) -> (Trie K V))))
+(define (tries lstv lstk)
+  (trie (ann (empty) (Trie K V)) lstv lstk))
 
 ;; Uses the same trick as previous one does
 (: go-deep : (All (K V) ((Trie K V) (Listof K) V -> (Trie K V))))
@@ -95,81 +100,10 @@
   (if (null? lstk)
       (make-Trie (make-Some val) (Trie-map tri))
       (let* ([hash (Trie-map tri)]
-             [opt (Trie-opt tri)]
-             [fstk (car lstk)]
-             [rstk (cdr lstk)]
-             [key-in (hash-has-key? hash fstk)]
-             [trie (ann (with-handlers 
-                            ([exn:fail? (lambda (error?) (build val rstk))])
-                          (go-deep (hash-ref hash fstk) rstk val))
+             [k (car lstk)]
+             [ks (cdr lstk)]
+             [trie (ann (with-handlers
+                            ([exn:fail? (lambda (error?) (build val ks))])
+                          (go-deep (hash-ref hash k) ks val))
                         (Trie K V))])
-        (make-Trie opt (hash-set hash fstk trie)))))
-
-(lookup (string->list "Hari")
-        (bind (string->list "JP") 5 
-              (make-trie 
-               (map string->list 
-                    (list "Hari Prashanth" "Hari" "Hari " "K R H P")))))
-
-(trie (ann (empty) (Trie Char Integer)) 
-             (list 1 2) 
-             (map string->list (list "K R" "K R H P")))
-
-(lookup (string->list "Hari") 
-        (trie 
-         (ann (empty) (Trie Char Integer)) 
-         (list 1 2 3 4 5) 
-         (map string->list (list "Hari" "Prashanth" "K R" "KRHP" "K R H P"))))
-
-(lookup (string->list "Prashanth") 
-        (trie 
-         (ann (empty) (Trie Char Integer)) 
-         (list 1 2 3 4 5) 
-         (map string->list (list "Hari" "Prashanth" "K R" "KRHP" "K R H P"))))
-
-(lookup (string->list "KRHP") 
-        (trie 
-         (ann (empty) (Trie Char Integer)) 
-         (list 1 2 3 4 5) 
-         (map string->list (list "Hari" "Prashanth" "K R" "KRHP" "K R H P"))))
-
-(lookup (string->list "K R H P") 
-        (trie 
-         (ann (empty) (Trie Char Integer)) 
-         (list 1 2 3 4 5) 
-         (map string->list (list "Hari" "Prashanth" "K R" "KRHP" "K R H P"))))
-
-(lookup (string->list "K R") 
-        (trie 
-         (ann (empty) (Trie Char Integer)) 
-         (list 1 2 3 4 5) 
-         (map string->list (list "Hari" "Prashanth" "K R" "KRHP" "K R H P"))))
-
-(lookup (string->list "Hari Prashanth") 
-        (trie 
-         (ann (empty) (Trie Char Integer)) 
-         (list 1 2 3 4) 
-         (map string->list (list "Hari Prashanth" "K R" "KRHP" "K R H P"))))
-
-(lookup (string->list "Hari") 
-        (trie 
-         (ann (empty) (Trie Char Integer)) 
-         (list 1 2 3 4) 
-         (map string->list (list "Hari Prashanth" "Hari" "Hari " "K R H P"))))
-
-
-(lookup (string->list "HariKRH") 
-        (bind (string->list "HariKRH") 5 
-              (trie 
-               (ann (empty) (Trie Char Integer)) 
-               (list 1 2 3 4) 
-               (map string->list 
-                    (list "Hari Prashanth" "Hari" "Hari " "K R H P")))))
-
-(lookup (string->list "JP") 
-        (bind (string->list "JP") 5 
-              (trie 
-               (ann (empty) (Trie Char Integer)) 
-               (list 1 2 3 4) 
-               (map string->list 
-                    (list "Hari Prashanth" "Hari" "Hari " "K R H P")))))
+        (make-Trie (Trie-opt tri) (hash-set hash k trie)))))

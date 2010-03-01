@@ -1,5 +1,8 @@
 #lang typed-scheme
 
+(provide empty empty? insert merge find-min 
+         delete-min sorted-list splayheap)
+
 (require scheme/match)
 
 (define-struct: Mt ())
@@ -30,34 +33,29 @@
         [right (Tree-right tree)])
     (: phelp-rgt : (Heap A) -> (Pair (Heap A) (Heap A)))
     (define (phelp-rgt rheap)
-      (if (Mt? rheap)
-          (cons tree empty)
-          (let ([rheap-elem (Tree-elem rheap)]
-                [rheap-left (Tree-left rheap)]
-                [rheap-rgt (Tree-right rheap)])
-            (if (func rheap-elem pivot)
-                (let ([pair (partition pivot rheap-rgt func)])
-                  (cons (make-Tree (make-Tree left elem rheap-left) 
-                                   rheap-elem 
-                                   (car pair))
-                        (cdr pair)))
-                (let ([pair (partition pivot rheap-left func)])
-                  (cons (make-Tree left elem (car pair))
-                        (make-Tree (cdr pair) rheap-elem rheap-rgt)))))))
+      (match rheap 
+        [(struct Mt ()) (cons tree empty)]
+        [(struct Tree (l e r))
+         (if (func e pivot)
+             (let ([pair (partition pivot r func)])
+               (cons (make-Tree (make-Tree left elem l) e (car pair))
+                     (cdr pair)))
+             (let ([pair (partition pivot l func)])
+               (cons (make-Tree left elem (car pair))
+                     (make-Tree (cdr pair) e r))))]))
     (: phelp-lft : (Heap A) -> (Pair (Heap A) (Heap A)))
     (define (phelp-lft lheap)
-      (if (Mt? lheap)
-          (cons empty tree)
-          (let ([lheap-elem (Tree-elem lheap)]
-                [lheap-left (Tree-left lheap)]
-                [lheap-rgt (Tree-right lheap)])
-            (if (func lheap-elem pivot)
-                (let ([pair (partition pivot lheap-rgt func)])
-                  (cons (make-Tree lheap-left lheap-elem (car pair))
-                        (make-Tree (cdr pair) elem right)))
-                (let ([pair (partition pivot lheap-left func)])
-                  (cons (car pair)
-                        (make-Tree (cdr pair) lheap-elem right)))))))
+      (match lheap
+        [(struct Mt ()) (cons empty tree)]
+        [(struct Tree (l e r))
+         (if (func e pivot)
+             (let ([pair (partition pivot r func)])
+               (cons (make-Tree l e (car pair))
+                     (make-Tree (cdr pair) elem right)))
+             (let ([pair (partition pivot l func)])
+               (cons (car pair)
+                     (make-Tree (cdr pair) e 
+                                (make-Tree r elem right)))))]))
     (if (func elem pivot)
         (phelp-rgt right)
         (phelp-lft left))))
@@ -84,11 +82,12 @@
   (let ([pair (cons heap1 heap2)])
     (match pair
       [(cons (struct Mt ()) _) heap2]
+      [(cons _ (struct Mt ())) heap1]
       [(cons (struct Tree (a elem b)) _) 
        (let ([in-pair (partition elem heap2 func)])
-         (make-Tree (merge-help (car pair) a func) 
+         (make-Tree (merge-help (car in-pair) a func) 
                     elem
-                    (merge-help (cdr pair) b func)))])))
+                    (merge-help (cdr in-pair) b func)))])))
 
 (: find-min : (All (A) ((SplayHeap A) -> A)))
 (define (find-min sheap)
@@ -104,7 +103,7 @@
   (let ([heap (SplayHeap-heap sheap)]
         [func (SplayHeap-comparer sheap)])
     (match heap
-      [(struct Mt ()) (error "Heap is empty :" 'find-min)]
+      [(struct Mt ()) (error "Heap is empty :" 'delete-min)]
       [(struct Tree ((struct Mt ()) elem b)) (make-SplayHeap func b)]
       [(struct Tree ((struct Tree ((struct Mt ()) el a)) elem b))
        (make-SplayHeap func (make-Tree a elem b))]
@@ -121,9 +120,7 @@
       null
       (cons (find-min sheap) (sorted-list (delete-min sheap)))))
 
-(: splayheap : (All (A) ((A A -> Boolean) A A * -> (SplayHeap A))))
-(define (splayheap func fst . rst)
-  (let ([sheap (make-SplayHeap func (make-Tree empty fst empty))])
-    (if (null? rst)
-        sheap
-        (foldl (inst insert A) sheap rst))))
+(: splayheap : (All (A) ((A A -> Boolean) A * -> (SplayHeap A))))
+(define (splayheap func . rst)
+  (let ([sheap ((inst make-SplayHeap A) func (make-Mt))])
+    (foldl (inst insert A) sheap rst)))

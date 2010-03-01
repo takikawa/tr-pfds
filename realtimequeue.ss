@@ -3,7 +3,7 @@
 (provide rtqueue rtqueue->list empty empty? 
          head tail enqueue RealTimeQueue list->rtqueue)
 
-(require "stream1.ss")
+(require "stream2.ss")
 
 (define-struct: (A) RTQueue
   ([front : (Stream A)]
@@ -72,3 +72,9 @@
 (: rtqueue : (All (A) (A * -> (RTQueue A))))
 (define (rtqueue . lst)
   (foldl (inst enqueue A) empty lst))
+
+(define v (time (build-list 1000000 (λ(x) x))))
+;(define lst (time (build-list1 1 40000)))
+;;(define v (time (build-list 10000000 (λ(x) x))))
+(define que (time (apply rtqueue v)))
+;(define k (time (queue->list que)))

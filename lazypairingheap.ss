@@ -1,5 +1,7 @@
 #lang typed-scheme
 
+(provide pairingheap merge insert find-min delete-min sorted-list empty?)
+
 (require scheme/promise
          scheme/match)
 
@@ -40,10 +42,10 @@
 (define (link heap1 heap2 func)
   (match heap1
     [(struct Heap (x (struct Mt ()) m)) (make-Heap x heap2 m)]
-    [(struct Heap (x b m)) (make-Heap x (make-Mt) 
-                                      (delay (merge-help (merge-help heap2 b func)
-                                                         (force m)
-                                                         func)))]))
+    [(struct Heap (x b m)) 
+     (make-Heap x (make-Mt) (delay (merge-help (merge-help heap2 b func)
+                                               (force m)
+                                               func)))]))
 
 (: insert : (All (A) (A (PairingHeap A) -> (PairingHeap A))))
 (define (insert elem pheap)

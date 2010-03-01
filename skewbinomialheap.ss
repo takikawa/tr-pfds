@@ -1,5 +1,7 @@
 #lang typed-scheme
 
+(provide empty? insert merge find-min delete-min binomialheap sorted-list)
+
 (require scheme/match)
 
 (define-struct: (A) Tree ([rank : Integer]
@@ -122,7 +124,10 @@
 (define (find-min heap)
   (let* ([func (Heap-comparer heap)]
          [trees (Heap-trees heap)]
-         [pair (remove-mintree trees func)]
+         [pair (with-handlers 
+                   ([exn:fail? (lambda (error?) 
+                                 (error "Heap is empty :" 'find-min))])
+                 (remove-mintree trees func))]
          [tree (car pair)])
     (root tree)))
 
@@ -130,7 +135,10 @@
 (define (delete-min heap)
   (let* ([func (Heap-comparer heap)]
          [trees (Heap-trees heap)]
-         [pair (remove-mintree trees func)]
+         [pair (with-handlers 
+                   ([exn:fail? (lambda (error?) 
+                                 (error "Heap is empty :" 'delete-min))])
+                 (remove-mintree trees func))]
          [tree (car pair)]
          [ts (cdr pair)])
     (: ins-all : ((Listof A) (Heap A) -> (Heap A)))
@@ -145,9 +153,7 @@
 
 (: binomialheap : (All (A) ((FUNC A) A * -> (Heap A))))
 (define (binomialheap func . lst)
-  (foldl (inst insert A)
-         ((inst make-Heap A) func null)
-         lst))
+  (foldl (inst insert A) ((inst make-Heap A) func null) lst))
 
 (: sorted-list : (All (A) ((Heap A) -> (Listof A))))
 (define (sorted-list heap)

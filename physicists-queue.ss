@@ -24,15 +24,12 @@
 
 
 ;; Maintains "preF" invariant (preF in not not null when front is not null)
-(: check-preF-inv : (All (A) ((PQueue A) -> (PQueue A))))
-(define (check-preF-inv que)
-  (if (null? (PQueue-preF que))
-      (make-PQueue (force (PQueue-front que))
-                   (PQueue-front que)
-                   (PQueue-lenf que)
-                   (PQueue-rear que)
-                   (PQueue-lenr que))
-      que))
+(: check-preF-inv : 
+   (All (A) ((Listof A) (Promise (Listof A)) Integer (Listof A) Integer -> (PQueue A))))
+(define (check-preF-inv pref front lenf rear lenr)
+  (if (null? pref)
+      (make-PQueue (force front) front lenf rear lenr)
+      (make-PQueue pref front lenf rear lenr)))
 
 
 ;; Maintains lenr <= lenf invariant
@@ -40,16 +37,16 @@
    (All (A) ((Listof A) (Promise (Listof A)) Integer (Listof A) Integer -> (PQueue A))))
 (define (check-len-inv pref front lenf rear lenr)
   (if (>= lenf lenr)
-      (make-PQueue pref front lenf rear lenr)
+      (check-preF-inv pref front lenf rear lenr)
       (let* ([newpref (force front)]
              [newf (delay (append newpref (reverse rear)))])
-        (make-PQueue newpref newf (+ lenf lenr) null 0))))
+        (check-preF-inv newpref newf (+ lenf lenr) null 0))))
 
 ;; Maintains queue invariants
 (: internal-queue : 
    (All (A) ((Listof A) (Promise (Listof A)) Integer (Listof A) Integer -> (PQueue A))))
 (define (internal-queue pref front lenf rear lenr)
-  (check-preF-inv (check-len-inv pref front lenf rear lenr)))
+  (check-len-inv pref front lenf rear lenr))
 
 ;; Enqueues an item into the list
 (: enqueue : (All (A) (A (PQueue A) -> (PQueue A))))
@@ -94,7 +91,7 @@
 (define (pqueue . items)
   (foldl (inst enqueue A) empty items))
 
-(define v (time (build-list 1000000 (λ(x) x))))
+(define v (time (build-list 10000000 (λ(x) x))))
 ;(define lst (time (build-list1 1 40000)))
 ;;(define v (time (build-list 10000000 (λ(x) x))))
 (define que (time (apply pqueue v)))
