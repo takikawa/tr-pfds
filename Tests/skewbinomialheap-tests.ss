@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../binomialheap.ss")
+(require "../skewbinomialheap.ss")
 (require typed/test-engine/scheme-tests)
 
 
@@ -62,5 +62,9 @@
 
 (check-expect (sorted-list (apply binomialheap gt int-list))
               (reverse int-list))
+
+(define lst (build-list 100 (λ: ([x : Integer]) x)))
+(check-expect (sorted-list (apply binomialheap less-than? lst)) lst)
+(check-expect (sorted-list (apply binomialheap gt lst)) (reverse lst))
 
 (test)

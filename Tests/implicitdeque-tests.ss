@@ -36,4 +36,8 @@
 (check-expect (deque->list (enqueue-front 1 (deque 2 3))) 
               (list 1 2 3))
 
+(define lst (build-list 100 (λ(x) x))) 
+(check-expect (deque->list (apply deque lst)) lst)
+
+(check-expect (deque->rev-list (apply deque lst)) (reverse lst))
 (test)
