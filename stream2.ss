@@ -56,7 +56,7 @@
 (: take : (All (A) (Integer (Stream A) -> (Stream A))))
 (define (take num in-strem)
   (if (zero? num)
-      in-strem
+      null-stream
       (let ([forced (force in-strem)])
         (if (Mt? forced)
             (error "Not enough elements to take :" 'take)
@@ -76,20 +76,6 @@
   (if (Mt? (force in-strem2)) 
       in-strem1
       (local in-strem1 in-strem2)))
-
-
-;(: stream-reverse : (All (A) ((Stream A) -> (Stream A))))
-;(define (stream-reverse strem)
-;  (: rev : ((Stream A) (Pair A (Stream A)) -> (Stream A)))
-;  (define (rev int-strem accum)
-;    (let ([str (make-InStream (delay accum))])
-;      (if (Mt? int-strem)
-;          str
-;          (let ([forcd (force-stream int-strem)])
-;            (rev (cdr forcd) (cons (car forcd) str))))))
-;  (if (Mt? strem)
-;        strem
-;        (rev (stream-cdr strem) (cons (stream-car strem) null-stream))))
 
 (: stream-reverse : (All (A) ((Stream A) -> (Stream A))))
 (define (stream-reverse strem)

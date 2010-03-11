@@ -30,4 +30,8 @@
 (check-expect (rtdeque->list (enqueue 1 (rtdeque 2 3))) (list 2 3 1))
 (check-expect (rtdeque->list (snoc 1 (rtdeque 2 3))) (list 1 2 3))
 
+(define lst (build-list 100 (λ: ([x : Integer]) x)))
+
+(check-expect (rtdeque->list (apply rtdeque lst)) lst)
+
 (test)

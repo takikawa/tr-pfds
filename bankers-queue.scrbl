@@ -52,8 +52,19 @@ Deques obtained by applying @italic{Implicit Recursive Slowdown}.
 Provides amortized running time of @bold{@italic{O(1)}} for the 
 operations @italic{head, tail, last, init, enqueue-rear and enqueue}.
 
-@subsection[#:tag "Realtime Queue"]{Realtime Queue}
-@subsection[#:tag "Realtime Deque"]{Realtime Deque}
+@subsection[#:tag "Real-Time Queue"]{Real-Time Queue}
+Real-Time Queues eliminate the amortization by employing a technique 
+called @italic{Scheduling}. The data structure gives a worst case 
+running time of @bold{@italic{O(1)}} for the operations 
+@italic{head, tail and enqueue}.
+
+@subsection[#:tag "Real-Time Deque"]{Real-Time Deque}
+Real-Time Deques eliminate the amortization by employing a two 
+techniques @italic{Scheduling} and a variant of Global Rebuilding 
+called @italic{Lazy Rebuilding}. The data structure gives a worst 
+case running time of @bold{@italic{O(1)}} for the operations 
+@italic{head, tail, last, init, enqueue-rear and enqueue}.
+
 @subsection[#:tag "Bootstrapped Queue"]{Bootstrapped Queue}
 @subsection[#:tag "Binary Random Access List"]{Binary Random Access List}
 @subsection[#:tag "Skew Binary Random Access List"]{Skew Binary Random Access List}
