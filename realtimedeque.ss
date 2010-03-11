@@ -13,7 +13,7 @@
    [lenr   : Integer]
    [scdulR : (Stream A)]))
 
-(define inv-c 3)
+(define inv-c 2)
 
 (define empty (make-RTDeque null-stream 0 null-stream
                             null-stream 0 null-stream))
@@ -36,24 +36,27 @@
   (exec-one (exec-one strem)))
 
 
-(: rotateRev : (All (A) ((Stream A) (Stream A) (Stream A) -> (Stream A))))
-(define (rotateRev frnt rer accum)
+(: rotate-rev : (All (A) ((Stream A) (Stream A) (Stream A) -> (Stream A))))
+(define (rotate-rev frnt rer accum)
   (if (empty-stream? frnt)
-      (stream-append (stream-reverse rer) accum)
+      (rev-append rer accum)
       (stream-cons (stream-car frnt)
-                   (rotateRev (stream-cdr frnt)
-                              (drop inv-c rer)
-                              (stream-reverse (stream-append (take inv-c rer)
-                                                             accum))))))
+                   (rotate-rev (stream-cdr frnt)
+                               (drop inv-c rer)
+                               (rev-append (take inv-c rer) accum)))))
 
-;(: partial-rev : (All (A) (Integer (Stream A) (Stream A))
+(: rev-append : (All (A) ((Stream A) (Stream A) -> (Stream A))))
+(define (rev-append strm accum)
+  (if (empty-stream? strm)
+      accum
+      (rev-append (stream-cdr strm) (stream-cons (stream-car strm) accum))))
 
-(: rotateDrop : (All (A) ((Stream A) Integer (Stream A) -> (Stream A))))
-(define (rotateDrop frnt num rer)
+(: rotate-drop : (All (A) ((Stream A) Integer (Stream A) -> (Stream A))))
+(define (rotate-drop frnt num rer)
   (if (< num inv-c)
-      (rotateRev frnt (drop num rer) null-stream)
+      (rotate-rev frnt (drop num rer) null-stream)
       (stream-cons (stream-car frnt) 
-                   (rotateDrop (stream-cdr frnt) 
+                   (rotate-drop (stream-cdr frnt) 
                                (- num inv-c) 
                                (drop inv-c rer)))))
 
@@ -75,10 +78,11 @@
 (: maintainR : 
    (All (A) ((S A) Integer (S A) (S A) Integer (S A) -> (RTDeque A))))
 (define (maintainR front lenf sf rear lenr sr)
-  (let* ([new-lenf (arithmetic-shift (+ lenf lenr) -1)]
-         [new-lenr (- (+ lenf lenr) new-lenf)]
+  (let* ([size (+ lenf lenr)]
+         [new-lenf (arithmetic-shift size -1)]
+         [new-lenr (- size new-lenf)]
          [newF (take new-lenf front)]
-         [newR (rotateDrop rear new-lenf front)])
+         [newR (rotate-drop rear new-lenf front)])
     (make-RTDeque newF new-lenf newF newR new-lenr newR)))
 
 
@@ -86,9 +90,10 @@
 (: maintainF : 
    (All (A) ((S A) Integer (S A) (S A) Integer (S A) -> (RTDeque A))))
 (define (maintainF front lenf sf rear lenr sr)
-  (let* ([new-lenr (arithmetic-shift  (+ lenf lenr) -1)]
-         [new-lenf (- (+ lenf lenr) new-lenr)]
-         [newF (rotateDrop front new-lenr rear)]
+  (let* ([size (+ lenf lenr)]
+         [new-lenr (arithmetic-shift size -1)]
+         [new-lenf (- size new-lenr)]
+         [newF (rotate-drop front new-lenr rear)]
          [newR (take new-lenr rear)])
     (make-RTDeque newF new-lenf newF newR new-lenr newR)))
 
@@ -180,7 +185,3 @@
 (: rtdeque : (All (A) (A * -> (RTDeque A))))
 (define (rtdeque . lst)
   (foldl (inst enqueue A) empty lst))
-
-;(rtdeque->list (apply rtdeque (build-list 26 (λ: ([x : Integer]) x))))
-
-(last (init (init (init (init (init (init (init (init (init (init (init (apply rtdeque (build-list 26 (λ: ([x : Integer]) x)))))))))))))))
