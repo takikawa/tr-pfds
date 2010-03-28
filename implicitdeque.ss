@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide empty empty? head tail last init deque->rev-list
-         enqueue-front enqueue deque->list deque)
+         enqueue-rear enqueue deque->list deque)
 
 (require scheme/promise scheme/match)
 
@@ -27,8 +27,8 @@
 (define (empty? que)
   (and (Shallow? que) (Zero? (Shallow-elem que))))
 
-(: enqueue-front : (All (A) (A (ImplDeque A) -> (ImplDeque A))))
-(define (enqueue-front elem que)
+(: enqueue-rear : (All (A) (A (ImplDeque A) -> (ImplDeque A))))
+(define (enqueue-rear elem que)
   (match que    
     [(struct Shallow ((struct Zero ()))) (make-Shallow (make-One elem))]
     [(struct Shallow ((struct One (a)))) (make-Shallow (make-Two elem a))]
@@ -45,7 +45,7 @@
             [fst (car forced-mid)]
             [snd (cdr forced-mid)])
           (make-Deep (make-Two elem f) 
-                     (delay (cons (enqueue-front s fst) (enqueue-front t snd)))
+                     (delay (cons (enqueue-rear s fst) (enqueue-rear t snd)))
                      r))]))
 
 (: enqueue : (All (A) (A (ImplDeque A) -> (ImplDeque A))))

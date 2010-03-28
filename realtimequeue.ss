@@ -1,7 +1,7 @@
 #lang typed-scheme
 
-(provide rtqueue rtqueue->list empty empty? 
-         head tail enqueue RealTimeQueue list->rtqueue)
+(provide queue queue->list empty empty? 
+         head tail enqueue RealTimeQueue list->queue)
 
 (require "stream2.ss")
 
@@ -29,8 +29,8 @@
                              (cdr rer) 
                              (stream-cons carrer accum))))))
 
-(: internal-rtqueue : (All (A) ((Stream A) (Listof A) (Stream A) -> (RTQueue A))))
-(define (internal-rtqueue front rear schdl)
+(: internal-queue : (All (A) ((Stream A) (Listof A) (Stream A) -> (RTQueue A))))
+(define (internal-queue front rear schdl)
   (if (empty-stream? schdl)
       (let ([newf (rotate front rear schdl)])
         (make-RTQueue newf null newf))
@@ -39,9 +39,9 @@
 
 (: enqueue : (All (A) (A (RTQueue A) -> (RTQueue A))))
 (define (enqueue elem rtq)
-  (internal-rtqueue (RTQueue-front rtq)
-                    (cons elem (RTQueue-rear rtq))
-                    (RTQueue-scdul rtq)))
+  (internal-queue (RTQueue-front rtq)
+                  (cons elem (RTQueue-rear rtq))
+                  (RTQueue-scdul rtq)))
 
 
 (: head : (All (A) ((RTQueue A) -> A)))
@@ -55,26 +55,20 @@
 (define (tail rtq)
   (if (empty? rtq)
       (error "Queue is empty :" 'tail)
-      (internal-rtqueue (stream-cdr (RTQueue-front rtq)) 
-                        (RTQueue-rear rtq) 
-                        (RTQueue-scdul rtq))))
+      (internal-queue (stream-cdr (RTQueue-front rtq)) 
+                      (RTQueue-rear rtq) 
+                      (RTQueue-scdul rtq))))
 
-(: rtqueue->list : (All (A) ((RTQueue A) -> (Listof A))))
-(define (rtqueue->list rtq)
+(: queue->list : (All (A) ((RTQueue A) -> (Listof A))))
+(define (queue->list rtq)
   (if (empty? rtq)
       null
-      (cons (head rtq) (rtqueue->list (tail rtq)))))
+      (cons (head rtq) (queue->list (tail rtq)))))
 
-(: list->rtqueue : (All (A) ((Listof A) -> (RTQueue A))))
-(define (list->rtqueue lst)
+(: list->queue : (All (A) ((Listof A) -> (RTQueue A))))
+(define (list->queue lst)
   (foldl (inst enqueue A) empty lst))
 
-(: rtqueue : (All (A) (A * -> (RTQueue A))))
-(define (rtqueue . lst)
+(: queue : (All (A) (A * -> (RTQueue A))))
+(define (queue . lst)
   (foldl (inst enqueue A) empty lst))
-
-(define v (time (build-list 1000000 (λ(x) x))))
-;(define lst (time (build-list1 1 40000)))
-;;(define v (time (build-list 10000000 (λ(x) x))))
-(define que (time (apply rtqueue v)))
-;(define k (time (queue->list que)))

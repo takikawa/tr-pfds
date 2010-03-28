@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide skew-ralist skew-ralist->list empty? ralist-cons
+(provide ralist ralist->list empty? ralist-cons
          empty head tail lookup update drop list-length RAList)
 
 (define-struct: (A) Leaf ([fst : A]))
@@ -164,12 +164,12 @@
         (int-length (tail int-ralist) (add1 accum))))
   (int-length ralist 0))
 
-(: skew-ralist->list : (All (A) ((RAList A) -> (Listof A))))
-(define (skew-ralist->list ralist)
+(: ralist->list : (All (A) ((RAList A) -> (Listof A))))
+(define (ralist->list ralist)
   (if (empty? ralist)
       null
-      (cons (head ralist) (skew-ralist->list (tail ralist)))))
+      (cons (head ralist) (ralist->list (tail ralist)))))
 
-(: skew-ralist : (All (A) (A * -> (RAList A))))
-(define (skew-ralist . lst)
+(: ralist : (All (A) (A * -> (RAList A))))
+(define (ralist . lst)
   (foldr (inst ralist-cons A) null lst))

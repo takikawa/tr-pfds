@@ -1,7 +1,7 @@
 #lang typed-scheme
 
-(provide empty empty? enqueue snoc init 
-         last head tail rtdeque rtdeque->list)
+(provide empty empty? enqueue enqueue-rear init 
+         last head tail deque deque->list)
 
 (require "stream2.ss")
 
@@ -57,8 +57,8 @@
       (rotate-rev frnt (drop num rer) null-stream)
       (stream-cons (stream-car frnt) 
                    (rotate-drop (stream-cdr frnt) 
-                               (- num inv-c) 
-                               (drop inv-c rer)))))
+                                (- num inv-c) 
+                                (drop inv-c rer)))))
 
 (define-type-alias (S A) (Stream A))
 ;; A Pseudo-constructor. Maintains the invariants 
@@ -110,8 +110,8 @@
 
 
 ;; Pushes an element into the RTDeque at the rear end
-(: snoc : (All (A) (A (RTDeque A) -> (RTDeque A))))
-(define (snoc elem rtdq)
+(: enqueue-rear : (All (A) (A (RTDeque A) -> (RTDeque A))))
+(define (enqueue-rear elem rtdq)
   (internal-RTDeque (RTDeque-front rtdq)
                     (RTDeque-lenf rtdq)
                     (exec-one (RTDeque-scdulF rtdq))
@@ -170,18 +170,18 @@
                               (sub1 (RTDeque-lenr rtdq))
                               (exec-two (RTDeque-scdulR rtdq)))))))
 
-(: rtdeque->list : (All (A) ((RTDeque A) -> (Listof A))))
-(define (rtdeque->list dque)
+(: deque->list : (All (A) ((RTDeque A) -> (Listof A))))
+(define (deque->list dque)
   (if (empty? dque)
       null
-      (cons (last dque) (rtdeque->list (init dque)))))
+      (cons (last dque) (deque->list (init dque)))))
 
 
-(: list->rtdeque : (All (A) ((Listof A) -> (RTDeque A))))
-(define (list->rtdeque lst)
+(: list->deque : (All (A) ((Listof A) -> (RTDeque A))))
+(define (list->deque lst)
   (foldl (inst enqueue A) empty lst))
 
 ;; A RTDeque constructor
-(: rtdeque : (All (A) (A * -> (RTDeque A))))
-(define (rtdeque . lst)
+(: deque : (All (A) (A * -> (RTDeque A))))
+(define (deque . lst)
   (foldl (inst enqueue A) empty lst))

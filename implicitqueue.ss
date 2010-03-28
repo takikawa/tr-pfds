@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide empty empty? enqueue head tail queue->list implicit-queue)
+(provide empty empty? enqueue head tail queue->list queue)
 (require scheme/promise)
 
 (define-struct: Zero ())
@@ -109,13 +109,6 @@
       null
       (cons (head que) (queue->list (tail que)))))
 
-(: implicit-queue : (All (A) (A * -> (ImplQueue A))))
-(define (implicit-queue . lst)
+(: queue : (All (A) (A * -> (ImplQueue A))))
+(define (queue . lst)
   (foldl (inst enqueue A) (make-Shallow (make-Zero)) lst))
-
-
-(define v (time (build-list 1000000 (λ(x) x))))
-;(define lst (time (build-list1 1 40000)))
-;;(define v (time (build-list 10000000 (λ(x) x))))
-(define que (time (apply implicit-queue v)))
-;(define k (time (queue->list que)))

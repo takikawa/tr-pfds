@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide catenable-list empty? clist->list head tail CatenableList
-         merge cl-cons cl-snoc empty)
+         merge kons kons-rear empty)
 (require scheme/promise)
 
 (require (prefix-in rtq: "realtimequeue.ss"))
@@ -40,12 +40,12 @@
     [else (link cat1 (delay cat2))]))
 
 
-(: cl-cons : (All (A) (A (CatenableList A) -> (CatenableList A))))
-(define (cl-cons elem cat)
+(: kons : (All (A) (A (CatenableList A) -> (CatenableList A))))
+(define (kons elem cat)
   (merge (make-List elem rtq:empty) cat))
 
-(: cl-snoc : (All (A) (A (CatenableList A) -> (CatenableList A))))
-(define (cl-snoc elem cat)
+(: kons-rear : (All (A) (A (CatenableList A) -> (CatenableList A))))
+(define (kons-rear elem cat)
   (merge cat (make-List elem rtq:empty)))
 
 (: head : (All (A) ((CatenableList A) -> A)))
@@ -69,7 +69,7 @@
 
 (: catenable-list : (All (A) (A * -> (CatenableList A))))
 (define (catenable-list . lst)
-  (foldr (inst cl-cons A) empty lst))
+  (foldr (inst kons A) empty lst))
 
 (: clist->list : (All (A) ((CatenableList A) -> (Listof A))))
 (define (clist->list cat)

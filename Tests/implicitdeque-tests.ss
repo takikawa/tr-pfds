@@ -26,14 +26,14 @@
               (list 1 2 3))
 
 (check-expect (deque->list (enqueue 1 empty)) (list 1))
-(check-expect (deque->list (enqueue-front 10 (enqueue-front 1 empty))) 
+(check-expect (deque->list (enqueue-rear 10 (enqueue-rear 1 empty))) 
               (list 10 1))
 (check-expect (deque->list (enqueue 1 (deque 2))) (list 2 1))
-(check-expect (deque->list (enqueue-front 1 (deque 2 3 4 5))) 
+(check-expect (deque->list (enqueue-rear 1 (deque 2 3 4 5))) 
               (list 1 2 3 4 5))
 (check-expect (deque->list (enqueue 10 (enqueue 1 (deque 2 3 4 5)))) 
               (list 2 3 4 5 1 10))
-(check-expect (deque->list (enqueue-front 1 (deque 2 3))) 
+(check-expect (deque->list (enqueue-rear 1 (deque 2 3))) 
               (list 1 2 3))
 
 (define lst (build-list 100 (λ(x) x))) 

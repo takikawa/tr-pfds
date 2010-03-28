@@ -39,6 +39,9 @@
 (check-error (update (ralist 1 2 3 4 5 6 7) -2 1234)
              "Index out of bound : update")
 
+(define lst (build-list 100 (λ(x) x)))
+(check-expect (ralist->list (apply ralist lst)) lst)
+
 (check-expect (list-size null-ralist) 0)
 (check-expect (list-size (ralist 1)) 1)
 (check-expect (list-size (ralist 1 2 3 4 5 6 7)) 7)

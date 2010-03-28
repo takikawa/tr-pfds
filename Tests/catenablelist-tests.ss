@@ -29,16 +29,21 @@
 
 (check-expect (clist->list (merge empty empty)) null)
 
-(check-expect (clist->list (cl-snoc 0 (catenable-list 1 2 3 4 5 6 7)))
+(check-expect (clist->list (kons-rear 0 (catenable-list 1 2 3 4 5 6 7)))
               (list 1 2 3 4 5 6 7 0))
 
-(check-expect (clist->list (cl-snoc 0 (catenable-list 1 2 3)))
+(check-expect (clist->list (kons-rear 0 (catenable-list 1 2 3)))
               (list 1 2 3 0))
 
-(check-expect (clist->list (cl-cons 0 (catenable-list 1)))
+(check-expect (clist->list (kons 0 (catenable-list 1)))
               (list 0 1))
 
-(check-expect (clist->list (cl-snoc 0 empty)) (list 0))
+(check-expect (clist->list (kons-rear 0 empty)) (list 0))
 
-(check-expect (clist->list (cl-cons 0 empty)) (list 0))
+(check-expect (clist->list (kons 0 empty)) (list 0))
+
+(define lst (build-list 100 (λ (x) x)))
+
+(check-expect (clist->list (apply catenable-list lst)) lst)
+
 (test)
