@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide null-ralist empty? list-size ralist-cons 
+(provide empty empty? list-length kons 
          head tail lookup update drop ralist->list ralist)
 
 (define-struct: (A) Leaf ([fst : A]))
@@ -18,33 +18,28 @@
 
 (define-struct: Null-RaList ([Null : Any]))
 
-(define null-ralist (make-Null-RaList ""))
+(define empty (make-Null-RaList ""))
 
 (define One 1)
 (define Zero 0)
-
-;(: isTreEmpty? : (All (A) ((Tree A) -> Boolean)))
-;(define (isTreEmpty? tre)
-;  (equal? empty-tree tre))
-
 
 (: empty? : (All (A) ((RAList A) -> Boolean)))
 (define (empty? ralist)
   (Null-RaList? ralist))
 
-(: list-size : (All (A) ((RAList A) -> Integer)))
-(define (list-size ralist)
+(: list-length : (All (A) ((RAList A) -> Integer)))
+(define (list-length ralist)
   (if (Null-RaList? ralist)
       0
       (Root-size ralist)))
 
-(: ralist-cons : (All (A) (A (RAList A) -> (RAList A))))
-(define (ralist-cons elem ralist)
+(: kons : (All (A) (A (RAList A) -> (RAList A))))
+(define (kons elem ralist)
   (if (Null-RaList? ralist) 
       (make-Root One (make-Leaf elem) ralist)
       (let* ([rst (Root-rst ralist)]
-             [lsize (list-size ralist)]
-             [rst-size (list-size rst)])
+             [lsize (list-length ralist)]
+             [rst-size (list-length rst)])
         (if (eq? lsize rst-size)
             (make-Root (+ One lsize rst-size)
                        (make-Node elem (Root-fst ralist) (first rst))
@@ -54,14 +49,14 @@
 (: first : (All (A) ((RAList A) -> (Tree A))))
 (define (first ralist )
   (if (Null-RaList? ralist)
-      (error "List is empty :" 'ralist-cons)
+      (error "List is empty :" 'kons)
       (Root-fst ralist)))
 
 
 (: rest : (All (A) ((RAList A) -> (RAList A))))
 (define (rest ralist )
   (if (Null-RaList? ralist)
-      (error "Cannot access rest :" 'ralist-cons)
+      (error "Cannot access rest :" 'kons)
       (Root-rst ralist)))
 
 
@@ -126,18 +121,18 @@
       [else (make-Node first left 
                        (tree-update newsize right (- pos 1 newsize) elem))])))
     
-(: lookup : (All (A) ((RAList A) Integer -> A)))
-(define (lookup ralist pos)
+(: lookup : (All (A) (Integer (RAList A) -> A)))
+(define (lookup pos ralist)
   (if (Null-RaList? ralist) 
       (error "Index out of bound :" 'lookup)
       (let ([size (Root-size ralist)])
         (if (< pos size) 
             (tree-lookup size (Root-fst ralist) pos)
-            (lookup (Root-rst ralist) (- pos size))))))
+            (lookup (- pos size) (Root-rst ralist))))))
 
 
-(: update : (All (A) ((RAList A) Integer A -> (RAList A))))
-(define (update ralist pos elem)
+(: update : (All (A) (Integer (RAList A) A -> (RAList A))))
+(define (update pos ralist elem)
   (if (Null-RaList? ralist) 
       (error "Index out of bound :" 'update) 
       (let ([size (Root-size ralist)]
@@ -145,7 +140,7 @@
             [rst (Root-rst ralist)])
         (if (< pos size)
             (make-Root size (tree-update size fst pos elem) rst)
-            (make-Root size fst (update rst (- pos size) elem))))))
+            (make-Root size fst (update (- pos size) rst elem))))))
 
 (: tree-drop : (All (A) (Integer (Tree A) Integer (RAList A) -> (RAList A))))
 (define (tree-drop size tre pos ralist)
@@ -190,6 +185,4 @@
 
 (: ralist : (All (A) (A * -> (RAList A))))
 (define (ralist . rst)
-  (if (null? rst)
-      null-ralist
-      (foldr (inst ralist-cons A) null-ralist rst)))
+  (foldr (inst kons A) empty rst))

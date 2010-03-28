@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide ralist ralist->list empty? ralist-cons
+(provide ralist ralist->list empty? kons
          empty head tail lookup update drop list-length RAList)
 
 (define-struct: (A) Leaf ([fst : A]))
@@ -23,8 +23,8 @@
 (define (getWeight root)
   (Root-weight root))
 
-(: ralist-cons : (All (A) (A (RAList A) -> (RAList A))))
-(define (ralist-cons elem sralist)
+(: kons : (All (A) (A (RAList A) -> (RAList A))))
+(define (kons elem sralist)
   (if (or (null? sralist) (null? (cdr sralist)))
       (cons (make-Root 1 (make-Leaf elem)) sralist)
       (let ([wgt1 (getWeight (car sralist))]
@@ -101,17 +101,17 @@
                                             (- pos 1 new-wgt) elem))])))
 
 
-(: lookup : (All (A) ((RAList A) Integer -> A)))
-(define (lookup sralist pos)
+(: lookup : (All (A) (Integer (RAList A) -> A)))
+(define (lookup pos sralist)
   (cond
     [(null? sralist) (error "Index out of bound :" 'lookup)]
     [(< pos (getWeight (car sralist)))
      (tree-lookup (getWeight (car sralist)) (Root-fst (car sralist)) pos)]
-    [else (lookup (cdr sralist) (- pos (getWeight (car sralist))))]))
+    [else (lookup (- pos (getWeight (car sralist))) (cdr sralist))]))
 
 
-(: update : (All (A) ((RAList A) Integer A -> (RAList A))))
-(define (update sralist pos elem)
+(: update : (All (A) (Integer (RAList A) A -> (RAList A))))
+(define (update pos sralist elem)
   (cond
     [(null? sralist) (error "Index out of bound :" 'update)]
     [(< pos (getWeight (car sralist)))
@@ -120,8 +120,9 @@
                                    (Root-fst (car sralist)) pos elem)) 
            (cdr sralist))]
     [else (cons (car sralist)
-                (update (cdr sralist)
-                        (- pos (getWeight (car sralist))) elem))]))
+                (update (- pos (getWeight (car sralist)))
+                        (cdr sralist)
+                        elem))]))
 
 (: tree-drop : (All (A) (Integer (Tree A) Integer (RAList A) -> (RAList A))))
 (define (tree-drop size tre pos ralist)
@@ -140,8 +141,8 @@
       [else (error "Index out of bound :" 'tree-drop)])))
 
 
-(: drop : (All (A) ((RAList A) Integer -> (RAList A))))
-(define (drop ralist pos)
+(: drop : (All (A) (Integer (RAList A) -> (RAList A))))
+(define (drop pos ralist)
   (cond
     [(zero? pos) ralist]
     [(null? ralist) (error "Index out of bound :" 'drop)]
@@ -153,7 +154,7 @@
         [tree (Root-fst root)])
   (if (< pos size)
       (tree-drop size tree pos rest)
-      (drop rest (- pos size)))))
+      (drop (- pos size) rest))))
 
 (: list-length : (All (A) ((RAList A) -> Integer)))
 (define (list-length ralist)
@@ -172,4 +173,4 @@
 
 (: ralist : (All (A) (A * -> (RAList A))))
 (define (ralist . lst)
-  (foldr (inst ralist-cons A) null lst))
+  (foldr (inst kons A) null lst))
