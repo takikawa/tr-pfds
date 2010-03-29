@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide catenable-list empty? clist->list head tail CatenableList
+(provide clist empty? clist->list head tail CatenableList
          merge kons kons-rear empty)
 (require scheme/promise)
 
@@ -67,8 +67,8 @@
         empty
         (link-all ques))))
 
-(: catenable-list : (All (A) (A * -> (CatenableList A))))
-(define (catenable-list . lst)
+(: clist : (All (A) (A * -> (CatenableList A))))
+(define (clist . lst)
   (foldr (inst kons A) empty lst))
 
 (: clist->list : (All (A) ((CatenableList A) -> (Listof A))))

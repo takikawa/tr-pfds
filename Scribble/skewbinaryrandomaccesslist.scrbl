@@ -11,8 +11,8 @@ for the operations @italic{lookup and update}
 @section{Skew Binary Random Access List Constructor and Operations}
 
 @subsection{ralist}
-The function ralist creates a Skew Binary Random Access List with the given inputs. For 
-example,
+The function ralist creates a Skew Binary Random Access List with the given 
+inputs. For example,
 @schememod[
 typed-scheme
 (require "skewbinaryrandomaccesslist.ss")
@@ -28,8 +28,8 @@ operations.
 A empty ralist
 
 @subsection{empty?}
-The function @scheme[empty?] takes a Skew Binary Random Access List checks if the given ralist is 
-empty. For example,
+The function @scheme[empty?] takes a Skew Binary Random Access List checks 
+if the given ralist is empty. For example,
 @schememod[
 typed-scheme
 (require "skewbinaryrandomaccesslist.ss")
@@ -44,8 +44,8 @@ In the above example, @scheme[(empty? ral)] returns @scheme[#f] and
 
 
 @subsection{kons}
-The function @scheme[kons] takes an element and a ralist and returns 
-a ralist with its first element as the given element. For example,
+The function @scheme[kons] takes an element and a ralist and adds the given 
+element to the front of the given list. For example,
 @schememod[
 typed-scheme
 (require "skewbinaryrandomaccesslist.ss")

@@ -2,17 +2,17 @@
 
 @title{Binary Random Access List}
 
-Random Access Lists are list data structures that provide array-like lookup and
-update operations. They have been implemented as a framework of binary 
+Random Access Lists are list data structures that provide array-like lookup 
+and update operations. They have been implemented as a framework of binary 
 numerical representation using complete binary leaf trees. It has a worst 
 case running time of @bold{@italic{O(log(n))}} for the operations
-@italic{kons, head, tail, lookup and update}
+@italic{kons, head, tail, lookup and update}.
 
 @section{Binary Random Access List Constructor and Operations}
 
 @subsection{ralist}
-The function ralist creates a Binary Random Access List with the given inputs. For 
-example,
+The function ralist creates a Binary Random Access List with the given 
+inputs. For example,
 @schememod[
 typed-scheme
 (require "binaryrandomaccesslist.ss")
@@ -21,15 +21,15 @@ typed-scheme
 ]
 
 In the above example, @scheme[(ralist 1 2 3 4 5 6)] gives a Binary Random 
-Access List which is similar to lists but comes with efficient lookup and update
-operations.
+Access List which is similar to lists but comes with efficient lookup and 
+update operations.
 
 @subsection{empty}
 A empty ralist
 
 @subsection{empty?}
-The function @scheme[empty?] takes a Binary Random Access List checks if the given ralist is 
-empty. For example,
+The function @scheme[empty?] takes a Binary Random Access List checks if the 
+given ralist is empty. For example,
 @schememod[
 typed-scheme
 (require "binaryrandomaccesslist.ss")
@@ -44,8 +44,8 @@ In the above example, @scheme[(empty? ral)] returns @scheme[#f] and
 
 
 @subsection{kons}
-The function @scheme[kons] takes an element and a ralist and returns 
-a ralist with its first element as the given element. For example,
+The function @scheme[kons] takes an element and a ralist and adds the given 
+element to the front of the given list. For example,
 @schememod[
 typed-scheme
 (require "binaryrandomaccesslist.ss")
