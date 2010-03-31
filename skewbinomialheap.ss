@@ -1,6 +1,7 @@
 #lang typed-scheme
 
-(provide empty? insert merge find-min delete-min binomialheap sorted-list)
+(provide empty? insert merge find-min/max delete-min/max 
+         binomialheap sorted-list empty)
 
 (require scheme/match)
 
@@ -19,6 +20,8 @@
 (: empty? : (All (A) ((Heap A) -> Boolean)))
 (define (empty? heap)
   (null? (Heap-trees heap)))
+
+(define empty null)
 
 (: rank : (All (A) ((Tree A) -> Integer)))
 (define (rank tree)
@@ -107,7 +110,8 @@
                                  (normalize trees2 func)
                                  func))))
 
-(: remove-mintree : (All (A) ((Trees A) (FUNC A) -> (Pair (Tree A) (Trees A)))))
+(: remove-mintree : 
+   (All (A) ((Trees A) (FUNC A) -> (Pair (Tree A) (Trees A)))))
 (define (remove-mintree trees func)
   (match trees 
     [(list) (error "Heap is empty")]
@@ -120,24 +124,24 @@
            (cons t ts)
            (cons t1 (cons t ts1))))]))
 
-(: find-min : (All (A) ((Heap A) -> A)))
-(define (find-min heap)
+(: find-min/max : (All (A) ((Heap A) -> A)))
+(define (find-min/max heap)
   (let* ([func (Heap-comparer heap)]
          [trees (Heap-trees heap)]
          [pair (with-handlers 
                    ([exn:fail? (lambda (error?) 
-                                 (error "Heap is empty :" 'find-min))])
+                                 (error "Heap is empty :" 'find-min/max))])
                  (remove-mintree trees func))]
          [tree (car pair)])
     (root tree)))
 
-(: delete-min : (All (A) ((Heap A) -> (Heap A))))
-(define (delete-min heap)
+(: delete-min/max : (All (A) ((Heap A) -> (Heap A))))
+(define (delete-min/max heap)
   (let* ([func (Heap-comparer heap)]
          [trees (Heap-trees heap)]
          [pair (with-handlers 
                    ([exn:fail? (lambda (error?) 
-                                 (error "Heap is empty :" 'delete-min))])
+                                 (error "Heap is empty :" 'delete-min/max))])
                  (remove-mintree trees func))]
          [tree (car pair)]
          [ts (cdr pair)])
@@ -159,4 +163,4 @@
 (define (sorted-list heap)
   (if (empty? heap)
       null
-      (cons (find-min heap) (sorted-list (delete-min heap)))))
+      (cons (find-min/max heap) (sorted-list (delete-min/max heap)))))

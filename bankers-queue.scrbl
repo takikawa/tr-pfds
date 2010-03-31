@@ -121,6 +121,11 @@ paper @italic{Fast Functional Lists, Hash-Lists, Deques and
               Variable Length Arrays} by  Phil Bagwell.
 
 @subsection[#:tag "Binomial Heap"]{Binomial Heap}
+Binomial Heaps are nothing but mergeable priority queues. To avoid the
+confusion with FIFO queues, they are referred as heaps. Heaps are similar
+to the sortable collections but the difference is that comparison function
+is fixed when the heap is created. Binomial heaps are heap-ordered, binomial
+trees. A tree is heap-ordered if it maintains min-heap or max-heap property.
 
 @subsection[#:tag "Skew Binomial Heap"]{Skew Binomial Heap}
 @subsection[#:tag "Leftist Heap"]{Leftist Heap}

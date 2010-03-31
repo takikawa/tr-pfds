@@ -43,7 +43,7 @@ In the above example, @scheme[(empty? que)] returns @scheme[#f] and
 
 
 @subsection{enqueue}
-the function @scheme[enqueue] takes an element and a deque and enqueues 
+The function @scheme[enqueue] takes an element and a deque and enqueues 
 the given element into the deque. Example
 @schememod[
 typed-scheme
