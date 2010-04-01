@@ -1,5 +1,7 @@
 #lang typed-scheme
 
+(provide leftistheap merge insert find-min delete-min sorted-list)
+
 (define-struct: Mt ())
 (define-struct: (A) Tree ([rank : Integer]
                           [elem : A]
@@ -25,8 +27,8 @@
         (make-Tree (add1 rank2) elem heap1 heap2)
         (make-Tree (add1 rank1) elem heap2 heap1))))
 
-(: is-empty? : (All (A) ((LeftistHeap A) -> Boolean)))
-(define (is-empty? lheap)
+(: empty? : (All (A) ((LeftistHeap A) -> Boolean)))
+(define (empty? lheap)
   (Mt? (LeftistHeap-heap lheap)))
 
 (: insert : (All (A) (A (LeftistHeap A) -> (LeftistHeap A))))
@@ -87,21 +89,13 @@
                                     (Tree-right heap) 
                                     comparer)))))
 
-(: get-sorted-list : (All (A) ((LeftistHeap A) -> (Listof A))))
-(define (get-sorted-list lheap)
-  (: helper : (All (A) ((LeftistHeap A) (Listof A) -> (Listof A))))
-  (define (helper inheap lst)
-    (let ([heap (LeftistHeap-heap inheap)])
-      (if (Mt? heap)
-          lst
-          (helper (delete-min inheap) (cons (find-min inheap) lst)))))
-  (helper lheap null))
+(: sorted-list : (All (A) ((LeftistHeap A) -> (Listof A))))
+(define (sorted-list lheap)
+  (if (Mt? (LeftistHeap-heap lheap))
+      null
+      (cons (find-min lheap) (sorted-list (delete-min lheap)))))
 
-(: leftistheap : (All (A) ((Listof A) (A A -> Boolean) -> (LeftistHeap A))))
-(define (leftistheap lst comparer)
-  (if (null? lst)
-      (error "At least one element expected in the input list" 'leftistheap)
-      (foldl (inst insert A) 
-             (make-LeftistHeap comparer 
-                               (make-Tree 1 (car lst) empty empty))
-             (cdr lst))))
+(: leftistheap : (All (A) ((A A -> Boolean) A * -> (LeftistHeap A))))
+(define (leftistheap comparer . lst)
+  (let ([first ((inst make-LeftistHeap A) comparer empty)])
+    (foldl (inst insert A) first lst)))
