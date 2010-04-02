@@ -1,4 +1,7 @@
 #lang scribble/manual
+@(require (for-label (only-in scheme
+                              map)))
+
 
 @title{VList}
 
@@ -178,7 +181,7 @@ vlist @scheme[(vlist 6 5 4 3 2 1)].
 
 
 @subsection{vmap}
-The function @scheme[vmap] is same as @schememodname[map] except that 
+The function @scheme[vmap] is same as @scheme[map] except that 
 @scheme[vmap] runs works on vlists. For example
 @schememod[
 typed-scheme
@@ -198,17 +201,3 @@ and gives back the vlist @scheme[(1 4 9 16 25 36 49)].
 
 
 
-@subsection{vmap}
-The function @scheme[vmap] is same as @schememodname[map] except that 
-@scheme[vmap] runs works on vlists. For example
-@schememod[
-typed-scheme
-(require "vlist.ss")
-
-(define vlst (vlist 1 2 3 4 5 6))
-
-(define new-vlist  (vmap add1 vlst))
-]
-
-In the above example, @scheme[(vmap add1 vlst)] adds 1 to each element of the
-given vlist and gives back @scheme[(vlist 2 3 4 5 6 7)].

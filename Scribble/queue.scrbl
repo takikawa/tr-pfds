@@ -1,19 +1,17 @@
 #lang scribble/manual
 
-@;@(require "stream.ss")
+@;(define ref-src 
+@;   '(lib "home/krhari/Desktop/TS/TS/Scribble/streams.scrbl"))
 
 @title{Banker's Queue}
 
-
-
-@;@guideintro["bankersqueue"]{Banker's Queue}
 A Queue is nothing but a FIFO data structure. A Banker's queue ia a
 Amortized queues obtained using Bankers method. Provides a amortized
 running time of @bold{@italic{O(1)}} for @italic{head, tail and enqueue}
 operations. To obtain this amortized running time, the data structure
 uses the techniques, lazy evaluation and memoization. Banker's Queue
 internally uses Streams for lazy evaluation. For Streams, see 
-@(other-manual '(lib "streams.scrbl"))
+@secref[#:doc "streams.scrbl"]{stream}
 
 @section{Banker's Queue Construction and Operations}
 
