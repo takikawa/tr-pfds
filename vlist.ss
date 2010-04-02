@@ -127,8 +127,8 @@
       null
       (cons (Base-size block) (base-size (Base-prevbase block)))))
 
-(: vlist : (All (A) ((Listof A) -> (VList A))))
-(define (vlist lst)
+(: vlist : (All (A) (A * -> (VList A))))
+(define (vlist . lst)
   (foldr (inst vcons A) empty lst))
 
 (: vmap : (All (A C B ...) ((A ... -> C) (VList A) ... -> (VList C))))
