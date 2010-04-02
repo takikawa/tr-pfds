@@ -1,8 +1,8 @@
 #lang typed-scheme
 
-(require "stream.ss")
+(require "stream2.ss")
 
-(provide empty? empty enqueue-rear head tail
+(provide empty? empty enqueue-front head tail
          deque enqueue last init deque->list)
          
 ;; A Banker's Queue (Maintains length of front >= length of rear)
@@ -27,24 +27,19 @@
 ;; A Pseudo-constructor. Maintains the invariants 
 ;; 1. lenf <= inv-c * lenr
 ;; 2. lenr <= inv-c * lenf
-(: internal-deque : (All (A) ((Deque A) -> (Deque A))))
-(define (internal-deque que)
-  (let ([lenf (Deque-lenf que)]
-        [lenr (Deque-lenr que)])
-    (cond 
-      [(> lenf (add1 (* lenr inv-c))) (maintainF que)]
-      [(> lenr (add1 (* lenf inv-c))) (maintainR que)]
-      [else que])))
+(: internal-deque : 
+   (All (A) ((Stream A) Integer (Stream A) Integer -> (Deque A))))
+(define (internal-deque front lenf rear lenr)
+  (cond 
+    [(> lenf (add1 (* lenr inv-c))) (maintainF front lenf rear lenr)]
+    [(> lenr (add1 (* lenf inv-c))) (maintainR front lenf rear lenr)]
+    [else (make-Deque front lenf rear lenr)]))
 
 
 ;; Maintains invariant lenf <= inv-c * lenr
-(: maintainF : (All (A) ((Deque A) -> (Deque A))))
-(define (maintainF deq)
-  (let* ([lenf (Deque-lenf deq)]
-         [lenr (Deque-lenr deq)]
-         [front (Deque-front deq)]
-         [rear (Deque-rear deq)]
-         [new-lenf (arithmetic-shift (+ lenf lenr) -1)]
+(: maintainF : (All (A) ((Stream A) Integer (Stream A) Integer -> (Deque A))))
+(define (maintainF front lenf rear lenr)
+  (let* ([new-lenf (arithmetic-shift (+ lenf lenr) -1)]
          [new-lenr (- (+ lenf lenr) new-lenf)]
          [newF (take new-lenf front)]
          [newR (stream-append rear (stream-reverse (drop new-lenf front)))])
@@ -52,13 +47,9 @@
 
 
 ;; Maintains invariant lenr <= inv-c * lenf
-(: maintainR : (All (A) ((Deque A) -> (Deque A))))
-(define (maintainR deq)
-  (let* ([lenf (Deque-lenf deq)]
-         [lenr (Deque-lenr deq)]
-         [front (Deque-front deq)]
-         [rear (Deque-rear deq)]
-         [new-lenf (arithmetic-shift (+ lenf lenr) -1)]
+(: maintainR : (All (A) ((Stream A) Integer (Stream A) Integer -> (Deque A))))
+(define (maintainR front lenf rear lenr)
+  (let* ([new-lenf (arithmetic-shift (+ lenf lenr) -1)]
          [new-lenr (- (+ lenf lenr) new-lenf)]
          [newR (take (ann new-lenr Integer) rear)]
          [newF (stream-append front (stream-reverse (drop new-lenr rear)))])
@@ -66,21 +57,21 @@
 
 
 ;; Pushes an element into the Deque at the front end
-(: enqueue-rear : (All (A) (A (Deque A) -> (Deque A))))
-(define (enqueue-rear elem deq)
-  (internal-deque (make-Deque (stream-cons elem (Deque-front deq))
-                              (add1 (Deque-lenf deq))
-                              (Deque-rear deq)
-                              (Deque-lenr deq))))
+(: enqueue-front : (All (A) (A (Deque A) -> (Deque A))))
+(define (enqueue-front elem deq)
+  (internal-deque (stream-cons elem (Deque-front deq))
+                  (add1 (Deque-lenf deq))
+                  (Deque-rear deq)
+                  (Deque-lenr deq)))
 
 
 ;; Pushes an element into the Deque at the rear end
 (: enqueue : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue elem deq)
-  (internal-deque (make-Deque (Deque-front deq)
-                              (Deque-lenf deq)
-                              (stream-cons elem (Deque-rear deq))
-                              (add1 (Deque-lenr deq)))))
+  (internal-deque (Deque-front deq)
+                  (Deque-lenf deq)
+                  (stream-cons elem (Deque-rear deq))
+                  (add1 (Deque-lenr deq))))
 
 ;; Retrieves the head element of the queue
 (: head : (All (A) ((Deque A) -> A)))
@@ -111,34 +102,31 @@
       (let ([front (Deque-front deq)])
         (if (empty-stream? front) 
             empty
-            (internal-deque (make-Deque (stream-cdr front) 
-                                        (sub1 (Deque-lenf deq))
-                                        (Deque-rear deq)
-                                        (Deque-lenr deq)))))))
+            (internal-deque (stream-cdr front) 
+                            (sub1 (Deque-lenf deq))
+                            (Deque-rear deq)
+                            (Deque-lenr deq))))))
 
 ;; Removes the last and returns the deque without the last
 (: init : (All (A) ((Deque A) -> (Deque A))))
 (define (init deq)
-  (if (empty? deq) 
+  (if (empty? deq)
       (error "Deque is empty :" 'init)
       (let ([rear (Deque-rear deq)])
         (if (empty-stream? rear)
             empty
-            (internal-deque (make-Deque (Deque-front deq) 
-                                        (Deque-lenf deq)
-                                        (stream-cdr rear)
-                                        (sub1 (Deque-lenr deq))))))))
+            (internal-deque (Deque-front deq) 
+                            (Deque-lenf deq)
+                            (stream-cdr rear)
+                            (sub1 (Deque-lenr deq)))))))
 
 (: deque->list : (All (A) ((Deque A) -> (Listof A))))
 (define (deque->list deq)
-  (: helper : (All (A) ((Deque A) (Listof A) -> (Listof A))))
-  (define (helper intdeq accu)
-    (if (empty? intdeq)
-        accu
-        (helper (init intdeq) (cons (last intdeq) accu))))
-  (helper deq null))
+  (if (empty? deq)
+      null
+      (cons (head deq) (deque->list (tail deq)))))
 
 ;; A Deque constructor with the given element
-(: deque : (All (A) ((Listof A) -> (Deque A))))
-(define (deque lst)
+(: deque : (All (A) (A * -> (Deque A))))
+(define (deque . lst)
   (foldl (inst enqueue A) empty lst))
