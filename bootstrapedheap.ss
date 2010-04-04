@@ -1,4 +1,8 @@
 #lang typed-scheme
+
+(provide empty? insert find-min/max delete-min/max empty
+         merge sorted-list bootstrapped-heap BSHeap)
+
 (require (prefix-in bh: "binomialheap.ss")
          scheme/match)
 
@@ -12,6 +16,8 @@
 (define-struct: (A) BSHeap ([comparer : (A A -> Boolean)]
                             [heap : (Heaps A)]))
 
+
+(define empty (make-Mt))
 
 (: empty? : (All (A) ((BSHeap A) -> Boolean)))
 (define (empty? bsheap)
@@ -51,29 +57,30 @@
         [else (func (Heap-elem h1) (Heap-elem h2))]))
     (make-BSHeap func 
                  (merge-help (make-Heap elem 
-                                        (ann ((inst bh:binomialheap (Heap A)) comp)
+                                        (ann ((inst bh:binomialheap (Heap A)) 
+                                              comp)
                                              (bh:BinomialHeap (Heap A))))
                              inheap func))))
 
 
-(: find-min : (All (A) ((BSHeap A) -> A)))
-(define (find-min bsheap)
+(: find-min/max : (All (A) ((BSHeap A) -> A)))
+(define (find-min/max bsheap)
   (let ([heap (BSHeap-heap bsheap)])
     (if (Mt? heap)
-        (error "Heap is empty" 'find-min)
+        (error "Heap is empty" 'find-min/max)
         (Heap-elem heap))))
 
-(: delete-min : (All (A) ((BSHeap A) -> (BSHeap A))))
-(define (delete-min bsheap)
+(: delete-min/max : (All (A) ((BSHeap A) -> (BSHeap A))))
+(define (delete-min/max bsheap)
   (let ([heap (BSHeap-heap bsheap)]
         [func (BSHeap-comparer bsheap)])
     (if (Mt? heap)
-        (error "Heap is empty" 'delete-min)
+        (error "Heap is empty" 'delete-min/max)
         (let ([bheap (Heap-heap heap)])
           (if (bh:empty? bheap)
               bsheap
-              (let ([min-heap (bh:find-min bheap)]
-                    [del (bh:delete-min bheap)])
+              (let ([min-heap (bh:find-min/max bheap)]
+                    [del (bh:delete-min/max bheap)])
                 (make-BSHeap func 
                              (make-Heap (Heap-elem min-heap) 
                                         (bh:merge (Heap-heap min-heap) 
@@ -97,4 +104,5 @@
     (cond 
       [(Mt? heap) null]
       [(bh:empty? (Heap-heap heap)) (list (Heap-elem heap))]
-      [else (cons (find-min bsheap) (sorted-list (delete-min bsheap)))])))
+      [else (cons (find-min/max bsheap) 
+                  (sorted-list (delete-min/max bsheap)))])))
