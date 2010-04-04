@@ -15,23 +15,23 @@
 (define (str-less-than? a b)
   (string<=? a b))
 
-(check-expect (find-min (splayheap less-than? 1 2 3 4)) 1)
-(check-expect (find-min (splayheap less-than? 1 2 3 0)) 0)
-(check-expect (find-min (splayheap less-than? 1 2 -3 4)) -3)
-(check-error (find-min (delete-min (splayheap less-than? 1))) 
+(check-expect (find-min/max (splayheap less-than? 1 2 3 4)) 1)
+(check-expect (find-min/max (splayheap less-than? 1 2 3 0)) 0)
+(check-expect (find-min/max (splayheap less-than? 1 2 -3 4)) -3)
+(check-error (find-min/max (delete-min/max (splayheap less-than? 1))) 
              "Heap is empty : find-min")
 
-(check-expect (sorted-list (delete-min (splayheap less-than? 1 2 3 4)))
+(check-expect (sorted-list (delete-min/max (splayheap less-than? 1 2 3 4)))
               (list 2 3 4))
-(check-expect (sorted-list (delete-min (splayheap less-than? 1 2 3 0)))
+(check-expect (sorted-list (delete-min/max (splayheap less-than? 1 2 3 0)))
               (list 1 2 3))
-(check-expect (sorted-list (delete-min (splayheap less-than? 1 2 -3 4)))
+(check-expect (sorted-list (delete-min/max (splayheap less-than? 1 2 -3 4)))
               (list 1 2 4))
-(check-error (delete-min (delete-min (splayheap less-than? 1))) 
+(check-error (delete-min/max (delete-min/max (splayheap less-than? 1))) 
              "Heap is empty : delete-min")
 
-(check-expect (sorted-list (delete-min (splayheap less-than? 1))) (list))
-(check-expect (sorted-list (delete-min (splayheap less-than? 1 -2 -3 -4))) 
+(check-expect (sorted-list (delete-min/max (splayheap less-than? 1))) (list))
+(check-expect (sorted-list (delete-min/max (splayheap less-than? 1 -2 -3 -4))) 
               (list -3 -2 1))
 
 (check-expect (sorted-list (insert 10 (splayheap less-than? 1 -2 -3 -4)))
@@ -47,12 +47,12 @@
                                   (splayheap less-than? 1 -2 -3 -4)))
               (list -10 -4 -3 -2 0 1 2 3))
 
-(check-expect (sorted-list (merge (delete-min (splayheap less-than? -1))
+(check-expect (sorted-list (merge (delete-min/max (splayheap less-than? -1))
                                   (splayheap less-than? 1 -2 -3 -4)))
               (list -4 -3 -2 1))
 
 (check-expect (sorted-list (merge (splayheap less-than? 1 -2 -3 -4)
-                                  (delete-min (splayheap less-than? -1))))
+                                  (delete-min/max (splayheap less-than? -1))))
               (list -4 -3 -2 1))
 
 (define int-list (build-list 100 (λ: ([x : Integer]) x)))

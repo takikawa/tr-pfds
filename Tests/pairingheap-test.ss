@@ -21,7 +21,7 @@
 
 (check-expect 
  (sorted-list 
-  (delete-min
+  (delete-min/max
    (merge (apply pairingheap 
                  (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                  (build-list 100 (λ: ([x : Integer]) x)))
@@ -34,8 +34,8 @@
 
 (check-expect 
  (sorted-list 
-  (delete-min
-   (delete-min
+  (delete-min/max
+   (delete-min/max
    (merge (apply pairingheap 
                  (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                  (build-list 100 (λ: ([x : Integer]) x)))
@@ -49,8 +49,8 @@
  (sorted-list 
   (insert 
    500
-   (delete-min
-    (delete-min
+   (delete-min/max
+    (delete-min/max
      (merge (apply pairingheap 
                    (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                    (build-list 100 (λ: ([x : Integer]) x)))
@@ -62,11 +62,11 @@
           (cons 500 null)))
 
 (check-error 
- (delete-min (pairingheap (λ: ([a : Integer] [b : Integer]) (<= a b))))
- "Heap is empty : delete-min")
+ (delete-min/max (pairingheap (λ: ([a : Integer] [b : Integer]) (<= a b))))
+ "Heap is empty : delete-min/max")
 
 (check-error 
- (find-min (pairingheap (λ: ([a : Integer] [b : Integer]) (<= a b))))
- "Heap is empty : find-min")
+ (find-min/max (pairingheap (λ: ([a : Integer] [b : Integer]) (<= a b))))
+ "Heap is empty : find-min/max")
  
 (test)

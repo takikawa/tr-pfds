@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@title{Streams}
+@title[#:tag "streams"]{Streams}
 
 Streams are nothing but lazy lists. They are similar to ordinary
 lists and they provide the same functions that lists provide. The 

@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide pairingheap merge insert find-min delete-min sorted-list)
+(provide pairingheap merge insert find-min/max delete-min/max sorted-list)
 
 (define-struct: Mt ())
 (define-struct: (A) Tree ([elem : A]
@@ -62,20 +62,20 @@
         (make-Tree tr1-elm (cons tree2 tr1-heaps))
         (make-Tree tr2-elm (cons tree1 tr2-heaps)))))
 
-(: find-min : (All (A) ((PairingHeap A) -> A)))
-(define (find-min pheap)
+(: find-min/max : (All (A) ((PairingHeap A) -> A)))
+(define (find-min/max pheap)
   (let ([heap (PairingHeap-heap pheap)]
         [comparer (PairingHeap-comparer pheap)])
     (if (Mt? heap)
-        (error "Heap is empty :" 'find-min)
+        (error "Heap is empty :" 'find-min/max)
         (Tree-elem heap))))
 
-(: delete-min : (All (A) ((PairingHeap A) -> (PairingHeap A))))
-(define (delete-min pheap)
+(: delete-min/max  : (All (A) ((PairingHeap A) -> (PairingHeap A))))
+(define (delete-min/max  pheap)
   (let ([heap (PairingHeap-heap pheap)]
         [comparer (PairingHeap-comparer pheap)])
     (if (Mt? heap)
-        (error "Heap is empty :" 'delete-min)
+        (error "Heap is empty :" 'delete-min/max )
         (make-PairingHeap comparer
                           (merge-pairs (Tree-heaps heap) comparer)))))
 
@@ -83,7 +83,7 @@
 (define (sorted-list pheap)
   (if (Mt? (PairingHeap-heap pheap))
       null
-      (cons (find-min pheap) (sorted-list (delete-min pheap)))))
+      (cons (find-min/max pheap) (sorted-list (delete-min/max pheap)))))
 
 (: pairingheap : (All (A) ((A A -> Boolean) A * -> (PairingHeap A))))
 (define (pairingheap comparer . lst)
