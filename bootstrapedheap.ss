@@ -3,7 +3,7 @@
 (provide empty? insert find-min/max delete-min/max empty
          merge sorted-list bootstrapped-heap BSHeap)
 
-(require (prefix-in bh: "binomialheap.ss")
+(require (prefix-in bh: "skewbinomialheap.ss")
          scheme/match)
 
 (define-struct: Mt ())
@@ -67,7 +67,7 @@
 (define (find-min/max bsheap)
   (let ([heap (BSHeap-heap bsheap)])
     (if (Mt? heap)
-        (error "Heap is empty" 'find-min/max)
+        (error "Heap is empty :" 'find-min/max)
         (Heap-elem heap))))
 
 (: delete-min/max : (All (A) ((BSHeap A) -> (BSHeap A))))
@@ -75,10 +75,10 @@
   (let ([heap (BSHeap-heap bsheap)]
         [func (BSHeap-comparer bsheap)])
     (if (Mt? heap)
-        (error "Heap is empty" 'delete-min/max)
+        (error "Heap is empty :" 'delete-min/max)
         (let ([bheap (Heap-heap heap)])
           (if (bh:empty? bheap)
-              bsheap
+              ((inst make-BSHeap A) func (ann (make-Mt) (Heaps A)))
               (let ([min-heap (bh:find-min/max bheap)]
                     [del (bh:delete-min/max bheap)])
                 (make-BSHeap func 

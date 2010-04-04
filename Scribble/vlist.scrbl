@@ -1,6 +1,6 @@
 #lang scribble/manual
 @(require (for-label (only-in scheme
-                              map)))
+                              map foldr foldl filter)))
 
 
 @title{VList}
@@ -12,6 +12,7 @@ operations. Indexing and length operations have a running time of
 @bold{@italic{O(N)}} in lists. The data structure has been described in the 
 paper @italic{Fast Functional Lists, Hash-Lists, vlists and 
               Variable Length Arrays} by  Phil Bagwell.
+VLists implementation internally uses @secref["bral"].
 
 @section{VList Construction and Operations}
 
@@ -164,8 +165,8 @@ In the above example, @scheme[(vlist->list vlst)], gives
 gives an empty list.
 
 
-@subsection{reverse}
-The function @scheme[reverse] takes a vlist and gives back a reverses vlist. 
+@subsection{vreverse}
+The function @scheme[vreverse] takes a vlist and gives back a reverses vlist. 
 For example
 @schememod[
 typed-scheme
@@ -173,16 +174,16 @@ typed-scheme
 
 (define vlst (vlist 1 2 3 4 5 6))
 
-(reverse vlst)
+(vreverse vlst)
 ]
 
-In the above example, @scheme[(reverse vlst)], gives back the reversed
+In the above example, @scheme[(vreverse vlst)], gives back the reversed
 vlist @scheme[(vlist 6 5 4 3 2 1)].
 
 
 @subsection{vmap}
 The function @scheme[vmap] is same as @scheme[map] except that 
-@scheme[vmap] runs works on vlists. For example
+@scheme[vmap] works on vlists. For example
 @schememod[
 typed-scheme
 (require "vlist.ss")
@@ -200,4 +201,61 @@ given vlist and gives back @scheme[(vlist 2 3 4 5 6 7)].
 and gives back the vlist @scheme[(1 4 9 16 25 36 49)].
 
 
+@subsection{vfoldl}
+The function @scheme[vfoldl] is same as @scheme[foldl] except that 
+@scheme[vfoldl] works on vlists. For example
+@schememod[
+typed-scheme
+(require "vlist.ss")
 
+(define vlst (vlist 1 2 3 4 5 6))
+
+(define new-vlist  (vfoldl + 0 vlst))
+
+(define new-vlist1  (vfoldl * 1 vlst vlst))
+]
+
+In the above example, @scheme[(vfoldl + 0 vlst)] gives @scheme[21].
+@scheme[(vfoldl * 1 vlst vlst)] gives @scheme[518400].
+
+
+@subsection{vfoldr}
+The function @scheme[vfoldr] is same as @scheme[foldr] except that 
+@scheme[vfoldr] works on vlists. For example
+@schememod[
+typed-scheme
+(require "vlist.ss")
+
+(define vlst (vlist 1 2 3 4 5 6))
+
+(define new-vlist  (vfoldr + 0 vlst))
+
+(define new-vlist1  (vfoldr * 1 vlst vlst))
+]
+
+In the above example, @scheme[(vfoldl + 0 vlst)] gives @scheme[21].
+@scheme[(vfoldl * 1 vlst vlst)] gives @scheme[518400].
+
+
+@subsection{vfilter}
+The function @scheme[vfilter] is same as @scheme[filter] except that 
+@scheme[vfilter] works on vlists. For example
+@schememod[
+typed-scheme
+(require "vlist.ss")
+
+(define vlst (vlist 1 2 3 4 5 6))
+
+(vfilter (λ:([x : Integer]) (> x 5)) vlst)
+
+(vfilter (λ:([x : Integer]) (< x 5)) vlst)
+
+(vfilter (λ:([x : Integer]) (<= x 5)) vlst)
+]
+
+In the above example, @scheme[(vfilter (λ:([x : Integer]) (> x 5)) vlst)]
+gives @scheme[(vlist 6)].
+@scheme[(vfilter (λ:([x : Integer]) (< x 5)) vlst)] gives
+@scheme[(vlist 1 2 3 4)]. And
+@scheme[(vfilter (λ:([x : Integer]) (<= x 5)) vlst)] gives
+@scheme[(vlist 1 2 3 4 5)].

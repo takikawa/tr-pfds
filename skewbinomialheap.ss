@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide empty? insert merge find-min/max delete-min/max 
-         binomialheap sorted-list empty)
+         binomialheap sorted-list empty BinomialHeap)
 
 (require scheme/match)
 

@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@title{Binary Random Access List}
+@title[#:tag "bral"]{Binary Random Access List}
 
 Random Access Lists are list data structures that provide array-like lookup 
 and update operations. They have been implemented as a framework of binary 

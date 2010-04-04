@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@title{Skew Binomial Heap}
+@title[#:tag "skewbh"]{Skew Binomial Heap}
 
 Skew Binomial Heaps are Binomial Heaps with hybrid numerical representation
 for heaps based on both skew binary numbers. Skew binary number representation

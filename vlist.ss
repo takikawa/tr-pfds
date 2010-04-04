@@ -1,7 +1,7 @@
 #lang typed/scheme
 
 (provide vlist vlist->list vcons empty empty? size get first rest last
-         reverse vmap vfoldr vfoldl vfilter)
+         vreverse vmap vfoldr vfoldl vfilter)
 
 (require (prefix-in ra: "skewbinaryrandomaccesslist.ss"))
 (define-struct: (A) Base ([prevbase : (Block A)]
@@ -47,16 +47,14 @@
 
 (: first : (All (A) ((VList A) -> A)))
 (define (first vlst)
-  (let ([offset (VList-offset vlst)]
-        [size (VList-size vlst)])
-    (if (< (sub1 offset) size)
-        (ra:head (Base-elems (VList-base vlst)))
-        (error "List is empty :" 'first))))
+  (if (empty? vlst)
+      (error "VList is empty :" 'first)
+      (ra:head (Base-elems (VList-base vlst)))))
 
 (: last : (All (A) ((VList A) -> A)))
 (define (last vlst)
-  (if (zero? (size vlst))
-      (error "List is empty :" 'last)
+  (if (empty? vlst)
+      (error "VList is empty :" 'last)
       (last-helper (VList-base vlst))))
 
 (: last-helper : (All (A) ((Base A) -> A)))
@@ -73,8 +71,7 @@
          [base (VList-base vlst)]
          [prev (Base-prevbase base)])
     (cond 
-      [(and (zero? (Base-size base)) (zero? offset)) 
-       (error "List is empty :" 'rest)]
+      [(empty? vlst) (error "VList is empty :" 'rest)]
       [(> offset 1) (make-VList (sub1 offset) 
                                 (make-Base (Base-prevbase base)
                                            (Base-prevoffset base)
@@ -112,14 +109,14 @@
                     (make-VList (Base-prevoffset base) prev (VList-size vlist)))
         (ra:lookup index (Base-elems base)))))
 
-(: reverse : (All (A) ((VList A) -> (VList A))))
-(define (reverse vlist)
-  (: reverse-helper : (All (A) ((VList A) (VList A) -> (VList A))))
-  (define (reverse-helper inner-vl accum)
+(: vreverse : (All (A) ((VList A) -> (VList A))))
+(define (vreverse vlist)
+  (: vreverse-helper : (All (A) ((VList A) (VList A) -> (VList A))))
+  (define (vreverse-helper inner-vl accum)
     (if (zero? (VList-size inner-vl))
         accum
-        (reverse-helper (rest inner-vl) (vcons (first inner-vl) accum))))
-  (reverse-helper vlist empty))
+        (vreverse-helper (rest inner-vl) (vcons (first inner-vl) accum))))
+  (vreverse-helper vlist empty))
 
 (: base-size : (All (A) ((Block A) -> (Listof Integer))))
 (define (base-size block)
