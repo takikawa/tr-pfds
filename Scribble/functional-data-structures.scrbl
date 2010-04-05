@@ -30,4 +30,3 @@ And the data structures have been entirely implemented in Typed Scheme.
 @include-section{pairingheap.scrbl}
 @include-section{lazypairingheap.scrbl}
 @include-section{bootstrapedheap.scrbl}
-

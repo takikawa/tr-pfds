@@ -6,7 +6,7 @@ Bootstrapped Queue use a structural bootstrapping technique called
 @italic{Structural Decomposition}. The data structure gives a worst 
 case running time of @bold{@italic{O(1)}} for the operation 
 @italic{head} and @bold{@italic{O(log*(n))}} for 
-@italic{tail and enqueue}. Internally uses Real Time Queue.
+@italic{tail and enqueue}. Internally uses @secref["rtq"].
 
 @section{Bootstraped Queue Construction and Operations}
 
@@ -20,8 +20,7 @@ typed-scheme
 (queue 1 2 3 4 5 6)
 ]
 
-In the above example, the queue obtained will have 1 as its head element,
-2 as the head of its tail and so on.
+In the above example, the queue obtained will have 1 as its first element.
 
 
 @subsection{empty}
@@ -55,8 +54,8 @@ typed-scheme
 (define new-queue (enqueue 10 que))
 ]
 
-In the above example, enqueue adds the element 10 to the queue que. 
-new-queue now contains 10 as its last element.
+In the above example, @scheme[(enqueue 10 que)] adds the element 10 to the
+given queue @scheme[que]. new-queue now contains 10 as its last element.
 
 @subsection{head}
 The function @scheme[head] takes a queue and gives the first element in the
@@ -74,8 +73,9 @@ In the above example, @scheme[(head que)], gives back the first element in
 @scheme[que] which happens to be 1.
 
 @subsection{tail}
-The function @scheme[tail] takes a queue and gives back a queue with rest 
-elements if its a non empty queue else throws an error. Example
+The function @scheme[tail] takes a queue and gives back the same queue without
+the first element of the given queue if its a non empty queue else throws an 
+error. For example
 @schememod[
 typed-scheme
 (require "bootstrapedqueue.ss")
@@ -85,15 +85,15 @@ typed-scheme
 (tail que)
 ]
 
-In the above example, @scheme[(tail que)], gives back a queue which has 2
-as its new head.
+In the above example, @scheme[(tail que)], gives back a queue 
+@scheme[(queue 2 3 4 5 6)].
 
 
 @subsection{queue->list}
 The function @scheme[queue->list] takes a queue and gives back a list of 
 elements. The list will have head of the given queue as its first element.
 If the given queue is empty, then it returns an empty list. 
-For Example
+For example
 @schememod[
 typed-scheme
 (require "bootstrapedqueue.ss")

@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@title{Real-Time Queue}
+@title[#:tag "rtq"]{Real-Time Queue}
 
 Real-Time Queues eliminate the amortization by employing laziness and 
 a technique called @italic{Scheduling}. The data structure gives a worst
@@ -19,8 +19,7 @@ typed-scheme
 (queue 1 2 3 4 5 6)
 ]
 
-In the above example, the queue obtained will have 1 as its head element,
-2 as the head of its tail and so on.
+In the above example, the queue obtained will have 1 as its first element.
 
 
 @subsection{empty}
@@ -35,11 +34,10 @@ typed-scheme
 
 (define que (queue 1 2 3 4 5 6))
 
-(define mt empty)
 ]
 
 In the above example, @scheme[(empty? que)] returns @scheme[#f] and 
-@scheme[(empty? mt)] returns @scheme[#t].
+@scheme[(empty? empty)] returns @scheme[#t].
 
 
 @subsection{enqueue}
@@ -54,8 +52,8 @@ typed-scheme
 (define new-queue (enqueue 10 que))
 ]
 
-In the above example, enqueue adds the element 10 to the queue que. 
-new-queue now contains 10 as its last element.
+In the above example, @scheme[(enqueue 10 que)] adds the element 10 to the
+queue que. new-queue now contains 10 as its last element.
 
 @subsection{head}
 The function @scheme[head] takes a queue and gives the first element in the
@@ -73,8 +71,9 @@ In the above example, @scheme[(head que)], gives back the first element in
 @scheme[que] which happens to be 1.
 
 @subsection{tail}
-The function @scheme[tail] takes a queue and gives back a queue with rest 
-elements if its a non empty queue else throws an error. Example
+The function @scheme[tail] takes a queue and gives back the same queue without
+head element of the given queue if its a non empty queue else throws an error.
+For example
 @schememod[
 typed-scheme
 (require "realtimequeue.ss")
@@ -84,15 +83,15 @@ typed-scheme
 (tail que)
 ]
 
-In the above example, @scheme[(tail que)], gives back a queue which has 2
-as its new head.
+In the above example, @scheme[(tail que)], gives back 
+@scheme[(queue 2 3 4 5 6)].
 
 
 @subsection{queue->list}
 The function @scheme[queue->list] takes a queue and gives back a list of 
 elements. The list will have head of the given queue as its first element.
 If the given queue is empty, then it returns an empty list. 
-For Example
+For example
 @schememod[
 typed-scheme
 (require "realtimequeue.ss")
@@ -103,4 +102,4 @@ typed-scheme
 ]
 
 In the above example, @scheme[(queue->list que)], gives back the list 
-@scheme[(10 2 34 4 15 6)].
+@scheme[(list 10 2 34 4 15 6)].

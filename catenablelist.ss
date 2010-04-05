@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide clist empty? clist->list head tail CatenableList
-         merge kons kons-rear empty)
+         append kons kons-rear empty)
 (require scheme/promise)
 
 (require (prefix-in rtq: "realtimequeue.ss"))
@@ -32,8 +32,8 @@
         hd
         (link hd (delay (link-all tl))))))
 
-(: merge : (All (A) ((CatenableList A) (CatenableList A) -> (CatenableList A))))
-(define (merge cat1 cat2)
+(: append : (All (A) ((CatenableList A) (CatenableList A) -> (CatenableList A))))
+(define (append cat1 cat2)
   (cond
     [(EmptyList? cat1) cat2]
     [(EmptyList? cat2) cat1]
@@ -42,11 +42,11 @@
 
 (: kons : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (kons elem cat)
-  (merge (make-List elem rtq:empty) cat))
+  (append (make-List elem rtq:empty) cat))
 
 (: kons-rear : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (kons-rear elem cat)
-  (merge cat (make-List elem rtq:empty)))
+  (append cat (make-List elem rtq:empty)))
 
 (: head : (All (A) ((CatenableList A) -> A)))
 (define (head cat)

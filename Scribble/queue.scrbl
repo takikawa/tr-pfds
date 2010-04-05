@@ -2,8 +2,8 @@
 
 @title{Banker's Queue}
 
-A Queue is nothing but a FIFO data structure. A Banker's queue ia a
-Amortized queues obtained using Bankers method. Provides a amortized
+A Queue is nothing but a FIFO data structure. A Banker's Queue is a
+amortized queue obtained using Bankers method. It provides a amortized
 running time of @bold{@italic{O(1)}} for @italic{head, tail and enqueue}
 operations. To obtain this amortized running time, the data structure
 uses the techniques, lazy evaluation and memoization. Banker's Queue
@@ -22,8 +22,7 @@ typed-scheme
 (queue 1 2 3 4 5 6)
 ]
 
-In the above example, the queue obtained will have 1 as its head element,
-2 as the head of its tail and so on.
+In the above example, the queue obtained will have 1 as its head element.
 
 
 @subsection{empty}
@@ -38,16 +37,15 @@ typed-scheme
 
 (define que (queue 1 2 3 4 5 6))
 
-(define mt empty)
 ]
 
 In the above example, @scheme[(empty? que)] returns @scheme[#f] and 
-@scheme[(empty? mt)] returns @scheme[#t].
+@scheme[(empty? empty)] returns @scheme[#t].
 
 
 @subsection{enqueue}
-the function @scheme[enqueue] takes an element and a queue and enqueues 
-the given element into the queue. Example
+The function @scheme[enqueue] takes an element and a queue and adds the given
+element into the queue. For example
 @schememod[
 typed-scheme
 (require "bankers-queue.ss")
@@ -57,8 +55,8 @@ typed-scheme
 (define new-queue (enqueue 10 que))
 ]
 
-In the above example, enqueue adds the element 10 to the queue que. 
-new-queue now contains 10 as its last element.
+In the above example, @scheme[(enqueue 10 que)] adds the element 10 to the 
+end of the queue to give @scheme[(queue 1 2 3 4 5 6 10)]
 
 @subsection{head}
 The function @scheme[head] takes a queue and gives the first element in the
@@ -76,8 +74,9 @@ In the above example, @scheme[(head que)], gives back the first element in
 @scheme[que] which happens to be 1.
 
 @subsection{tail}
-The function @scheme[tail] takes a queue and gives back a queue with rest 
-elements if its a non empty queue else throws an error. Example
+The function @scheme[tail] takes a queue and gives back the same queue 
+without the first element. If the queue is empty it throws an error. 
+For example
 @schememod[
 typed-scheme
 (require "bankers-queue.ss")
@@ -87,8 +86,8 @@ typed-scheme
 (tail que)
 ]
 
-In the above example, @scheme[(tail que)], gives back a queue which has 2
-as its new head.
+In the above example, @scheme[(tail que)], gives back  
+@scheme[(queue 2 3 4 5 6)].
 
 
 @subsection{queue->list}
@@ -106,4 +105,4 @@ typed-scheme
 ]
 
 In the above example, @scheme[(queue->list que)], gives back the list 
-@scheme[(10 2 34 4 15 6)].
+@scheme[(list 10 2 34 4 15 6)].

@@ -3,9 +3,9 @@
 @title[#:tag "streams"]{Streams}
 
 Streams are nothing but lazy lists. They are similar to ordinary
-lists and they provide the same functions that lists provide. The 
-difference between Streams and lists is that they are in nature and 
-each cell of a Stream is suspended is forced only when required. Streams 
+lists and they provide the same functionality as that of lists. The 
+difference between Streams and lists is that they are lazy in nature and 
+each cell of a Stream is suspended and is forced only when required. Streams 
 have been used in some of the below mentioned data structures. Since
 each suspention comes with a little overhead, Streams should be used
 only when there is a good enough reason to do so.
@@ -23,7 +23,7 @@ typed-scheme
 ]
 
 In the above example, the stream obtained will be similar to lists but will
-lazy in nature. 1 as its head element, 2 as the head of its tail and so on.
+lazy in nature. It will have 1 as its first element.
 
 @subsection{empty}
 A empty stream
@@ -37,16 +37,15 @@ typed-scheme
 
 (define strm (stream 1 2 3 4 5 6))
 
-(define mt empty)
 ]
 
 In the above example, @scheme[(empty? strm)] returns @scheme[#f] and 
-@scheme[(empty? mt)] returns @scheme[#t].
+@scheme[(empty? empty)] returns @scheme[#t].
 
 
 @subsection{stream-cons}
-The function @scheme[stream-cons] takes an element and a stream and returns 
-a stream with its first element as the given element. For example,
+The function @scheme[stream-cons] takes an element and a stream and adds 
+the given element to the given stream. For example,
 @schememod[
 typed-scheme
 (require "stream.ss")
@@ -56,13 +55,14 @@ typed-scheme
 (stream-cons 10 strm)
 ]
 
-In the above example, @scheme[(stream-cons 10 strm)] returns a stream which 
-has 10 as its first element.
+In the above example, @scheme[(stream-cons 10 strm)] returns the stream 
+@scheme[(stream 1 2 3 4 5 6)].
 
 
 @subsection{stream-car}
 The function @scheme[stream-car] takes a stream and returns the first element
-of the given stream. For example,
+of the given stream. If the given stream is empty, then it throws an error.
+For example,
 @schememod[
 typed-scheme
 (require "stream.ss")
@@ -77,8 +77,8 @@ of the the given stream.
 
 
 @subsection{stream-cdr}
-The function @scheme[stream-cdr] takes a stream and returns a stream without 
-the first element of the given stream. For example,
+The function @scheme[stream-cdr] takes a stream and returns the same stream 
+but without the first element of the given stream. For example,
 @schememod[
 typed-scheme
 (require "stream.ss")
@@ -88,13 +88,13 @@ typed-scheme
 (stream-cdr strm)
 ]
 
-In the above example, @scheme[(stream-cdr strm)] returns a stream, without 1, 
-the first element of the the given stream.
+In the above example, @scheme[(stream-cdr strm)] returns 
+@scheme[(stream 2 3 4 5 6)].
 
 
 @subsection{stream-append}
 The function @scheme[stream-append] takes two streams and creates a new 
-stream in which the second stream is appended to the end of first stream. 
+stream by appending the second stream to the end of first stream. 
 For example,
 @schememod[
 typed-scheme
@@ -140,13 +140,15 @@ typed-scheme
 ]
 
 In the above example, @scheme[(stream->list strm)] returns the list,
-@scheme[(1 2 3 4 5 6)].
+@scheme[(list 1 2 3 4 5 6)].
 
 
 @subsection{drop}
 The function @scheme[drop] takes an integer(say n) and a stream and creates a
 new stream which is same as the given stream but without the first n elements
-of the input stream. For example,
+of the input stream. If the number of elements in the given stream is less 
+than n, then @scheme[drop] throws an error.
+For example,
 @schememod[
 typed-scheme
 (require "stream.ss")
@@ -163,7 +165,9 @@ In the above example, @scheme[(drop 3 strm)] returns the stream,
 
 @subsection{take}
 The function @scheme[take] takes an integer(say n) and a stream and creates a
-new stream with the first n elements of the input stream. For example,
+new stream with the first n elements of the input stream. If the number of 
+elements in the given stream is less than n, then @scheme[take] throws an 
+error. For example,
 @schememod[
 typed-scheme
 (require "stream.ss")

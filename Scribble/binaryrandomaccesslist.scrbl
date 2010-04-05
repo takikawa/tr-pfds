@@ -36,11 +36,13 @@ typed-scheme
 
 (define ral (ralist 1 2 3 4 5 6))
 
-(define mt empty)
+(empty? ral)
+
+(empty? empty)
 ]
 
 In the above example, @scheme[(empty? ral)] returns @scheme[#f] and 
-@scheme[(empty? mt)] returns @scheme[#t].
+@scheme[(empty? empty)] returns @scheme[#t].
 
 
 @subsection{kons}
@@ -55,8 +57,8 @@ typed-scheme
 (kons 10 ral)
 ]
 
-In the above example, @scheme[(kons 10 ral)] returns a ralist which 
-has 10 as its first element.
+In the above example, @scheme[(kons 10 ral)] returns 
+@scheme[(ralist 10 1 2 3 4 5 6)].
 
 
 @subsection{head}
@@ -76,8 +78,8 @@ of the the given ralist.
 
 
 @subsection{tail}
-The function @scheme[tail] takes a ralist and returns a ralist without 
-the first element of the given ralist. For example,
+The function @scheme[tail] takes a ralist and returns the given ralist but
+without its first element. For example,
 @schememod[
 typed-scheme
 (require "binaryrandomaccesslist.ss")
@@ -143,8 +145,8 @@ typed-scheme
 (ralist->list ral)
 ]
 
-In the above example, @scheme[(ralist->list ral)] returns the list,
-@scheme[(1 2 3 4 5 6)].
+In the above example, @scheme[(ralist->list ral)] returns
+@scheme[(ralist 1 2 3 4 5 6)].
 
 
 @subsection{drop}

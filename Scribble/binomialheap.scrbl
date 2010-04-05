@@ -39,11 +39,10 @@ typed-scheme
 
 (define bheap (binomialheap < 1 2 3 4 5 6))
 
-(define mt empty)
 ]
 
 In the above example, @scheme[(empty? bheap)] returns @scheme[#f] and 
-@scheme[(empty? mt)] returns @scheme[#t].
+@scheme[(empty? empty)] returns @scheme[#t].
 
 
 @subsection{insert}
@@ -58,13 +57,13 @@ typed-scheme
 (define new-bheap (insert 10 bheap))
 ]
 
-In the above example, insert adds the element 10 to the heap bheap.
+In the above example, insert adds the element 10 to bheap.
 
 @subsection{find-min/max}
 The function @scheme[find-min/max] takes a binomial heap and gives the 
 largest or the smallest element in the heap if binomial heap is not empty
-else throws an error. The element returned is max or min depends on the
-comparison function of the heap. For Example
+else throws an error. The element returned is largest or smallest depends
+on the comparison function of the heap. For Example
 @schememod[
 typed-scheme
 (require "binomialheap.ss")
@@ -79,24 +78,28 @@ element in @scheme[bheap] which happens to be 1.
 
 @subsection{delete-min/max}
 The function @scheme[delete-min/max] takes a binomial heap and gives back the 
-same heap with out the min or max element in the given heap. The element 
+same heap without the min or max element in the given heap. The element 
 removed from the heap is max or min depends on the comparison function of the
 heap. For Example
 @schememod[
 typed-scheme
 (require "binomialheap.ss")
 
-(define bheap (binomialheap < 1 2 3 4 5 6))
+(define bheap1 (binomialheap < 1 2 3 4 5 6))
 
-(delete-min/max bheap)
+(define bheap2 (binomialheap > 1 2 3 4 5 6))
+
+(delete-min/max bheap1)
+(delete-min/max bheap2)
 ]
 
-In the above example, @scheme[(delete-min/max bheap)], gives back a heap 
-without the min element 1.
+In the above example, @scheme[(delete-min/max bheap1)], deletes the element
+1(min) from the given heap. And @scheme[(delete-min/max bheap2)], deletes 
+the element 6(max) from the given heap
 
 @subsection{merge}
 The function @scheme[merge] takes two binomial heaps and gives back a 
-merged binomial heap. Uses the comparison function in the first heap for
+merged binomial heap. Uses the comparison function of the first heap for
 merging and the same function becomes the comparison function for the 
 merged heap. For Example
 @schememod[

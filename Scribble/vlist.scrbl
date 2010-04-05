@@ -6,7 +6,7 @@
 @title{VList}
 
 A VList is a data structure very similar to noraml Scheme List but the 
-corresponding operations are significantly faster than most of the List
+corresponding operations are significantly faster for most of the List
 operations. Indexing and length operations have a running time of 
 @bold{@italic{O(1)}} and @bold{@italic{O(lg N)}} respectively compared to 
 @bold{@italic{O(N)}} in lists. The data structure has been described in the 
@@ -26,8 +26,7 @@ typed-scheme
 (vlist 1 2 3 4 5 6)
 ]
 
-In the above example, the vlist obtained will have 1 as its head element,
-2 as the head of its tail and so on.
+In the above example, the vlist obtained will have 1 as its first element.
 
 
 @subsection{empty}
@@ -58,11 +57,11 @@ typed-scheme
 
 (define vlst (vlist 1 2 3 4 5 6))
 
-(define new-vlist  (vcons 10 vlst))
+(define new-vlist (vcons 10 vlst))
 ]
 
-In the above example, envlstue adds the element 10 to the vlist vlst. 
-new-vlist now contains 10 as its first element.
+In the above example, vcons adds the element 10 to vlst. 
+new-vlist contains 10 as its first element.
 
 @subsection{first}
 The function @scheme[first] takes a vlist and gives the first element 
@@ -109,7 +108,7 @@ typed-scheme
 ]
 
 In the above example, @scheme[(rest vlst)], removes the head of the given 
-vlist and returns @scheme[(vlist 1 2 3 4 5 6)].
+vlist and returns @scheme[(vlist 2 3 4 5 6)].
 
 
 @subsection{get}
@@ -123,6 +122,8 @@ typed-scheme
 
 (define vlst (vlist 1 2 3 4 5 6))
 
+(get 0 vlst)
+(get 1 vlst)
 ]
 
 In the above example, @scheme[(get 0 vlst)] returns 1, 
@@ -198,12 +199,15 @@ typed-scheme
 In the above example, @scheme[(vmap add1 vlst)] adds 1 to each element of the
 given vlist and gives back @scheme[(vlist 2 3 4 5 6 7)].
 @scheme[(vmap * vlst)] multiplies corresponding elements in the two vlists 
-and gives back the vlist @scheme[(1 4 9 16 25 36 49)].
+and gives back the vlist @scheme[(vlist 1 4 9 16 25 36 49)].
 
 
 @subsection{vfoldl}
 The function @scheme[vfoldl] is same as @scheme[foldl] except that 
-@scheme[vfoldl] works on vlists. For example
+@scheme[vfoldl] works on vlists.
+@margin-note{vfoldl currently does not produce correct results when the 
+             function supplied to it is non-commutative.}
+For example
 @schememod[
 typed-scheme
 (require "vlist.ss")
@@ -221,7 +225,10 @@ In the above example, @scheme[(vfoldl + 0 vlst)] gives @scheme[21].
 
 @subsection{vfoldr}
 The function @scheme[vfoldr] is same as @scheme[foldr] except that 
-@scheme[vfoldr] works on vlists. For example
+@scheme[vfoldr] works on vlists. 
+@margin-note{vfoldr currently does not produce correct results when the 
+             function supplied to it is non-commutative.}
+For example
 @schememod[
 typed-scheme
 (require "vlist.ss")

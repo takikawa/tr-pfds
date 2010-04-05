@@ -16,18 +16,18 @@
 (check-expect (clist->list (tail (tail (clist 1 2 3 4 5 6 7))))
               (list 3 4 5 6 7))
 
-(check-expect (clist->list (merge (clist 1) 
+(check-expect (clist->list (append (clist 1) 
                                   (clist 1 2 3 4 5 6 7))) 
               (list 1 1 2 3 4 5 6 7))
 
-(check-expect (clist->list (merge empty 
+(check-expect (clist->list (append empty 
                                   (clist 1 2 3 4 5 6 7))) 
               (list 1 2 3 4 5 6 7))
 
-(check-expect (clist->list (merge (clist 1 2 3 4 5 6 7) empty)) 
+(check-expect (clist->list (append (clist 1 2 3 4 5 6 7) empty)) 
               (list 1 2 3 4 5 6 7))
 
-(check-expect (clist->list (merge empty empty)) null)
+(check-expect (clist->list (append empty empty)) null)
 
 (check-expect (clist->list (kons-rear 0 (clist 1 2 3 4 5 6 7)))
               (list 1 2 3 4 5 6 7 0))

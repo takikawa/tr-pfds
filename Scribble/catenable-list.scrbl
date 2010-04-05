@@ -21,8 +21,7 @@ typed-scheme
 ]
 
 In the above example, @scheme[(clist 1 2 3 4 5 6)] gives a Catenable List
-which is similar to lists but comes with efficient lookup and update
-operations.
+which is similar to lists but comes with efficient append operation.
 
 @subsection{empty}
 A empty clist
@@ -36,11 +35,10 @@ typed-scheme
 
 (define cal (clist 1 2 3 4 5 6))
 
-(define mt empty)
 ]
 
 In the above example, @scheme[(empty? cal)] returns @scheme[#f] and 
-@scheme[(empty? mt)] returns @scheme[#t].
+@scheme[(empty? empty)] returns @scheme[#t].
 
 
 @subsection{kons}
@@ -55,13 +53,13 @@ typed-scheme
 (kons 10 cal)
 ]
 
-In the above example, @scheme[(kons 10 cal)] returns a 
+In the above example, @scheme[(kons 10 cal)] returns 
 @scheme[(clist 10 1 2 3 4 5 6)].
 
 
 @subsection{kons-rear}
-The function @scheme[kons-rear] takes an element and a clist and adds the given
-element to the rear end the given clist. For example,
+The function @scheme[kons-rear] takes an element and a clist and adds the 
+given element to the rear end the given clist. For example,
 @schememod[
 typed-scheme
 (require "catenablelist.ss")
@@ -107,9 +105,9 @@ clist, @scheme[(clist 2 3 4 5 6)].
 
 
 
-@subsection{merge}
-The function @scheme[merge] takes two clists and merges the second clist 
-to the end of the second clist.
+@subsection{append}
+The function @scheme[append] takes two clists and appends the second clist 
+to the end of the first clist.
 
 For example,
 @schememod[
@@ -119,10 +117,10 @@ typed-scheme
 (define cal1 (clist 1 2 3 4 5 6))
 (define cal2 (clist 7 8 9 10))
 
-(merge cal1 cal2)
+(append cal1 cal2)
 ]
 
-In the above example, @scheme[(merge cal1 cal2)] returns 
+In the above example, @scheme[(append cal1 cal2)] returns 
 @scheme[(clist 1 2 3 4 5 6 7 8 9 10)].
 
 
