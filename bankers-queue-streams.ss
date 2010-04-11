@@ -68,9 +68,3 @@
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
   (foldl (inst enqueue A) empty lst))
-
-(define v (time (build-list 10000000 (λ(x) x))))
-;(define lst (time (build-list1 1 40000)))
-;;(define v (time (build-list 10000000 (λ(x) x))))
-(define que (time (apply queue v)))
-;(define k (time (queue->list que)))

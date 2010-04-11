@@ -22,5 +22,6 @@
 
 (check-expect (queue->list (enqueue 10 (queue 20))) 
               (list 20 10))
-
+(check-expect (queue->list (apply queue (build-list 100 (λ(x) x))))
+              (build-list 100 (λ(x) x)))
 (test)

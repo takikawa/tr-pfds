@@ -2,7 +2,7 @@
 
 (require scheme/promise)
 
-(provide empty empty? enqueue head tail queue->list pqueue list->pqueue)
+(provide empty empty? enqueue head tail queue->list queue list->queue)
 
 ;; Physicists Queue
 ;; Maintains invariant lenr <= lenf
@@ -83,16 +83,10 @@
       null
       (cons (head que) (queue->list (tail que)))))
 
-(: list->pqueue : (All (A) ((Listof A) -> (PQueue A))))
-(define (list->pqueue items)
+(: list->queue : (All (A) ((Listof A) -> (PQueue A))))
+(define (list->queue items)
   (foldl (inst enqueue A) empty items))
 
-(: pqueue : (All (A) (A * -> (PQueue A))))
-(define (pqueue . items)
+(: queue : (All (A) (A * -> (PQueue A))))
+(define (queue . items)
   (foldl (inst enqueue A) empty items))
-
-(define v (time (build-list 10000000 (λ(x) x))))
-;(define lst (time (build-list1 1 40000)))
-;;(define v (time (build-list 10000000 (λ(x) x))))
-(define que (time (apply pqueue v)))
-;(define k (time (queue->list que)))
