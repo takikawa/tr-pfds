@@ -78,12 +78,12 @@ typed-scheme
 (find-min/max sheap2)
 ]
 
-In the above example, @scheme[(find-min/max sheap1)], gives back the smallest
+In the above example, @scheme[(find-min/max sheap1)], returns the smallest
 element in @scheme[sheap1] which happens to be 1. And 
 @scheme[(find-min/max sheap2)] gives the largest element in the heap 6.
 
 @subsection{delete-min/max}
-The function @scheme[delete-min/max] takes a splay heap and gives back the 
+The function @scheme[delete-min/max] takes a splay heap and returns the 
 same heap with out the min or max element in the given heap. The element 
 removed from the heap is max or min depends on the comparison function of the
 heap. For Example
@@ -100,11 +100,11 @@ typed-scheme
 
 In the above example, @scheme[(delete-min/max sheap1)], deletes the smallest 
 element in the heap and gives a heap without the min element 1 in it. 
-And @scheme[(delete-min/max sheap2)], gives back a heap without the largest
+And @scheme[(delete-min/max sheap2)], returns a heap without the largest
 element which is 6.
 
 @subsection{merge}
-The function @scheme[merge] takes two splay heaps and gives back a 
+The function @scheme[merge] takes two splay heaps and returns a 
 merged splay heap. Uses the comparison function in the first heap for
 merging and the same function becomes the comparison function for the 
 merged heap. For Example
@@ -129,7 +129,7 @@ heap-order.
 
 
 @subsection{sorted-list}
-The function @scheme[sorted-list] takes a splay heap and gives back a list 
+The function @scheme[sorted-list] takes a splay heap and returns a list 
 which is sorted according to the comparison function of the heap. For Example
 @schememod[
 typed-scheme
@@ -140,5 +140,5 @@ typed-scheme
 (sorted-list sheap)
 ]
 
-In the above example, @scheme[(sorted-list sheap)], gives back 
+In the above example, @scheme[(sorted-list sheap)], returns 
 @scheme[(6 5 4 3 2 1)].

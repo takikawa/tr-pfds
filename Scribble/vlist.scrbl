@@ -76,7 +76,7 @@ typed-scheme
 (first vlst)
 ]
 
-In the above example, @scheme[(first vlst)], gives back the first element in 
+In the above example, @scheme[(first vlst)], returns the first element in 
 @scheme[vlst] which happens to be 1.
 
 @subsection{last}
@@ -91,11 +91,11 @@ typed-scheme
 (last vlst)
 ]
 
-In the above example, @scheme[(last vlst)], gives back the last element in 
+In the above example, @scheme[(last vlst)], returns the last element in 
 @scheme[vlst] which is 6.
 
 @subsection{rest}
-The function @scheme[rest] takes a vlist and gives back a vlist without the 
+The function @scheme[rest] takes a vlist and returns a vlist without the 
 first element if the given vlist is not empty. Else throws an error. 
 For example
 @schememod[
@@ -150,7 +150,7 @@ In the above example, @scheme[(size vlst)], gives 6.
 
 
 @subsection{vlist->list}
-The function @scheme[vlist->list] takes a vlist and gives back a normal list
+The function @scheme[vlist->list] takes a vlist and returns a normal list
 scheme list. Example
 @schememod[
 typed-scheme
@@ -167,7 +167,7 @@ gives an empty list.
 
 
 @subsection{vreverse}
-The function @scheme[vreverse] takes a vlist and gives back a reverses vlist. 
+The function @scheme[vreverse] takes a vlist and returns a reverses vlist. 
 For example
 @schememod[
 typed-scheme
@@ -178,7 +178,7 @@ typed-scheme
 (vreverse vlst)
 ]
 
-In the above example, @scheme[(vreverse vlst)], gives back the reversed
+In the above example, @scheme[(vreverse vlst)], returns the reversed
 vlist @scheme[(vlist 6 5 4 3 2 1)].
 
 
@@ -197,9 +197,9 @@ typed-scheme
 ]
 
 In the above example, @scheme[(vmap add1 vlst)] adds 1 to each element of the
-given vlist and gives back @scheme[(vlist 2 3 4 5 6 7)].
+given vlist and returns @scheme[(vlist 2 3 4 5 6 7)].
 @scheme[(vmap * vlst)] multiplies corresponding elements in the two vlists 
-and gives back the vlist @scheme[(vlist 1 4 9 16 25 36 49)].
+and returns the vlist @scheme[(vlist 1 4 9 16 25 36 49)].
 
 
 @subsection{vfoldl}

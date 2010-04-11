@@ -73,11 +73,11 @@ typed-scheme
 (find-min/max bheap)
 ]
 
-In the above example, @scheme[(find-min/max bheap)], gives back the smallest
+In the above example, @scheme[(find-min/max bheap)], returns the smallest
 element in @scheme[bheap] which happens to be 1.
 
 @subsection{delete-min/max}
-The function @scheme[delete-min/max] takes a binomial heap and gives back the 
+The function @scheme[delete-min/max] takes a binomial heap and returns the 
 same heap without the min or max element in the given heap. The element 
 removed from the heap is max or min depends on the comparison function of the
 heap. For Example
@@ -98,7 +98,7 @@ In the above example, @scheme[(delete-min/max bheap1)], deletes the element
 the element 6(max) from the given heap
 
 @subsection{merge}
-The function @scheme[merge] takes two binomial heaps and gives back a 
+The function @scheme[merge] takes two binomial heaps and returns a 
 merged binomial heap. Uses the comparison function of the first heap for
 merging and the same function becomes the comparison function for the 
 merged heap. For Example
@@ -123,7 +123,7 @@ heap-order.
 
 
 @subsection{sorted-list}
-The function @scheme[sorted-list] takes a binomial heap and gives back a list 
+The function @scheme[sorted-list] takes a binomial heap and returns a list 
 which is sorted according to the comparison function of the heap. For Example
 @schememod[
 typed-scheme
@@ -134,5 +134,5 @@ typed-scheme
 (sorted-list bheap)
 ]
 
-In the above example, @scheme[(sorted-list bheap)], gives back 
+In the above example, @scheme[(sorted-list bheap)], returns 
 @scheme[(6 5 4 3 2 1)].

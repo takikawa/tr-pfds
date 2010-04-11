@@ -72,11 +72,11 @@ typed-scheme
 (head que)
 ]
 
-In the above example, @scheme[(head que)], gives back the first element in 
+In the above example, @scheme[(head que)], returns the first element in 
 @scheme[que] which happens to be 1.
 
 @subsection{tail}
-The function @scheme[tail] takes a queue and gives back a queue with rest 
+The function @scheme[tail] takes a queue and returns a queue with rest 
 elements if its a non empty queue else throws an error. Example
 @schememod[
 typed-scheme
@@ -87,12 +87,12 @@ typed-scheme
 (tail que)
 ]
 
-In the above example, @scheme[(tail que)], gives back a queue which has 2
+In the above example, @scheme[(tail que)], returns a queue which has 2
 as its new head.
 
 
 @subsection{queue->list}
-The function @scheme[queue->list] takes a queue and gives back a list of 
+The function @scheme[queue->list] takes a queue and returns a list of 
 elements. The list will have head of the given queue as its first element.
 If the given queue is empty, then it returns an empty list. 
 For Example
@@ -105,12 +105,12 @@ typed-scheme
 (queue->list que)
 ]
 
-In the above example, @scheme[(queue->list que)], gives back the list 
+In the above example, @scheme[(queue->list que)], returns the list 
 @scheme[(10 2 34 4 15 6)].
 
 
 @subsection{list->queue}
-The function @scheme[list->queue] takes a list and gives back a queue of 
+The function @scheme[list->queue] takes a list and returns a queue of 
 elements. The queue will be such that its head will have car of the list.
 For Example
 @schememod[

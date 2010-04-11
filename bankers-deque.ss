@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(require "stream2.ss")
+(require "stream.ss")
 
 (provide empty? empty enqueue-front head tail
          deque enqueue last init deque->list)

@@ -74,16 +74,16 @@ typed-scheme
 (find-min/max bheap2)
 ]
 
-In the above example, @scheme[(find-min/max bheap1)], gives back the smallest
+In the above example, @scheme[(find-min/max bheap1)], returns the smallest
 element in @scheme[bheap1] which happens to be 1. 
-And @scheme[(find-min/max bheap2)], gives back the largest element in 
+And @scheme[(find-min/max bheap2)], returns the largest element in 
 @scheme[bheap2] which happens to be 6
 
 @subsection{delete-min/max}
-The function @scheme[delete-min/max] takes a bootstrapped heap and gives back the 
+The function @scheme[delete-min/max] takes a bootstrapped heap and returns the 
 same heap without the min or max element in the given heap. The element 
 removed from the heap is max or min depends on the comparison function of the
-heap. For Example
+heap. For example
 @schememod[
 typed-scheme
 (require "bootstrappedheap.ss")
@@ -95,12 +95,12 @@ typed-scheme
 (delete-min/max bheap2)
 ]
 
-In the above example, @scheme[(delete-min/max bheap1)], gives back a heap 
-without the min element 1. And @scheme[(delete-min/max bheap2)], gives back 
+In the above example, @scheme[(delete-min/max bheap1)], returns a heap 
+without the min element 1. And @scheme[(delete-min/max bheap2)], returns 
 a heap without the max element 6. 
 
 @subsection{merge}
-The function @scheme[merge] takes two bootstrapped heaps and gives back a 
+The function @scheme[merge] takes two bootstrapped heaps and returns a 
 merged bootstrapped heap. Uses the comparison function in the first heap for
 merging and the same function becomes the comparison function for the 
 merged heap. For Example
@@ -125,7 +125,7 @@ heap-order.
 
 
 @subsection{sorted-list}
-The function @scheme[sorted-list] takes a bootstrapped heap and gives back a 
+The function @scheme[sorted-list] takes a bootstrapped heap and returns a 
 list which is sorted according to the comparison function of the heap. 
 For example
 @schememod[
@@ -137,5 +137,5 @@ typed-scheme
 (sorted-list bheap)
 ]
 
-In the above example, @scheme[(sorted-list bheap)], gives back 
+In the above example, @scheme[(sorted-list bheap)], returns 
 @scheme[(6 5 4 3 2 1)].

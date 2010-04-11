@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(require "stream3.ss")
+(require "stream.ss")
 
 (provide Queue empty empty? enqueue head tail queue queue->list)
          

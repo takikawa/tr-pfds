@@ -128,7 +128,7 @@ In the above example, @scheme[(stream-reverse strm)] returns the stream,
 
 
 @subsection{stream->list}
-The function @scheme[stream->list] takes a stream and gives back a list
+The function @scheme[stream->list] takes a stream and returns a list
 of elements which are in the same order as in the stream. For example,
 @schememod[
 typed-scheme

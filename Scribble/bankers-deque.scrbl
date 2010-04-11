@@ -83,7 +83,7 @@ typed-scheme
 (head deq)
 ]
 
-In the above example, @scheme[(head deq)], gives back the first element in 
+In the above example, @scheme[(head deq)], returns the first element in 
 @scheme[deq] which happens to be 1.
 
 @subsection{last}
@@ -98,11 +98,11 @@ typed-scheme
 (last deq)
 ]
 
-In the above example, @scheme[(last deq)], gives back the last element in 
+In the above example, @scheme[(last deq)], returns the last element in 
 @scheme[deq] which is 6.
 
 @subsection{tail}
-The function @scheme[tail] takes a deque and gives back the given deque 
+The function @scheme[tail] takes a deque and returns the given deque 
 without the first element if the given deque is non empty else throws an 
 error.
 Example
@@ -121,7 +121,7 @@ deque in the above example and returns @scheme[(deque 2 3 4 5 6)].
 
 
 @subsection{init}
-The function @scheme[init] takes a deque and gives back the given deque 
+The function @scheme[init] takes a deque and returns the given deque 
 without the last element if the given deque is non empty else throws an error.
 Example
 @schememod[
@@ -138,7 +138,7 @@ given deque and returns @scheme[(deque 1 2 3 4 5)].
 
 
 @subsection{deque->list}
-The function @scheme[deque->list] takes a deque and gives back a list of 
+The function @scheme[deque->list] takes a deque and returns a list of 
 elements. The list will have head of the given deque as its first element.
 If the given deque is empty, then it returns an empty list. 
 For Example
@@ -151,5 +151,5 @@ typed-scheme
 (deque->list deq)
 ]
 
-In the above example, @scheme[(deque->list deq)], gives back the list 
+In the above example, @scheme[(deque->list deq)], returns the list 
 @scheme[(10 2 34 4 15 6)].

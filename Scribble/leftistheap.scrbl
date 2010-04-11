@@ -76,11 +76,11 @@ typed-scheme
 (find-min/max lheap)
 ]
 
-In the above example, @scheme[(find-min/max lheap)], gives back the smallest
+In the above example, @scheme[(find-min/max lheap)], returns the smallest
 element in @scheme[lheap] which happens to be 1.
 
 @subsection{delete-min/max}
-The function @scheme[delete-min/max] takes a leftist heap and gives back the 
+The function @scheme[delete-min/max] takes a leftist heap and returns the 
 same heap with out the min or max element in the given heap. The element 
 removed from the heap is max or min depends on the comparison function of the
 heap. For Example
@@ -93,11 +93,11 @@ typed-scheme
 (delete-min/max lheap)
 ]
 
-In the above example, @scheme[(delete-min/max lheap)], gives back a heap 
+In the above example, @scheme[(delete-min/max lheap)], returns a heap 
 without the min element 1.
 
 @subsection{merge}
-The function @scheme[merge] takes two leftist heaps and gives back a 
+The function @scheme[merge] takes two leftist heaps and returns a 
 merged leftist heap. Uses the comparison function in the first heap for
 merging and the same function becomes the comparison function for the 
 merged heap. For Example
@@ -122,7 +122,7 @@ heap-order.
 
 
 @subsection{sorted-list}
-The function @scheme[sorted-list] takes a leftist heap and gives back a list 
+The function @scheme[sorted-list] takes a leftist heap and returns a list 
 which is sorted according to the comparison function of the heap. For Example
 @schememod[
 typed-scheme
@@ -133,5 +133,5 @@ typed-scheme
 (sorted-list lheap)
 ]
 
-In the above example, @scheme[(sorted-list lheap)], gives back 
+In the above example, @scheme[(sorted-list lheap)], returns 
 @scheme[(6 5 4 3 2 1)].

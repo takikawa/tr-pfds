@@ -125,7 +125,7 @@ In the above example, @scheme[(append cal1 cal2)] returns
 
 
 @subsection{clist->list}
-The function @scheme[clist->list] takes a clist and gives back a list
+The function @scheme[clist->list] takes a clist and returns a list
 of elements which are in the same order as in the clist. For example,
 @schememod[
 typed-scheme

@@ -74,12 +74,12 @@ typed-scheme
 (find-min/max pheap2)
 ]
 
-In the above example, @scheme[(find-min/max pheap1)], gives back the smallest
+In the above example, @scheme[(find-min/max pheap1)], returns the smallest
 element in @scheme[pheap1] which happens to be 1. And 
 @scheme[(find-min/max pheap2)] gives the largest element in the heap 6.
 
 @subsection{delete-min/max}
-The function @scheme[delete-min/max] takes a pairing heap and gives back the 
+The function @scheme[delete-min/max] takes a pairing heap and returns the 
 same heap with out the min or max element in the given heap. The element 
 removed from the heap is max or min depends on the comparison function of the
 heap. For Example
@@ -96,11 +96,11 @@ typed-scheme
 
 In the above example, @scheme[(delete-min/max pheap1)], deletes the smallest 
 element in the heap and gives a heap without the min element 1 in it. 
-And @scheme[(delete-min/max pheap2)], gives back a heap without the largest
+And @scheme[(delete-min/max pheap2)], returns a heap without the largest
 element which is 6.
 
 @subsection{merge}
-The function @scheme[merge] takes two pairing heaps and gives back a 
+The function @scheme[merge] takes two pairing heaps and returns a 
 merged pairing heap. Uses the comparison function in the first heap for
 merging and the same function becomes the comparison function for the 
 merged heap. For Example
@@ -125,7 +125,7 @@ heap-order.
 
 
 @subsection{sorted-list}
-The function @scheme[sorted-list] takes a pairing heap and gives back a list 
+The function @scheme[sorted-list] takes a pairing heap and returns a list 
 which is sorted according to the comparison function of the heap. For Example
 @schememod[
 typed-scheme
@@ -136,5 +136,5 @@ typed-scheme
 (sorted-list pheap)
 ]
 
-In the above example, @scheme[(sorted-list pheap)], gives back 
+In the above example, @scheme[(sorted-list pheap)], returns 
 @scheme[(6 5 4 3 2 1)].

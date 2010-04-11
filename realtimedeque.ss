@@ -3,7 +3,7 @@
 (provide empty empty? enqueue enqueue-rear init 
          last head tail deque deque->list)
 
-(require "stream2.ss")
+(require "stream3.ss")
 
 (define-struct: (A) RTDeque
   ([front  : (Stream A)]

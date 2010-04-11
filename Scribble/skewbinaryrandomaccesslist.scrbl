@@ -132,7 +132,7 @@ throws an error.
 
 
 @subsection{ralist->list}
-The function @scheme[ralist->list] takes a ralist and gives back a list
+The function @scheme[ralist->list] takes a ralist and returns a list
 of elements which are in the same order as in the ralist. For example,
 @schememod[
 typed-scheme

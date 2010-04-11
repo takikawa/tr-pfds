@@ -3,7 +3,7 @@
 (provide queue queue->list empty empty? 
          head tail enqueue RealTimeQueue list->queue)
 
-(require "stream2.ss")
+(require "stream.ss")
 
 (define-struct: (A) RTQueue
   ([front : (Stream A)]
