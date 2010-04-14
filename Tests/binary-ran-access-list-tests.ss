@@ -45,4 +45,8 @@
 (check-expect (list-length empty) 0)
 (check-expect (list-length (ralist 1)) 1)
 (check-expect (list-length (ralist 1 2 3 4 5 6 7)) 7)
+
+(check-expect (list-length (ralist 1 2 3 4 5)) 5)
+
+(check-expect (list-length (apply ralist lst)) 100)
 (test)
