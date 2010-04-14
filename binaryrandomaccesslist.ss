@@ -31,7 +31,7 @@
 (define (list-length ralist)
   (if (Null-RaList? ralist)
       0
-      (Root-size ralist)))
+      (+ (Root-size ralist) (list-length (Root-rst ralist)))))
 
 (: kons : (All (A) (A (RAList A) -> (RAList A))))
 (define (kons elem ralist)
