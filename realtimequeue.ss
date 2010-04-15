@@ -11,7 +11,7 @@
    [scdul : (Stream A)]))
 
 (define-type-alias RealTimeQueue (All (A) (RTQueue A)))
-(define empty (make-RTQueue null-stream null null-stream))
+(define empty (make-RTQueue empty-stream null empty-stream))
 
 
 (: empty? : (All (A) ((RTQueue A) -> Boolean)))

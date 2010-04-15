@@ -1,5 +1,11 @@
 #lang scribble/manual
 
+@(require scribble/eval)
+
+@(define evaluate (make-base-eval))
+@(evaluate '(require typed/scheme))
+@(evaluate '(require "../realtimedeque.ss"))
+
 @title{Real-Time Deque}
 
 Real-Time Deques eliminate the amortization by using two 
@@ -12,10 +18,8 @@ case running time of @bold{@italic{O(1)}} for the operations
 
 @subsection{deque}
 The function @scheme[deque] creates a Real-Time Deque with the given inputs. 
-For example,
-@schememod[
-typed-scheme
-(require "realtimedeque.ss")
+
+@examples[#:eval evaluate
 
 (deque 1 2 3 4 5 6)
 ]
@@ -29,111 +33,95 @@ An empty deque
 
 @subsection{empty?}
 The function @scheme[empty?] checks if the given deque is empty or not.
-For example,
-@schememod[
-typed-scheme
-(require "realtimedeque.ss")
 
-(define que (deque 1 2 3 4 5 6))
+@examples[#:eval evaluate
 
-(define mt empty)
+(empty? (deque 1 2 3 4 5 6))
+
+(empty? empty)
 ]
-
-In the above example, @scheme[(empty? que)] returns @scheme[#f] and 
-@scheme[(empty? mt)] returns @scheme[#t].
 
 
 @subsection{enqueue}
 the function @scheme[enqueue] takes an element and a deque and enqueues 
-the given element into the deque. Example
-@schememod[
-typed-scheme
-(require "realtimedeque.ss")
+the given element into the deque. 
+@examples[#:eval evaluate
 
-(define que (deque 1 2 3 4 5 6))
-
-(define new-queue (enqueue 10 que))
+(enqueue 10 (deque 1 2 3 4 5 6))
 ]
 
-In the above example, enqueue adds the element 10 to the deque que. 
-new-queue now contains 10 as its last element.
+In the above example, enqueue adds the element 10 to the  end of 
+@scheme[(deque 1 2 3 4 5 6)].
+
+
+@subsection{enqueue-front}
+the function @scheme[enqueue-front] takes an element and a deque and adds 
+the given element to the front of deque. 
+@examples[#:eval evaluate
+
+(enqueue-front 10 (deque 1 2 3 4 5 6))
+]
+
+In the above example, enqueue adds the element 10 to the front of 
+@scheme[(deque 1 2 3 4 5 6)] and returns @scheme[(deque 10 1 2 3 4 5 6)].
+
+
 
 @subsection{head}
 The function @scheme[head] takes a deque and gives the first element in the
-queue if deque is not empty else throws an error. Example
-@schememod[
-typed-scheme
-(require "realtimedeque.ss")
+queue if deque is not empty else throws an error. 
+@examples[#:eval evaluate
 
-(define que (deque 1 2 3 4 5 6))
-
-(head que)
+(head (deque 1 2 3 4 5 6))
+(head empty)
 ]
-
-In the above example, @scheme[(head que)], returns the first element in 
-@scheme[que] which happens to be 1.
 
 @subsection{last}
 The function @scheme[last] takes a deque and gives the last element in the
-queue if deque is not empty else throws an error. Example
-@schememod[
-typed-scheme
-(require "realtimedeque.ss")
+queue if deque is not empty else throws an error. 
+@examples[#:eval evaluate
 
-(define que (deque 1 2 3 4 5 6))
-
-(last que)
+(last (deque 1 2 3 4 5 6))
+(last empty)
 ]
 
-In the above example, @scheme[(last que)], returns the last element in 
-@scheme[que] which is 6.
 
 @subsection{tail}
 The function @scheme[tail] takes a deque and returns a deque with rest 
-elements if its a non empty deque else throws an error. Example
-@schememod[
-typed-scheme
-(require "realtimedeque.ss")
+elements if its a non empty deque else throws an error. 
+@examples[#:eval evaluate
 
-(define que (deque 1 2 3 4 5 6))
-
-(tail que)
+(tail (deque 1 2 3 4 5 6))
+(tail empty)
 ]
 
-In the above example, @scheme[(tail que)], removes the head of the given 
-deque 1 in the above example and returns the rest as is.
+In the above example, @scheme[(tail (deque 1 2 3 4 5 6))], removes the head
+of the given deque returns @scheme[(deque 2 3 4 5 6)].
 
 
 
 @subsection{init}
 The function @scheme[init] takes a deque and returns a deque without the 
-last element if its a non empty deque else throws an error. Example
-@schememod[
-typed-scheme
-(require "realtimedeque.ss")
+last element if its a non empty deque else throws an error. 
+@examples[#:eval evaluate
 
-(define que (deque 1 2 3 4 5 6))
-
-(tail que)
+(init (deque 1 2 3 4 5 6))
+(init empty)
 ]
 
-In the above example, @scheme[(init que)], removes the last element 6 of the 
-given deque and returns the rest of the deque as is.
+In the above example, @scheme[(init (deque 1 2 3 4 5 6))], removes the last 
+element 6 of the 
+given deque and returns @scheme[(deque 1 2 3 4 5)].
 
 
 @subsection{deque->list}
 The function @scheme[deque->list] takes a deque and returns a list of 
 elements. The list will have head of the given deque as its first element.
 If the given deque is empty, then it returns an empty list. 
-For Example
-@schememod[
-typed-scheme
-(require "realtimedeque.ss")
+
+@examples[#:eval evaluate
 
 (define que (deque 10 2 34 4 15 6))
 
 (deque->list que)
 ]
-
-In the above example, @scheme[(deque->list que)], returns the list 
-@scheme[(10 2 34 4 15 6)].

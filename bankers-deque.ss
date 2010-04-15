@@ -16,7 +16,7 @@
 (define inv-c 2)
 
 ;; Constants
-(define empty (make-Deque null-stream 0 null-stream 0))
+(define empty (make-Deque empty-stream 0 empty-stream 0))
 
 ;; Checks if the given deque is empty
 (: empty? : (All (A) ((Deque A) -> Boolean)))

@@ -1,5 +1,11 @@
 #lang scribble/manual
 
+@(require scribble/eval)
+
+@(define evaluate (make-base-eval))
+@(evaluate '(require typed/scheme))
+@(evaluate '(require "../catenablelist.ss"))
+
 @title{Catenable List}
 
 Catenable Lists are nothing but lists with efficient catenation. They use 
@@ -11,11 +17,9 @@ for the operations @italic{head, tail, kons, kons-rear}
 @section{Catenable List Constructor and Operations}
 
 @subsection{clist}
-The function clist creates a Catenable List with the given inputs. For 
-example,
-@schememod[
-typed-scheme
-(require "catenablelist.ss")
+The function clist creates a Catenable List with the given inputs. 
+  
+@examples[#:eval evaluate
 
 (clist 1 2 3 4 5 6)
 ]
@@ -28,91 +32,67 @@ A empty clist
 
 @subsection{empty?}
 The function @scheme[empty?] takes a Catenable List checks if the given clist is 
-empty. For example,
-@schememod[
-typed-scheme
-(require "catenablelist.ss")
+empty.   
+@examples[#:eval evaluate
 
-(define cal (clist 1 2 3 4 5 6))
+(empty? (clist 1 2 3 4 5 6))
+
+(empty? empty)
 
 ]
-
-In the above example, @scheme[(empty? cal)] returns @scheme[#f] and 
-@scheme[(empty? empty)] returns @scheme[#t].
-
 
 @subsection{kons}
 The function @scheme[kons] takes an element and a clist and adds the given
-element to the front the given clist. For example,
-@schememod[
-typed-scheme
-(require "catenablelist.ss")
+element to the front the given clist.   
+@examples[#:eval evaluate
 
-(define cal (clist 1 2 3 4 5 6))
-
-(kons 10 cal)
+(kons 10 (clist 1 2 3 4 5 6))
 ]
 
-In the above example, @scheme[(kons 10 cal)] returns 
+In the above example, @scheme[(kons 10 (clist 1 2 3 4 5 6))] returns 
 @scheme[(clist 10 1 2 3 4 5 6)].
 
 
 @subsection{kons-rear}
 The function @scheme[kons-rear] takes an element and a clist and adds the 
-given element to the rear end the given clist. For example,
-@schememod[
-typed-scheme
-(require "catenablelist.ss")
+given element to the rear end the given clist.   
+@examples[#:eval evaluate
 
-(define cal (clist 1 2 3 4 5 6))
-
-(kons-rear 10 cal)
+(kons-rear 10 (clist 1 2 3 4 5 6))
 ]
 
-In the above example, @scheme[(kons 10 cal)] returns 
+In the above example, @scheme[(kons-rear 10 (clist 1 2 3 4 5 6))] returns 
 @scheme[(clist 1 2 3 4 5 6 10)].
 
 @subsection{head}
 The function @scheme[head] takes a clist and returns the first element
-of the given clist. For example,
-@schememod[
-typed-scheme
-(require "catenablelist.ss")
+of the given clist.   
+@examples[#:eval evaluate
 
-(define cal (clist 1 2 3 4 5 6))
-
-(head cal)
+(head (clist 1 2 3 4 5 6))
+(head empty)
 ]
-
-In the above example, @scheme[(head cal)] returns 1, the first element
-of the the given clist.
 
 
 @subsection{tail}
 The function @scheme[tail] takes a clist and returns a clist without 
-the first element of the given clist. For example,
-@schememod[
-typed-scheme
-(require "catenablelist.ss")
+the first element of the given clist.   
+@examples[#:eval evaluate
 
-(define cal (clist 1 2 3 4 5 6))
-
-(tail cal)
+(tail (clist 1 2 3 4 5 6))
+(tail empty)
 ]
 
-In the above example, @scheme[(tail cal)] returns the rest of the given 
-clist, @scheme[(clist 2 3 4 5 6)].
-
+In the above example, @scheme[(tail (clist 1 2 3 4 5 6))] returns the rest of
+the given clist, @scheme[(clist 2 3 4 5 6)].
 
 
 @subsection{append}
 The function @scheme[append] takes two clists and appends the second clist 
 to the end of the first clist.
 
-For example,
-@schememod[
-typed-scheme
-(require "catenablelist.ss")
+  
+@examples[#:eval evaluate
 
 (define cal1 (clist 1 2 3 4 5 6))
 (define cal2 (clist 7 8 9 10))
@@ -126,10 +106,8 @@ In the above example, @scheme[(append cal1 cal2)] returns
 
 @subsection{clist->list}
 The function @scheme[clist->list] takes a clist and returns a list
-of elements which are in the same order as in the clist. For example,
-@schememod[
-typed-scheme
-(require "catenablelist.ss")
+of elements which are in the same order as in the clist.   
+@examples[#:eval evaluate
 
 (define cal (clist 1 2 3 4 5 6))
 

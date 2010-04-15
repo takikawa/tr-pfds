@@ -15,8 +15,8 @@
 
 (define inv-c 2)
 
-(define empty (make-RTDeque null-stream 0 null-stream
-                            null-stream 0 null-stream))
+(define empty (make-RTDeque empty-stream 0 empty-stream
+                            empty-stream 0 empty-stream))
 
 
 (: empty? : (All (A) ((RTDeque A) -> Boolean)))
@@ -27,7 +27,7 @@
 (: exec-one : (All (A) ((Stream A) -> (Stream A))))
 (define (exec-one strem)
   (if (empty-stream? strem)
-      null-stream
+      empty-stream
       (stream-cdr strem)))
 
 
@@ -54,7 +54,7 @@
 (: rotate-drop : (All (A) ((Stream A) Integer (Stream A) -> (Stream A))))
 (define (rotate-drop frnt num rer)
   (if (< num inv-c)
-      (rotate-rev frnt (drop num rer) null-stream)
+      (rotate-rev frnt (drop num rer) empty-stream)
       (stream-cons (stream-car frnt) 
                    (rotate-drop (stream-cdr frnt) 
                                 (- num inv-c) 

@@ -15,7 +15,7 @@
 
 ;; Constants
 (define ZERO 0)
-(define empty (make-Queue null-stream ZERO null-stream ZERO))
+(define empty (make-Queue empty-stream ZERO empty-stream ZERO))
 
 ;; Checks if the given queue is empty
 (: empty? : (All (A) ((Queue A) -> Boolean)))
@@ -31,7 +31,7 @@
       (make-Queue front lenf rear lenr)
       (make-Queue (stream-append front (stream-reverse rear))
                   (+ lenf lenr)
-                  null-stream ZERO)))
+                  empty-stream ZERO)))
 
 ;; Pushes an element into the queue
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))

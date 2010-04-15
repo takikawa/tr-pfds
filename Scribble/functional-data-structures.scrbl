@@ -33,12 +33,12 @@ And the data structures have been entirely implemented in Typed Scheme.
 @include-section{redblacktrees.scrbl}
 
 
-@subsection[#:tag "Hash List"]{VHash List}
-A Hash List is a modified VList. Along with data it maintains a hash table.
-Hence each time the hash-list grows, both the data area and the hash table
-grow by the same factor. The data structure has been described in the 
-paper @italic{Fast Functional Lists, Hash-Lists, Deques and 
-              Variable Length Arrays} by  Phil Bagwell.
-
-@subsection[#:tag "Unbalanced Set"]{Unbalanced Set}
-@subsection[#:tag "Tries"]{Tries}
+@;@subsection[#:tag "Hash List"]{VHash List}
+@;A Hash List is a modified VList. Along with data it maintains a hash table.
+@;Hence each time the hash-list grows, both the data area and the hash table
+@;grow by the same factor. The data structure has been described in the 
+@;paper @italic{Fast Functional Lists, Hash-Lists, Deques and 
+@;              Variable Length Arrays} by  Phil Bagwell.
+@;
+@;@subsection[#:tag "Unbalanced Set"]{Unbalanced Set}
+@;@subsection[#:tag "Tries"]{Tries}

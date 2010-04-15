@@ -1,5 +1,11 @@
 #lang scribble/manual
 
+@(require scribble/eval)
+
+@(define evaluate (make-base-eval))
+@(evaluate '(require typed/scheme))
+@(evaluate '(require "../stream.ss"))
+
 @title[#:tag "streams"]{Streams}
 
 Streams are nothing but lazy lists. They are similar to ordinary
@@ -13,11 +19,9 @@ only when there is a good enough reason to do so.
 @section{Stream Constructor and Operations}
 
 @subsection{stream}
-The function stream creates a Stream with the given inputs. For 
-example,
-@schememod[
-typed-scheme
-(require "stream.ss")
+The function stream creates a Stream with the given inputs. 
+
+@examples[#:eval evaluate
 
 (stream 1 2 3 4 5 6)
 ]
@@ -25,67 +29,50 @@ typed-scheme
 In the above example, the stream obtained will be similar to lists but will
 lazy in nature. It will have 1 as its first element.
 
-@subsection{empty}
+@subsection{empty-stream}
 A empty stream
 
-@subsection{empty?}
-The function @scheme[empty?] takes a Stream checks if the given stream is 
-empty. For example,
-@schememod[
-typed-scheme
-(require "stream.ss")
+@subsection{empty-stream?}
+The function @scheme[empty-stream?] takes a Stream checks if the given stream is 
+empty. 
+@examples[#:eval evaluate
 
-(define strm (stream 1 2 3 4 5 6))
+(empty-stream? (stream 1 2 3 4 5 6))
+(empty-stream? empty-stream)
 
 ]
-
-In the above example, @scheme[(empty? strm)] returns @scheme[#f] and 
-@scheme[(empty? empty)] returns @scheme[#t].
 
 
 @subsection{stream-cons}
 The function @scheme[stream-cons] takes an element and a stream and adds 
-the given element to the given stream. For example,
-@schememod[
-typed-scheme
-(require "stream.ss")
+the given element to the given stream. 
+@examples[#:eval evaluate
 
-(define strm (stream 1 2 3 4 5 6))
-
-(stream-cons 10 strm)
+(stream-cons 10 (stream 1 2 3 4 5 6))
 ]
 
-In the above example, @scheme[(stream-cons 10 strm)] returns the stream 
-@scheme[(stream 1 2 3 4 5 6)].
+In the above example, @scheme[(stream-cons 10 (stream 1 2 3 4 5 6))] 
+returns the stream @scheme[(stream 10 1 2 3 4 5 6)].
 
 
 @subsection{stream-car}
 The function @scheme[stream-car] takes a stream and returns the first element
 of the given stream. If the given stream is empty, then it throws an error.
-For example,
-@schememod[
-typed-scheme
-(require "stream.ss")
 
-(define strm (stream 1 2 3 4 5 6))
+@examples[#:eval evaluate
 
-(stream-car strm)
+(stream-car (stream 1 2 3 4 5 6))
+(stream-car empty-stream)
 ]
-
-In the above example, @scheme[(stream-car strm)] returns 1, the first element
-of the the given stream.
 
 
 @subsection{stream-cdr}
 The function @scheme[stream-cdr] takes a stream and returns the same stream 
-but without the first element of the given stream. For example,
-@schememod[
-typed-scheme
-(require "stream.ss")
+but without the first element of the given stream. 
+@examples[#:eval evaluate
 
-(define strm (stream 1 2 3 4 5 6))
-
-(stream-cdr strm)
+(stream-cdr (stream 1 2 3 4 5 6))
+(stream-cdr empty-stream)
 ]
 
 In the above example, @scheme[(stream-cdr strm)] returns 
@@ -95,10 +82,8 @@ In the above example, @scheme[(stream-cdr strm)] returns
 @subsection{stream-append}
 The function @scheme[stream-append] takes two streams and creates a new 
 stream by appending the second stream to the end of first stream. 
-For example,
-@schememod[
-typed-scheme
-(require "stream.ss")
+
+@examples[#:eval evaluate
 
 (define strm1 (stream 1 2 3 4 5 6))
 
@@ -113,34 +98,24 @@ In the above example, @scheme[(stream-append strm1 strm2)] returns the stream,
 
 @subsection{stream-reverse}
 The function @scheme[stream-reverse] takes a streams and gives a reversed
-stream back. For example,
-@schememod[
-typed-scheme
-(require "stream.ss")
+stream back. 
+@examples[#:eval evaluate
 
-(define strm (stream 1 2 3 4 5 6))
-
-(stream-reverse strm)
+(stream-reverse (stream 1 2 3 4 5 6))
 ]
 
-In the above example, @scheme[(stream-reverse strm)] returns the stream,
+In the above example, @scheme[(stream-reverse (stream 1 2 3 4 5 6))] returns
 @scheme[(stream 6 5 4 3 2 1)].
 
 
 @subsection{stream->list}
 The function @scheme[stream->list] takes a stream and returns a list
-of elements which are in the same order as in the stream. For example,
-@schememod[
-typed-scheme
-(require "stream.ss")
+of elements which are in the same order as in the stream. 
+@examples[#:eval evaluate
 
-(define strm (stream 1 2 3 4 5 6))
-
-(stream->list strm)
+(stream->list (stream 1 2 3 4 5 6))
+(stream->list empty-stream)
 ]
-
-In the above example, @scheme[(stream->list strm)] returns the list,
-@scheme[(list 1 2 3 4 5 6)].
 
 
 @subsection{drop}
@@ -148,17 +123,14 @@ The function @scheme[drop] takes an integer(say n) and a stream and creates a
 new stream which is same as the given stream but without the first n elements
 of the input stream. If the number of elements in the given stream is less 
 than n, then @scheme[drop] throws an error.
-For example,
-@schememod[
-typed-scheme
-(require "stream.ss")
 
-(define strm (stream 1 2 3 4 5 6))
+@examples[#:eval evaluate
 
-(drop 3 strm)
+(drop 3 (stream 1 2 3 4 5 6))
+(drop 10 (stream 1 2 3 4 5 6))
 ]
 
-In the above example, @scheme[(drop 3 strm)] returns the stream,
+In the above example, @scheme[(drop 3 (stream 1 2 3 4 5 6))] returns 
 @scheme[(stream 4 5 6)].
 
 
@@ -167,15 +139,15 @@ In the above example, @scheme[(drop 3 strm)] returns the stream,
 The function @scheme[take] takes an integer(say n) and a stream and creates a
 new stream with the first n elements of the input stream. If the number of 
 elements in the given stream is less than n, then @scheme[take] throws an 
-error. For example,
-@schememod[
-typed-scheme
-(require "stream.ss")
+error. 
+@margin-note{@scheme[(take 5 (stream 1))] does not
+throw any error because @scheme[take] returns a suspension rather than 
+finishing the whole computation.}
+@examples[#:eval evaluate
 
-(define strm (stream 1 2 3 4 5 6))
-
-(take 3 strm)
+(take 3 (stream 1 2 3 4 5 6))
+(take 5 (stream 1))
 ]
 
-In the above example, @scheme[(take 3 strm)] returns the stream,
+In the above example, @scheme[(take 3 (stream 1 2 3 4 5 6))] returns
 @scheme[(stream 1 2 3)].

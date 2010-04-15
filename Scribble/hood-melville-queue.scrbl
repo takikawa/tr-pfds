@@ -1,5 +1,8 @@
 #lang scribble/manual
-
+@(require scribble/eval)
+@(define evaluate (make-base-eval))
+@(evaluate '(require typed/scheme))
+@(evaluate '(require "../hood-melville-queue.ss"))
 @title{Hood-Melville Queue}
 
 Similar to Real-Time Queues in many ways. But the implementation is
@@ -12,16 +15,13 @@ running time of @bold{@italic{O(1)}} for the operations
 
 @subsection{queue}
 The function @scheme[queue] creates a Hood-Melville with the 
-given inputs. For example,
-@schememod[
-typed-scheme
-(require "hood-melville-queue.ss")
+given inputs. 
+@examples[#:eval evaluate
 
 (queue 1 2 3 4 5 6)
 ]
 
-In the above example, the queue obtained will have 1 as its head element,
-2 as the head of its tail and so on.
+In the above example, the queue obtained will have 1 as its head element.
 
 
 @subsection{empty}
@@ -29,79 +29,56 @@ An empty queue
 
 @subsection{empty?}
 The function @scheme[empty?] checks if the given queue is empty or not.
-For example,
-@schememod[
-typed-scheme
-(require "hood-melville-queue.ss")
 
-(define que (queue 1 2 3 4 5 6))
+@examples[#:eval evaluate
 
-(define mt empty)
+(empty? (queue 1 2 3 4 5 6))
+
+(empty? empty)
 ]
-
-In the above example, @scheme[(empty? que)] returns @scheme[#f] and 
-@scheme[(empty? mt)] returns @scheme[#t].
-
 
 @subsection{enqueue}
 the function @scheme[enqueue] takes an element and a queue and enqueues 
-the given element into the queue. Example
-@schememod[
-typed-scheme
-(require "hood-melville-queue.ss")
+the given element into the queue. 
+@examples[#:eval evaluate
 
-(define que (queue 1 2 3 4 5 6))
-
-(define new-queue (enqueue 10 que))
+(enqueue 10 (queue 1 2 3 4 5 6))
 ]
 
-In the above example, enqueue adds the element 10 to the queue que. 
-new-queue now contains 10 as its last element.
+In the above example, enqueue adds the element 10 to
+@scheme[(queue 1 2 3 4 5 6)].
 
 @subsection{head}
 The function @scheme[head] takes a queue and gives the first element in the
-queue if queue is not empty else throws an error. Example
-@schememod[
-typed-scheme
-(require "hood-melville-queue.ss")
+queue if queue is not empty else throws an error. 
+@examples[#:eval evaluate
 
-(define que (queue 1 2 3 4 5 6))
-
-(head que)
+(head (queue 1 2 3 4 5 6))
+(head empty)
 ]
-
-In the above example, @scheme[(head que)], returns the first element in 
-@scheme[que] which happens to be 1.
 
 @subsection{tail}
 The function @scheme[tail] takes a queue and returns a queue with rest 
-elements if its a non empty queue else throws an error. Example
-@schememod[
-typed-scheme
-(require "hood-melville-queue.ss")
+elements if its a non empty queue else throws an error. 
+@examples[#:eval evaluate
 
-(define que (queue 1 2 3 4 5 6))
+(tail (queue 1 2 3 4 5 6))
 
-(tail que)
+(tail empty)
 ]
 
-In the above example, @scheme[(tail que)], returns a queue which has 2
-as its new head.
+In the above example, @scheme[(tail (queue 1 2 3 4 5 6))], returns the 
+@scheme[(queue 1 2 3 4 5 6)].
 
 
 @subsection{queue->list}
 The function @scheme[queue->list] takes a queue and returns a list of 
 elements. The list will have head of the given queue as its first element.
 If the given queue is empty, then it returns an empty list. 
-For Example
-@schememod[
-typed-scheme
-(require "hood-melville-queue.ss")
+For 
+@examples[#:eval evaluate
 
 (define que (queue 10 2 34 4 15 6))
 
 (queue->list que)
 ]
-
-In the above example, @scheme[(queue->list que)], returns the list 
-@scheme[(10 2 34 4 15 6)].

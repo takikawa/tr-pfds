@@ -2,7 +2,7 @@
 
 (require scheme/promise)
 
-(provide empty? empty stream-cons stream-car
+(provide empty-stream? empty-stream stream-cons stream-car
          stream-cdr stream-append stream-reverse stream
          stream->list drop take Stream)
 
@@ -15,14 +15,14 @@
 
 (define-type-alias (Stream A) (Promise (StreamCell A)))
 
-(define empty (delay (make-Mt)))
+(define empty-stream (delay (make-Mt)))
 
 (: force-stream : (All (A) ((Stream A) -> (StreamCell A))))
 (define (force-stream strem)
   (force strem))
 
-(: empty? : (All (A) ((Stream A) -> Boolean)))
-(define (empty? strem)
+(: empty-stream? : (All (A) ((Stream A) -> Boolean)))
+(define (empty-stream? strem)
   (Mt? (force strem)))
 
 (: stream-cons : (All (A) (A (Stream A) -> (Stream A))))
@@ -56,7 +56,7 @@
 (: take : (All (A) (Integer (Stream A) -> (Stream A))))
 (define (take num in-strem)
   (if (zero? num)
-      empty
+      empty-stream
       (let ([forced (force in-strem)])
         (if (Mt? forced)
             (error "Not enough elements to take :" 'take)
@@ -86,7 +86,7 @@
           accum
           (rev (InStream-rst forcd)
                (delay (make-InStream (InStream-fst forcd) accum))))))
-  (rev strem empty))
+  (rev strem empty-stream))
 
 (: stream->list : (All (A) ((Stream A) -> (Listof A))))
 (define (stream->list strem)
@@ -98,4 +98,4 @@
 
 (: stream : (All (A) (A * -> (Stream A))))
 (define (stream . elems)
-  (foldr (inst stream-cons A) empty elems))
+  (foldr (inst stream-cons A) empty-stream elems))

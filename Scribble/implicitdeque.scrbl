@@ -1,5 +1,11 @@
 #lang scribble/manual
 
+@(require scribble/eval)
+
+@(define evaluate (make-base-eval))
+@(evaluate '(require typed/scheme))
+@(evaluate '(require "../implicitdeque.ss"))
+
 @title{Implicit Deque}
 
 Deques obtained by applying @italic{Implicit Recursive Slowdown}. 
@@ -14,10 +20,8 @@ laziness and technique called Recursive Slow-Down developed by
 
 @subsection{deque}
 The function @scheme[deque] creates a Implicit Deque with the given inputs. 
-For example,
-@schememod[
-typed-scheme
-(require "implicitdeque.ss")
+
+@examples[#:eval evaluate
 
 (deque 1 2 3 4 5 6)
 ]
@@ -31,111 +35,79 @@ An empty deque
 
 @subsection{empty?}
 The function @scheme[empty?] checks if the given deque is empty or not.
-For example,
-@schememod[
-typed-scheme
-(require "implicitdeque.ss")
 
-(define que (deque 1 2 3 4 5 6))
+@examples[#:eval evaluate
 
-(define mt empty)
+(empty? (deque 1 2 3 4 5 6))
+
+(empty? empty)
 ]
-
-In the above example, @scheme[(empty? que)] returns @scheme[#f] and 
-@scheme[(empty? mt)] returns @scheme[#t].
 
 
 @subsection{enqueue}
 the function @scheme[enqueue] takes an element and a deque and enqueues 
-the given element into the deque. Example
-@schememod[
-typed-scheme
-(require "implicitdeque.ss")
+the given element into the deque. 
+@examples[#:eval evaluate
 
-(define que (deque 1 2 3 4 5 6))
-
-(define new-queue (enqueue 10 que))
+(enqueue 10 (deque 1 2 3 4 5 6))
 ]
 
-In the above example, enqueue adds the element 10 to the deque que. 
-new-queue now contains 10 as its last element.
+In the above example, enqueue adds the element 10 to 
+@scheme[(deque 1 2 3 4 5 6 10)].
 
 @subsection{head}
 The function @scheme[head] takes a deque and gives the first element in the
-queue if deque is not empty else throws an error. Example
-@schememod[
-typed-scheme
-(require "implicitdeque.ss")
+queue if deque is not empty else throws an error. 
+@examples[#:eval evaluate
 
-(define que (deque 1 2 3 4 5 6))
-
-(head que)
+(head (deque 1 2 3 4 5 6))
+(head empty)
 ]
-
-In the above example, @scheme[(head que)], returns the first element in 
-@scheme[que] which happens to be 1.
 
 @subsection{last}
 The function @scheme[last] takes a deque and gives the last element in the
-queue if deque is not empty else throws an error. Example
-@schememod[
-typed-scheme
-(require "implicitdeque.ss")
+queue if deque is not empty else throws an error. 
+@examples[#:eval evaluate
 
-(define que (deque 1 2 3 4 5 6))
+(last (deque 1 2 3 4 5 6))
 
-(last que)
+(last empty)
 ]
-
-In the above example, @scheme[(last que)], returns the last element in 
-@scheme[que] which is 6.
 
 @subsection{tail}
 The function @scheme[tail] takes a deque and returns a deque with rest 
-elements if its a non empty deque else throws an error. Example
-@schememod[
-typed-scheme
-(require "implicitdeque.ss")
+elements if its a non empty deque else throws an error. 
+@examples[#:eval evaluate
 
-(define que (deque 1 2 3 4 5 6))
-
-(tail que)
+(tail (deque 1 2 3 4 5 6))
+(tail empty)
 ]
 
-In the above example, @scheme[(tail que)], removes the head of the given 
-deque 1 in the above example and returns the rest as is.
-
+In the above example, @scheme[(tail (deque 1 2 3 4 5 6))], removes 1 
+and returns @scheme[(tail (deque 2 3 4 5 6))].
 
 
 @subsection{init}
 The function @scheme[init] takes a deque and returns a deque without the 
-last element if its a non empty deque else throws an error. Example
-@schememod[
-typed-scheme
-(require "implicitdeque.ss")
+last element if its a non empty deque else throws an error. 
+@examples[#:eval evaluate
 
-(define que (deque 1 2 3 4 5 6))
+(init (deque 1 2 3 4 5 6))
 
-(tail que)
+(init empty)
 ]
 
-In the above example, @scheme[(init que)], removes the last element 6 of the 
-given deque and returns the rest of the deque as is.
-
+In the above example, @scheme[(init (deque 1 2 3 4 5 6))], removes the 
+last element 6 and returns @scheme[(deque 1 2 3 4 5)]
 
 @subsection{deque->list}
 The function @scheme[deque->list] takes a deque and returns a list of 
 elements. The list will have head of the given deque as its first element.
 If the given deque is empty, then it returns an empty list. 
-For Example
-@schememod[
-typed-scheme
-(require "implicitdeque.ss")
+
+@examples[#:eval evaluate
 
 (define que (deque 10 2 34 4 15 6))
 
 (deque->list que)
 ]
-
-In the above example, @scheme[(deque->list que)], returns the list 
-@scheme[(10 2 34 4 15 6)].

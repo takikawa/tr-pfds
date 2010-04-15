@@ -2,17 +2,17 @@
 (require "../stream.ss")
 (require typed/test-engine/scheme-tests)
 
-(check-expect (empty? empty) #t)
-(check-expect (empty? (stream 1)) #f)
-(check-expect (empty? (stream 1 2 3)) #f)
+(check-expect (empty-stream? empty-stream) #t)
+(check-expect (empty-stream? (stream 1)) #f)
+(check-expect (empty-stream? (stream 1 2 3)) #f)
 
 (check-expect (stream-car (stream 1)) 1)
 (check-expect (stream-car (stream 2 3 1)) 2)
-(check-error (stream-car empty) "Stream is empty : stream-car")
+(check-error (stream-car empty-stream) "Stream is empty : stream-car")
 
 (check-expect (stream->list (stream-cdr (stream 1))) null)
 (check-expect (stream->list (stream-cdr (stream 2 3 1))) (list 3 1))
-(check-error (stream-cdr empty) "Stream is empty : stream-cdr")
+(check-error (stream-cdr empty-stream) "Stream is empty : stream-cdr")
 
 (define lst1 (build-list 100 (λ: ([x : Integer]) x)))
 (define lst2 (build-list 100 (λ: ([x : Integer]) (+ x 100))))
