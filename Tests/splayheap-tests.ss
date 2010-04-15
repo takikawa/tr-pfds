@@ -68,5 +68,7 @@
 
 (check-expect (sorted-list (apply splayheap gt int-list))
               (reverse int-list))
+(check-expect (empty? (splayheap gt 1 2 3 4)) #f)
 
+(check-expect (empty? (splayheap gt)) #t)
 (test)
