@@ -60,9 +60,9 @@
         (phelp-rgt right)
         (phelp-lft left))))
 
-(: empty? : (All (A) ((Heap A) -> Boolean)))
+(: empty? : (All (A) ((SplayHeap A) -> Boolean)))
 (define (empty? heap)
-  (Mt? heap))
+  (Mt? (SplayHeap-heap heap)))
 
 (: insert : (All (A) (A (SplayHeap A) -> (SplayHeap A))))
 (define (insert elem sheap)

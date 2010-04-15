@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide empty empty? enqueue enqueue-rear init 
+(provide empty empty? enqueue enqueue-front init 
          last head tail deque deque->list)
 
 (require "stream.ss")
@@ -110,8 +110,8 @@
 
 
 ;; Pushes an element into the RTDeque at the rear end
-(: enqueue-rear : (All (A) (A (RTDeque A) -> (RTDeque A))))
-(define (enqueue-rear elem rtdq)
+(: enqueue-front : (All (A) (A (RTDeque A) -> (RTDeque A))))
+(define (enqueue-front elem rtdq)
   (internal-RTDeque (RTDeque-front rtdq)
                     (RTDeque-lenf rtdq)
                     (exec-one (RTDeque-scdulF rtdq))
