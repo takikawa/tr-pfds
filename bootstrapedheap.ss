@@ -67,7 +67,7 @@
 (define (find-min/max bsheap)
   (let ([heap (BSHeap-heap bsheap)])
     (if (Mt? heap)
-        (error "Heap is empty :" 'find-min/max)
+        (error 'find-min/max "Given heap is empty")
         (Heap-elem heap))))
 
 (: delete-min/max : (All (A) ((BSHeap A) -> (BSHeap A))))
@@ -75,7 +75,7 @@
   (let ([heap (BSHeap-heap bsheap)]
         [func (BSHeap-comparer bsheap)])
     (if (Mt? heap)
-        (error "Heap is empty :" 'delete-min/max)
+        (error 'delete-min/max "Given heap is empty")
         (let ([bheap (Heap-heap heap)])
           (if (bh:empty? bheap)
               ((inst make-BSHeap A) func (ann (make-Mt) (Heaps A)))

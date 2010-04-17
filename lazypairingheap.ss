@@ -1,6 +1,7 @@
 #lang typed-scheme
 
-(provide pairingheap merge insert find-min/max delete-min/max sorted-list empty?)
+(provide pairingheap merge insert find-min/max
+         delete-min/max sorted-list empty?)
 
 (require scheme/promise
          scheme/match)
@@ -58,7 +59,7 @@
 (define (find-min/max pheap)
   (let ([heap (PairingHeap-heap pheap)])
     (if (Mt? heap)
-        (error "Heap is empty :" 'find-min/max)
+        (error 'find-min/max "Given heap is empty")
         (Heap-elem heap))))
 
 (: delete-min/max : (All (A) ((PairingHeap A) -> (PairingHeap A))))
@@ -66,7 +67,7 @@
   (let ([heap (PairingHeap-heap pheap)]
         [func (PairingHeap-comparer pheap)])
     (if (Mt? heap)
-        (error "Heap is empty :" 'delete-min/max)
+        (error 'delete-min/max "Given heap is empty")
         (make-PairingHeap func (merge-help (Heap-heap heap) 
                                            (force (Heap-lazy heap)) 
                                            func)))))

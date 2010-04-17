@@ -51,13 +51,13 @@
 (: head : (All (A) ((CatenableList A) -> A)))
 (define (head cat)
   (if (EmptyList? cat)
-      (error "List is empty :" 'head)
+      (error 'head "Given list is empty")
       (List-elem cat)))
 
 (: tail : (All (A) ((CatenableList A) -> (CatenableList A))))
 (define (tail cat)
   (if (EmptyList? cat) 
-      (error "List is empty :" 'tail)
+      (error 'tail "Given list is empty")
       (tail-helper cat)))
 
 (: tail-helper : (All (A) ((List A) -> (CatenableList A))))

@@ -34,10 +34,11 @@
 (check-expect (empty? (delete-root (redblacktree < 1))) #t)
 (check-expect (empty? (redblacktree < 1)) #f)
 
-(check-error (root (delete-root (redblacktree < 1))) "Given tree is empty : root")
+(check-error (root (delete-root (redblacktree < 1)))
+             "root: Given tree is empty")
 (check-error (delete 1 (delete-root (redblacktree < 1))) 
-             "Given key not found in the Tree : delete")
+             "delete: Given key not found in the tree")
 
 (check-error (delete-root (delete-root (redblacktree < 1))) 
-             "Given tree is empty : delete-root")
+             "delete-root: Given tree is empty")
 (test)

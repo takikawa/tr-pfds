@@ -23,9 +23,9 @@
 (check-expect (ralist->list (drop (ralist 1 2 3 4 5 6 7) 0))
               (list 1 2 3 4 5 6 7))
 (check-error (drop (ralist 1 2 3 4 5 6 7) 8) 
-             "Index out of bound : drop")
+             "drop: Not enough elements to drop")
 (check-error (drop (ralist 1 2 3 4 5 6 7) -1) 
-             "Index out of bound : drop")
+             "drop: Not enough elements to drop")
 
 (check-expect (ralist->list (update 2 (ralist 1 2 3 4 5 6 7) 1234))
               (list 1 2 1234 4 5 6 7))
@@ -34,10 +34,10 @@
               (list 1234 2 3 4 5 6 7))
 
 (check-error (update -2 (ralist 1 2 3 4 5 6 7) 1234)
-             "Index out of bound : update")
+             "update: Given index out of bound")
 
 (check-error (update 20 (ralist 1 2 3 4 5 6 7) 1234)
-             "Index out of bound : update")
+             "update: Given index out of bound")
 
 (define lst (build-list 100 (λ(x) x)))
 (check-expect (ralist->list (apply ralist lst)) lst)

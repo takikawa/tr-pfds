@@ -7,21 +7,21 @@
 
 (check-expect (head (deque 1 2 3)) 1)
 (check-expect (head (deque 5 6 2 3)) 5)
-(check-error (head empty) "Deque is empty : head")
+(check-error (head empty) "head: Given deque is empty")
 
 (check-expect (last (deque 1 2 3)) 3)
 (check-expect (last (deque 5 6 2 8)) 8)
-(check-error (last empty) "Deque is empty : last")
+(check-error (last empty) "last: Given deque is empty")
 
 (check-expect (deque->list (tail (deque 1 2 3))) (list 2 3))
 (check-expect (deque->list (tail (deque 1 2 3 5 7 8))) 
               (list 2 3 5 7 8))
-(check-error (tail empty) "Deque is empty : tail")
+(check-error (tail empty) "tail: Given deque is empty")
 
 (check-expect (deque->list (init (deque 1 2 3))) (list 1 2))
 (check-expect (deque->list (init (deque 1 2 3 5 7 8))) 
               (list 1 2 3 5 7))
-(check-error (init empty) "Deque is empty : init")
+(check-error (init empty) "init: Given deque is empty")
 
 (check-expect (deque->list (enqueue 1 empty)) (list 1))
 (check-expect (deque->list (enqueue 4 (deque 1 2))) (list 1 2 4))

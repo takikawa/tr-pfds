@@ -75,7 +75,7 @@
   (let ([heap (LeftistHeap-heap lheap)]
         [comparer (LeftistHeap-comparer lheap)])
     (if (Mt? heap)
-        (error "Heap is empty :" 'find-min/max)
+        (error 'find-min/max "Given heap is empty")
         (Tree-elem heap))))
 
 (: delete-min/max : (All (A) ((LeftistHeap A) -> (LeftistHeap A))))
@@ -83,7 +83,7 @@
   (let ([heap (LeftistHeap-heap lheap)]
         [comparer (LeftistHeap-comparer lheap)])
     (if (Mt? heap)
-        (error "Heap is empty :" 'delete-min/max)
+        (error 'delete-min/max "Given heap is empty")
         (make-LeftistHeap comparer
                           (in-merge (Tree-left heap) 
                                     (Tree-right heap) 

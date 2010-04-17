@@ -33,7 +33,7 @@
 (define (stream-car strem)
   (let ([instr (force strem)])
     (if (Mt? instr)
-        (error "Stream is empty :" 'stream-car)
+        (error 'stream-car "Given stream is empty")
         (InStream-fst instr))))
 
 
@@ -41,7 +41,7 @@
 (define (stream-cdr strem)
   (let ([instr (force strem)])
     (if (Mt? instr)
-        (error "Stream is empty :" 'stream-cdr)  
+        (error 'stream-cdr "Given stream is empty")
         (InStream-rst instr))))
 
 (: drop : (All (A) (Integer (Stream A) -> (Stream A))))
@@ -50,7 +50,7 @@
       strem
       (let ([instr (force strem)]) 
         (if (Mt? instr) 
-            (error "Not enough elements to drop :" 'drop)
+            (error 'drop "Not enough elements to drop")
             (drop (sub1 num) (InStream-rst instr))))))
 
 (: take : (All (A) (Integer (Stream A) -> (Stream A))))
@@ -59,7 +59,7 @@
       empty-stream
       (let ([forced (force in-strem)])
         (if (Mt? forced)
-            (error "Not enough elements to take :" 'take)
+            (error 'take "Not enough elements to take")
             (delay (make-InStream (InStream-fst forced)
                                   (take (sub1 num) (InStream-rst forced))))))))
 

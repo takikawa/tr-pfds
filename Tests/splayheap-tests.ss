@@ -19,7 +19,7 @@
 (check-expect (find-min/max (splayheap less-than? 1 2 3 0)) 0)
 (check-expect (find-min/max (splayheap less-than? 1 2 -3 4)) -3)
 (check-error (find-min/max (delete-min/max (splayheap less-than? 1))) 
-             "Heap is empty : find-min")
+             "find-min/max: Given heap is empty")
 
 (check-expect (sorted-list (delete-min/max (splayheap less-than? 1 2 3 4)))
               (list 2 3 4))
@@ -28,7 +28,7 @@
 (check-expect (sorted-list (delete-min/max (splayheap less-than? 1 2 -3 4)))
               (list 1 2 4))
 (check-error (delete-min/max (delete-min/max (splayheap less-than? 1))) 
-             "Heap is empty : delete-min")
+             "delete-min/max: Given heap is empty")
 
 (check-expect (sorted-list (delete-min/max (splayheap less-than? 1))) (list))
 (check-expect (sorted-list (delete-min/max (splayheap less-than? 1 -2 -3 -4))) 

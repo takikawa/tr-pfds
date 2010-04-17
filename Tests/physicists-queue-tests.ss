@@ -8,13 +8,13 @@
 
 (check-expect (head (queue 1)) 1)
 (check-expect (head (queue 4 1 2)) 4)
-(check-error (head (list->queue (list))) "Queue is empty : head")
+(check-error (head (list->queue (list))) "head: Given queue is empty")
 
 (check-expect (queue->list (tail (queue 1))) null)
 (check-expect (queue->list (tail (queue 4 1 2))) (list 1 2))
 (check-expect (queue->list (tail (queue 4 1 2 10 15 23 -10))) 
               (list 1 2 10 15 23 -10))
-(check-error (tail (list->queue (list))) "Queue is empty : tail")
+(check-error (tail (list->queue (list))) "tail: Given queue is empty")
 
 
 (check-expect (queue->list (enqueue 1 empty)) (list 1))

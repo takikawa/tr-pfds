@@ -94,7 +94,7 @@
   (let ([heap (SplayHeap-heap sheap)]
         [func (SplayHeap-comparer sheap)])
     (match heap
-      [(struct Mt ()) (error "Heap is empty :" 'find-min)]
+      [(struct Mt ()) (error 'find-min/max "Given heap is empty")]
       [(struct Tree ((struct Mt ()) elem b)) elem]
       [(struct Tree (a elem b)) (find-min/max (make-SplayHeap func a))])))
 
@@ -103,7 +103,7 @@
   (let ([heap (SplayHeap-heap sheap)]
         [func (SplayHeap-comparer sheap)])
     (match heap
-      [(struct Mt ()) (error "Heap is empty :" 'delete-min)]
+      [(struct Mt ()) (error 'delete-min/max "Given heap is empty")]
       [(struct Tree ((struct Mt ()) elem b)) (make-SplayHeap func b)]
       [(struct Tree ((struct Tree ((struct Mt ()) el a)) elem b))
        (make-SplayHeap func (make-Tree a elem b))]

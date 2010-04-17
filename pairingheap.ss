@@ -67,7 +67,7 @@
   (let ([heap (PairingHeap-heap pheap)]
         [comparer (PairingHeap-comparer pheap)])
     (if (Mt? heap)
-        (error "Heap is empty :" 'find-min/max)
+        (error 'find-min/max "Given heap is empty")
         (Tree-elem heap))))
 
 (: delete-min/max  : (All (A) ((PairingHeap A) -> (PairingHeap A))))
@@ -75,7 +75,7 @@
   (let ([heap (PairingHeap-heap pheap)]
         [comparer (PairingHeap-comparer pheap)])
     (if (Mt? heap)
-        (error "Heap is empty :" 'delete-min/max )
+        (error 'delete-min/max "Given heap is empty")
         (make-PairingHeap comparer
                           (merge-pairs (Tree-heaps heap) comparer)))))
 

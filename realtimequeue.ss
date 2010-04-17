@@ -47,14 +47,14 @@
 (: head : (All (A) ((RTQueue A) -> A)))
 (define (head rtq)
   (if (empty? rtq)
-      (error "Queue is empty :" 'head)
+      (error 'head "Given queue is empty")
       (stream-car (RTQueue-front rtq))))
 
 
 (: tail : (All (A) ((RTQueue A) -> (RTQueue A))))
 (define (tail rtq)
   (if (empty? rtq)
-      (error "Queue is empty :" 'tail)
+      (error 'tail "Given queue is empty")
       (internal-queue (stream-cdr (RTQueue-front rtq)) 
                       (RTQueue-rear rtq) 
                       (RTQueue-scdul rtq))))

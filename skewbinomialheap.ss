@@ -130,7 +130,7 @@
          [trees (Heap-trees heap)]
          [pair (with-handlers 
                    ([exn:fail? (lambda (error?) 
-                                 (error "Heap is empty :" 'find-min/max))])
+                                 (error 'find-min/max "Given heap is empty"))])
                  (remove-mintree trees func))]
          [tree (car pair)])
     (root tree)))
@@ -141,7 +141,8 @@
          [trees (Heap-trees heap)]
          [pair (with-handlers 
                    ([exn:fail? (lambda (error?) 
-                                 (error "Heap is empty :" 'delete-min/max))])
+                                 (error 'delete-min/max
+                                        "Given heap is empty"))])
                  (remove-mintree trees func))]
          [tree (car pair)]
          [ts (cdr pair)])

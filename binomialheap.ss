@@ -95,7 +95,7 @@
 (define (find-min/max heap)
   (let ([trees (Heap-trees heap)])
     (cond
-      [(null? trees) (error "Heap is empty :" 'find-min/max)]
+      [(null? trees) (error 'find-min/max "Given heap is empty")]
       [(null? (cdr trees)) (Node-val (car trees))]
       [else (let* ([comparer (Heap-comparer heap)]
                    [x (root (car trees))]
@@ -120,13 +120,12 @@
                 (make-Heap func (cons fst-pair 
                                       (cons fst-trees rst-pair))))))))
   (if (null? (Heap-trees heap))
-      (error "Heap is empty :" 'delete-min/max)
+      (error 'delete-min/max "Given heap is empty")
        (let* ([func (Heap-comparer heap)]
               [newpair (getMin (Heap-trees heap) func)]
               [newpair-trees (Heap-trees newpair)])
          (merge (make-Heap func (reverse (Node-trees (car newpair-trees))))
                 (make-Heap func (cdr newpair-trees))))))
-                      
 
 (: sorted-list : (All (A) ((Heap A) -> (Listof A))))
 (define (sorted-list heap)

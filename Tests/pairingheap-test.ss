@@ -63,10 +63,10 @@
 
 (check-error 
  (delete-min/max (pairingheap (λ: ([a : Integer] [b : Integer]) (<= a b))))
- "Heap is empty : delete-min/max")
+ "delete-min/max: Given heap is empty")
 
 (check-error 
  (find-min/max (pairingheap (λ: ([a : Integer] [b : Integer]) (<= a b))))
- "Heap is empty : find-min/max")
+ "find-min/max: Given heap is empty")
  
 (test)

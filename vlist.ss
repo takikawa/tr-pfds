@@ -48,13 +48,13 @@
 (: first : (All (A) ((VList A) -> A)))
 (define (first vlst)
   (if (empty? vlst)
-      (error "VList is empty :" 'first)
+      (error 'first "Given vlist is empty")
       (ra:head (Base-elems (VList-base vlst)))))
 
 (: last : (All (A) ((VList A) -> A)))
 (define (last vlst)
   (if (empty? vlst)
-      (error "VList is empty :" 'last)
+      (error 'last "Given vlist is empty")
       (last-helper (VList-base vlst))))
 
 (: last-helper : (All (A) ((Base A) -> A)))
@@ -71,7 +71,7 @@
          [base (VList-base vlst)]
          [prev (Base-prevbase base)])
     (cond 
-      [(empty? vlst) (error "VList is empty :" 'rest)]
+      [(empty? vlst) (error 'rest "Given vlist is empty")]
       [(> offset 1) (make-VList (sub1 offset) 
                                 (make-Base (Base-prevbase base)
                                            (Base-prevoffset base)
@@ -95,7 +95,8 @@
 (: get : (All (A) (Integer (VList A) -> A)))
 (define (get index vlist)
   (cond
-    [(> index (sub1 (VList-size vlist))) (error "Index out of bound :" 'get)]
+    [(> index (sub1 (VList-size vlist))) (error 'get
+                                                "Given index out of bounds")]
     [(zero? index) (first vlist)]
     [else (get-helper index vlist)]))
 

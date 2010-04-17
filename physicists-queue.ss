@@ -62,7 +62,7 @@
 (: head : (All (A) ((PQueue A) -> A)))
 (define (head que)
   (if (empty? que)
-      (error "Queue is empty :" 'head)
+      (error 'head "Given queue is empty")
       (car (PQueue-preF que))))
 
 
@@ -70,7 +70,7 @@
 (: tail : (All (A) ((PQueue A) -> (PQueue A))))
 (define (tail que)
   (if (empty? que)
-      (error "Queue is empty :" 'tail)
+      (error 'tail "Given queue is empty")
       (internal-queue (cdr (PQueue-preF que))
                       (delay (cdr (force (PQueue-front que))))
                       (sub1 (PQueue-lenf que))

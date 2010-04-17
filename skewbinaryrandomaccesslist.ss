@@ -40,7 +40,7 @@
 (: head : (All (A) ((RAList A) -> A)))
 (define (head sralist)
   (if (null? sralist) 
-      (error "List is empty :" 'head)
+      (error 'head "Given list is empty")
       (let ([fst (Root-fst (car sralist))])
         (if (Leaf? fst) 
             (Leaf-fst fst)
@@ -50,7 +50,7 @@
 (: tail : (All (A) ((RAList A) -> (RAList A))))
 (define (tail sralist)
   (if (null? sralist)
-      (error "List is empty :" 'tail)
+      (error 'tail "Given list is empty")
       (let* ([fst (Root-fst (car sralist))]
              [wgt (arithmetic-shift (getWeight (car sralist)) -1)])
         (if (Leaf? fst) 
@@ -66,7 +66,7 @@
     (cond
       [(and (Leaf? tre) pos0?) (Leaf-fst tre)]
       [(Node? tre) (tl-help new-wgt tre pos pos0?)]
-      [else (error "Index out of bound :" 'lookup)])))
+      [else (error 'lookup "Given index out of bounds")])))
 
 
 (: tl-help : (All (A) (Integer (Node A) Integer Boolean -> A)))
@@ -84,7 +84,7 @@
     (cond
       [(and (Leaf? tre) pos0?) (make-Leaf elem)]
       [(Node? tre) (tu-help new-wgt tre pos pos0? elem)]
-      [else (error "Index out of bound :" 'update)])))
+      [else (error 'update "Given index out of bounds")])))
 
 
 (: tu-help : (All (A) (Integer (Node A) Integer Boolean A -> (Tree A))))
@@ -104,7 +104,7 @@
 (: lookup : (All (A) (Integer (RAList A) -> A)))
 (define (lookup pos sralist)
   (cond
-    [(null? sralist) (error "Index out of bound :" 'lookup)]
+    [(null? sralist) (error 'lookup "Given index out of bounds")]
     [(< pos (getWeight (car sralist)))
      (tree-lookup (getWeight (car sralist)) (Root-fst (car sralist)) pos)]
     [else (lookup (- pos (getWeight (car sralist))) (cdr sralist))]))
@@ -113,7 +113,7 @@
 (: update : (All (A) (Integer (RAList A) A -> (RAList A))))
 (define (update pos sralist elem)
   (cond
-    [(null? sralist) (error "Index out of bound :" 'update)]
+    [(null? sralist) (error 'update "Given index out of bounds")]
     [(< pos (getWeight (car sralist)))
      (cons (make-Root (getWeight (car sralist)) 
                       (tree-update (getWeight (car sralist))
@@ -138,14 +138,14 @@
        (tree-drop newsize 
                   (Node-rgt tre) (- pos 1 newsize) 
                   ralist)]
-      [else (error "Index out of bound :" 'tree-drop)])))
+      [else (error 'drop "Given index out of bounds")])))
 
 
 (: drop : (All (A) (Integer (RAList A) -> (RAList A))))
 (define (drop pos ralist)
   (cond
     [(zero? pos) ralist]
-    [(null? ralist) (error "Index out of bound :" 'drop)]
+    [(null? ralist) (error 'drop "Given index out of bounds")]
     [else (drop-helper (car ralist) (cdr ralist) pos)]))
 
 (: drop-helper : (All (A) ((Root A) (RAList A) Integer -> (RAList A))))

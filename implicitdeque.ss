@@ -72,11 +72,11 @@
 (: head : (All (A) ((ImplDeque A) -> A)))
 (define (head que)
   (match que    
-    [(struct Shallow ((struct Zero ()))) (error "Queue is empty :" 'head)]
+    [(struct Shallow ((struct Zero ()))) (error 'head "Given deque is empty")]
     [(struct Shallow ((struct One (f)))) f]
     [(struct Shallow ((struct Two (f s)))) f]
     [(struct Shallow ((struct Three (f s t)))) f]
-    [(struct Deep ((struct Zero ()) m r)) (error "Queue is empty :" 'head)]
+    [(struct Deep ((struct Zero ()) m r)) (error 'head "Given deque is empty")]
     [(struct Deep ((struct One (f)) m r)) f]
     [(struct Deep ((struct Two (f s)) m r)) f]
     [(struct Deep ((struct Three (f s t)) m r)) f]))
@@ -84,11 +84,11 @@
 (: last : (All (A) ((ImplDeque A) -> A)))
 (define (last que)
   (match que    
-    [(struct Shallow ((struct Zero ()))) (error "Queue is empty :" 'last)]
+    [(struct Shallow ((struct Zero ()))) (error 'last "Given deque is empty")]
     [(struct Shallow ((struct One (f)))) f]
     [(struct Shallow ((struct Two (f s)))) s]
     [(struct Shallow ((struct Three (f s t)))) t]
-    [(struct Deep (f m (struct Zero ()))) (error "Queue is empty :" 'last)]
+    [(struct Deep (f m (struct Zero ()))) (error 'last "Given deque is empty")]
     [(struct Deep (fi m (struct One (f)))) f]
     [(struct Deep (fi m (struct Two (f s)))) s]
     [(struct Deep (fi m (struct Three (f s t)))) t]))
@@ -97,11 +97,11 @@
 (: tail : (All (A) ((ImplDeque A) -> (ImplDeque A))))
 (define (tail que)
   (match que    
-    [(struct Shallow ((struct Zero ()))) (error "Queue is empty :" 'tail)]
+    [(struct Shallow ((struct Zero ()))) (error 'tail "Given deque is empty")]
     [(struct Shallow ((struct One (_)))) (make-Shallow (make-Zero))]
     [(struct Shallow ((struct Two (_ s)))) (make-Shallow (make-One s))]
     [(struct Shallow ((struct Three (_ s t)))) (make-Shallow (make-Two s t))]
-    [(struct Deep ((struct Zero ()) m r)) (error "Queue is empty :" 'tail)]
+    [(struct Deep ((struct Zero ()) m r)) (error 'tail "Given deque is empty")]
     [(struct Deep ((struct One (_)) mid r)) 
      (let ([m (force mid)])
        (if (empty? (car m))
@@ -119,14 +119,14 @@
 
 (: init : (All (A) ((ImplDeque A) -> (ImplDeque A))))
 (define (init que)
-  (match que    
-    [(struct Shallow ((struct Zero ()))) (error "Queue is empty :" 'init)]
+  (match que
+    [(struct Shallow ((struct Zero ()))) (error 'init "Given deque is empty")]
     [(struct Shallow ((struct One (f)))) (make-Shallow (make-Zero))]
     [(struct Shallow ((struct Two (f _)))) 
      (make-Shallow (make-One f))]
     [(struct Shallow ((struct Three (f s _)))) (make-Shallow (make-Two f s))]
-    [(struct Deep (f m (struct Zero ()))) (error "Queue is empty :" 'init)]
-    [(struct Deep (f mid (struct One (a)))) 
+    [(struct Deep (f m (struct Zero ()))) (error 'init "Given deque is empty")]
+    [(struct Deep (f mid (struct One (a))))
      (let* ([m (force mid)]
             [carm (car m)])
        (if (empty? carm)

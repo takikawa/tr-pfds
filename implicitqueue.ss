@@ -40,7 +40,7 @@
 (: head : (All (A) ((ImplQueue A) -> A)))
 (define (head que)
   (match que
-    [(struct Shallow ((struct Zero ()))) (error "Queue is empty :" 'head)]
+    [(struct Shallow ((struct Zero ()))) (error 'head "Given queue is empty")]
     [(struct Shallow ((struct One (one)))) one]
     [(struct Deep ((struct One (one)) _ _)) one]
     [(struct Deep ((struct Two (one two)) _ _)) one]))
@@ -48,7 +48,7 @@
 (: tail : (All (A) ((ImplQueue A) -> (ImplQueue A))))
 (define (tail que)
   (match que
-    [(struct Shallow ((struct Zero ()))) (error "Queue is empty :" 'tail)]
+    [(struct Shallow ((struct Zero ()))) (error 'tail "Given queue is empty")]
     [(struct Shallow ((struct One (one)))) (make-Shallow (make-Zero))]
     [(struct Deep ((struct Two (one two)) m r)) (make-Deep (make-One two) m r)]
     [(struct Deep (_ m r)) 

@@ -1,10 +1,10 @@
 #lang typed-scheme
-(provide add-elem isempty? get vhash-list VHashList)
+(provide bind empty? get vhash-list VHashList)
 
-(require "skewbinaryrandomaccesslist.ss")
+(require (prefix-in ra: "skewbinaryrandomaccesslist.ss"))
 (define-struct: (A) Base ([prevbase : (Block A)]
                           [prevoffset : Integer]
-                          [key-value-pairs : (RAList (Pair A A))]
+                          [key-value-pairs : (ra:RAList (Pair A A))]
                           [size : Integer]))
 (define-struct: Mt ())
 
@@ -16,14 +16,14 @@
 
 (define-type-alias VHashList (All (A) (List A)))
 
-(define empty-vlist (make-List 0 (make-Base (make-Mt) 0 empty 1) 0))
+(define empty-vlist (make-List 0 (make-Base (make-Mt) 0 ra:empty 1) 0))
 
-(: isempty? : (All (A) ((VHashList A) -> Boolean)))
-(define (isempty? vlist)
+(: empty? : (All (A) ((VHashList A) -> Boolean)))
+(define (empty? vlist)
   (zero? (List-size vlist)))
 
-(: add : (All (A) (A A (VHashList A) -> (VHashList A))))
-(define (add key value vlst)
+(: bind : (All (A) (A A (VHashList A) -> (VHashList A))))
+(define (bind key value vlst)
   (if (with-handlers ([exn:fail? (lambda (error?) #t)])
         (get key vlst)
         #f)
@@ -31,10 +31,6 @@
       (error 
        (format "Duplicate key: ~a already exists in the hash-list :" key) 
        'add-elem)))
-
-(: not-error? : Any -> Any)
-(define (not-error? res)
-  (not (exn:fail? res)))
 
 (: add-elem : (All (A) (A A (VHashList A) -> (VHashList A))))
 (define (add-elem key value vlst)
@@ -51,13 +47,13 @@
         (make-List newoffset 
                    (make-Base prevbase 
                               prevoffset
-                              (ralist-cons pair keys)
+                              (ra:kons pair keys)
                               basesize)
                    (add1 size))
         (make-List 1 
                    (make-Base base 
                               offset
-                              (ralist-cons pair empty)
+                              (ra:kons pair ra:empty)
                               (* basesize 2))
                    (add1 size)))))
 
@@ -67,7 +63,7 @@
         [size (List-size vlst)]
         [base (List-base vlst)])
     (if (< (sub1 offset) size)
-        (head (Base-key-value-pairs base))
+        (ra:head (Base-key-value-pairs base))
         (error "List is empty :" 'first))))
 
 (: rest : (All (A) ((VHashList A) -> (VHashList A))))
@@ -82,7 +78,7 @@
       [(> offset 1) (make-List (sub1 offset) 
                                (make-Base (Base-prevbase base)
                                           (Base-prevoffset base)
-                                          (tail (Base-key-value-pairs base))
+                                          (ra:tail (Base-key-value-pairs base))
                                           (Base-size base))
                                (sub1 size))]
       [(Base? prev) (make-List (Base-prevoffset base) prev (sub1 size))]
@@ -108,4 +104,4 @@
 
 (: vhash-list : (All (A) ((Listof A) (Listof A) -> (VHashList A))))
 (define (vhash-list keys values)
-  (foldr (inst add A) empty-vlist keys values))
+  (foldr (inst bind A) empty-vlist keys values))

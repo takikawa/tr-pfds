@@ -85,7 +85,7 @@
                 (list 1 2 3 4) 
                 (map string->list 
                      (list "Hari Prashanth" "Hari" "Hari " "K R H P")))))
- "Key not found : lookup")
+ "lookup: Given key not found in the trie")
 
 (check-error
  (lookup (string->list "Har") 
@@ -94,6 +94,6 @@
                 (list 1 2 3 4) 
                 (map string->list 
                      (list "Hari Prashanth" "Hari" "Hari " "K R H P")))))
- "Key not found : lookup")
+ "lookup: Given key not found in the trie")
 
 (test)
