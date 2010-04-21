@@ -14,9 +14,9 @@ case running time of @bold{@italic{O(1)}} for the operation
 @italic{head} and @bold{@italic{O(log*(n))}} for 
 @italic{tail and enqueue}. Internally uses @secref["rtq"].
 
-@section{Bootstraped Queue Construction and Operations}
+@;section{Bootstraped Queue Construction and Operations}
 
-@subsection{queue}
+@defproc[(queue [a A] ...) (Queue A)]{
 The function @scheme[queue] creates a Bootstraped Queue with the 
 given inputs.  
 @examples[#:eval evaluate
@@ -24,13 +24,13 @@ given inputs.
 (queue 1 2 3 4 5 6)
 ]
 
-In the above example, the queue obtained will have 1 as its first element.
+In the above example, the queue obtained will have 1 as its first element.}
 
 
-@subsection{empty}
-An empty queue
+@defform/none[empty]{
+An empty queue.}
 
-@subsection{empty?}
+@defproc[(empty? [que (Queue A)]) Boolean]{
 The function @scheme[empty?] checks if the given queue is empty or not.
  
 @examples[#:eval evaluate
@@ -38,10 +38,10 @@ The function @scheme[empty?] checks if the given queue is empty or not.
 (empty? (queue 1 2 3 4 5 6))
 
 (empty? empty)
-]
+]}
 
-@subsection{enqueue}
-the function @scheme[enqueue] takes an element and a queue and enqueues 
+@defproc[(enqueue [a A] [que (Queue A)]) (Queue A)]{
+The function @scheme[enqueue] takes an element and a queue and enqueues 
 the given element into the queue.  
 @examples[#:eval evaluate
 
@@ -50,21 +50,18 @@ the given element into the queue.
 ]
 
 In the above example, @scheme[(enqueue 10 (queue 1 2 3 4 5 6))] adds the 
-10 to the queue @scheme[(queue 1 2 3 4 5 6)]. 10 as its last element.
+10 to the queue @scheme[(queue 1 2 3 4 5 6)]. 10 as its last element.}
 
-@subsection{head}
+@defproc[(head [que (Queue A)]) A]{
 The function @scheme[head] takes a queue and gives the first element in the
 queue if queue is not empty else throws an error.  
 @examples[#:eval evaluate
 
 (head (queue 1 2 3 4 5 6))
 (head empty)
-]
+]}
 
-In the above example, @scheme[(head empty)] throws an error since the given 
-queue is empty.
-
-@subsection{tail}
+@defproc[(tail [que (Queue A)]) (Queue A)]{
 The function @scheme[tail] takes a queue and returns the same queue without
 the first element of the given queue if its a non empty queue else throws an 
 error.  
@@ -76,17 +73,16 @@ error.
 ]
 
 In the above example, @scheme[(tail (queue 1 2 3 4 5 6))], removes the head of
-the given queue returns @scheme[(queue 2 3 4 5 6)].
+the given queue returns @scheme[(queue 2 3 4 5 6)].}
 
 
-@subsection{queue->list}
+@defproc[(queue->list [que (Queue A)]) (Queue A)]{
 The function @scheme[queue->list] takes a queue and returns a list of 
 elements. The list will have head of the given queue as its first element.
 If the given queue is empty, then it returns an empty list. 
  
 @examples[#:eval evaluate
 
-(define que (queue 10 2 34 4 15 6))
-
-(queue->list que)
-]
+(queue->list (queue 10 2 34 4 15 6))
+(queue->list empty)
+]}

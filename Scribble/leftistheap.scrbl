@@ -19,9 +19,9 @@ Provides worst case running time of @bold{@italic{O(log(n))}} for the
 operations @italic{insert delete-min/max and merge} and a worst case running 
 time of @bold{@italic{O(1)}} for @italic{find-min/max}.
 
-@section{Leftist Heap Construction and Operations}
+@;section{Leftist Heap Construction and Operations}
 
-@subsection{leftistheap}
+@defproc[(leftistheap [comp (A A -> Boolean)] [a A] ...) (Heap A)]{
 The function @scheme[leftistheap] creates a Leftist Heap with the given 
 inputs. 
 @examples[#:eval evaluate
@@ -30,10 +30,10 @@ inputs.
 ]
 
 In the above example, the leftist heap obtained will have elements 1 thru' 6 
-with < as the comparison function.
+with < as the comparison function.}
 
 
-@subsection{empty?}
+@defproc[(empty? [heap (Heap A)]) Boolean]{
 The function @scheme[empty?] checks if the given leftist heap is empty or not.
 
 @examples[#:eval evaluate
@@ -41,9 +41,9 @@ The function @scheme[empty?] checks if the given leftist heap is empty or not.
 (empty? (leftistheap < 1 2 3 4 5 6))
 
 (empty? empty)
-]
+]}
 
-@subsection{insert}
+@defproc[(insert [a A] [heap (Heap A)] ...) (Heap A)]{
 The function @scheme[insert] takes an element and a leftist heap and inserts 
 the given element into the leftist heap. 
 @examples[#:eval evaluate
@@ -52,9 +52,9 @@ the given element into the leftist heap.
 ]
 
 In the above example, insert adds the element 10 to the heap 
-@scheme[(leftistheap < 1 2 3 4 5 6)].
+@scheme[(leftistheap < 1 2 3 4 5 6)].}
 
-@subsection{find-min/max}
+@defproc[(find-min/max [heap (Heap A)]) A]{
 The function @scheme[find-min/max] takes a leftist heap and gives the 
 largest or the smallest element in the heap if leftist heap is not empty
 else throws an error. The element returned is max or min depends on the
@@ -67,9 +67,9 @@ comparison function of the heap.
 ]
 
 In the above example, @scheme[(find-min/max lheap)], returns the smallest
-element in @scheme[lheap] which happens to be 1.
+element in @scheme[lheap] which happens to be 1.}
 
-@subsection{delete-min/max}
+@defproc[(delete-min/max [heap (Heap A)]) (Heap A)]{
 The function @scheme[delete-min/max] takes a leftist heap and returns the 
 same heap with out the min or max element in the given heap. The element 
 removed from the heap is max or min depends on the comparison function of the
@@ -84,41 +84,38 @@ heap.
 In the above example, @scheme[(delete-min/max (leftistheap < 1 2 3 4 5 6))]
 deletes min element 1 from the heap and 
 @scheme[(delete-min/max (leftistheap > 1 2 3 4 5 6))] deletes max element 6
-from the heap.
+from the heap.}
 
-@subsection{merge}
+@defproc[(merge [lheap1 (Heap A)] [lheap2 (Heap A)]) (Heap A)]{
 The function @scheme[merge] takes two leftist heaps and returns a 
 merged leftist heap. Uses the comparison function in the first heap for
 merging and the same function becomes the comparison function for the 
-merged heap. 
+merged heap.
+
+@margin-note{If the comparison
+functions do not have the same properties, merged heap might lose its 
+heap-order.}
+
 @examples[#:eval evaluate
 
 (define lheap1 (leftistheap < 1 2 3 4 5 6))
 (define lheap2 (leftistheap (λ: ([a : Integer] 
-                                  [b : Integer]) 
-                                 (< a b))
-                             10 20 30 40 50 60))
+                                 [b : Integer]) 
+                                (< a b))
+                            10 20 30 40 50 60))
 (merge lheap1 lheap2)
 
 ]
 
 In the above example, @scheme[(merge lheap1 lheap2)], merges the heaps and
-< will become the comparison function for the merged heap.
-@margin-note{If the comparison
-functions do not have the same properties, merged heap might lose its 
-heap-order.} 
+< will become the comparison function for the merged heap.}
 
 
-
-@subsection{sorted-list}
+@defproc[(sorted-list [heap (Heap A)]) (Listof A)]{
 The function @scheme[sorted-list] takes a leftist heap and returns a list 
 which is sorted according to the comparison function of the heap. 
 @examples[#:eval evaluate
 
-(define lheap (leftistheap > 1 2 3 4 5 6))
-
-(sorted-list lheap)
-]
-
-In the above example, @scheme[(sorted-list lheap)], returns 
-@scheme[(6 5 4 3 2 1)].
+(sorted-list (leftistheap > 1 2 3 4 5 6))
+(sorted-list (leftistheap < 1 2 3 4 5 6))
+]}

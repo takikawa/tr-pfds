@@ -9,7 +9,7 @@
 (define-struct: EmptyList ())
 
 (define-struct: (A) List ([elem : A]
-                          [ques : (rtq:RealTimeQueue (Promise (List A)))]))
+                          [ques : (rtq:Queue (Promise (List A)))]))
 
 (define-type-alias CatenableList (All (A) (U (List A) EmptyList)))
 
@@ -24,7 +24,7 @@
 (define (link lst cat)
   (make-List (List-elem lst) (rtq:enqueue cat (List-ques lst))))
 
-(: link-all : (All (A) ((rtq:RealTimeQueue (Promise (List A))) -> (List A))))
+(: link-all : (All (A) ((rtq:Queue (Promise (List A))) -> (List A))))
 (define (link-all rtq)
   (let ([hd (force (rtq:head rtq))]
         [tl (rtq:tail rtq)])

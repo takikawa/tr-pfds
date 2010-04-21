@@ -4,16 +4,18 @@
 
 (define-struct: Mt ())
 (define-struct: (A) Tree ([elem : A]
-                          [heaps : (Listof (Heap A))]))
+                          [heaps : (Listof (IntHeap A))]))
 
-(define-type-alias (Heap A) (U Mt (Tree A)))
+(define-type-alias (IntHeap A) (U Mt (Tree A)))
 
 (define-struct: (A) PairingHeap ([comparer : (A A -> Boolean)]
-                                 [heap : (Heap A)]))
+                                 [heap : (IntHeap A)]))
 
+(define-type-alias (Heap A) (PairingHeap A))
+  
 (define empty (make-Mt))
 
-(: merge-pairs : (All (A) ((Listof (Heap A)) (A A -> Boolean) -> (Heap A))))
+(: merge-pairs : (All (A) ((Listof (IntHeap A)) (A A -> Boolean) -> (IntHeap A))))
 (define (merge-pairs lst comparer)
   (cond
     [(null? lst) empty]
@@ -44,7 +46,7 @@
                                 comparer))))
 
 (: in-merge : 
-   (All (A) ((Heap A) (Heap A) (A A -> Boolean) -> (Heap A))))
+   (All (A) ((IntHeap A) (IntHeap A) (A A -> Boolean) -> (IntHeap A))))
 (define (in-merge heap1 heap2 comparer)
   (cond
     [(Mt? heap2) heap1]
@@ -52,7 +54,7 @@
     [else (in-merge-helper heap1 heap2 comparer)]))
 
 (: in-merge-helper : 
-   (All (A) ((Tree A) (Tree A) (A A -> Boolean) -> (Heap A))))
+   (All (A) ((Tree A) (Tree A) (A A -> Boolean) -> (IntHeap A))))
 (define (in-merge-helper tree1 tree2 comparer)
   (let ([tr1-elm (Tree-elem tree1)]
         [tr2-elm (Tree-elem tree2)]

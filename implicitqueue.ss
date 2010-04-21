@@ -11,18 +11,18 @@
 (define-type-alias OneTwo (All (A) (U (One A) (Two A))))
 (define-struct: (A) Shallow ([elem : (ZeroOne A)]))
 (define-struct: (A) Deep ([F : (OneTwo A)]
-                          [M : (Promise (Pair (ImplQueue A) (ImplQueue A)))]
+                          [M : (Promise (Pair (Queue A) (Queue A)))]
                           [R : (ZeroOne A)]))
 
-(define-type-alias ImplQueue (All (A) (U (Shallow A) (Deep A))))
+(define-type-alias Queue (All (A) (U (Shallow A) (Deep A))))
 
 (define empty (make-Shallow (make-Zero)))
 
-(: empty? : (All (A) ((ImplQueue A) -> Boolean)))
+(: empty? : (All (A) ((Queue A) -> Boolean)))
 (define (empty? que)
   (and (Shallow? que) (Zero? (Shallow-elem que))))
 
-(: enqueue : (All (A) (A (ImplQueue A) -> (ImplQueue A))))
+(: enqueue : (All (A) (A (Queue A) -> (Queue A))))
 (define (enqueue elem que)
   (match que
     [(struct Shallow ((struct Zero ()))) (make-Shallow (make-One elem))]
@@ -37,7 +37,7 @@
                   (make-Zero)))]))
 
 
-(: head : (All (A) ((ImplQueue A) -> A)))
+(: head : (All (A) ((Queue A) -> A)))
 (define (head que)
   (match que
     [(struct Shallow ((struct Zero ()))) (error 'head "Given queue is empty")]
@@ -45,7 +45,7 @@
     [(struct Deep ((struct One (one)) _ _)) one]
     [(struct Deep ((struct Two (one two)) _ _)) one]))
 
-(: tail : (All (A) ((ImplQueue A) -> (ImplQueue A))))
+(: tail : (All (A) ((Queue A) -> (Queue A))))
 (define (tail que)
   (match que
     [(struct Shallow ((struct Zero ()))) (error 'tail "Given queue is empty")]
@@ -63,12 +63,12 @@
              (make-Deep (make-Two fst snd) new-mid r))))]))
 
 
-(: queue->list : (All (A) ((ImplQueue A) -> (Listof A))))
+(: queue->list : (All (A) ((Queue A) -> (Listof A))))
 (define (queue->list que)
   (if (and (Shallow? que) (Zero? (Shallow-elem que)))
       null
       (cons (head que) (queue->list (tail que)))))
 
-(: queue : (All (A) (A * -> (ImplQueue A))))
+(: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
   (foldl (inst enqueue A) (make-Shallow (make-Zero)) lst))

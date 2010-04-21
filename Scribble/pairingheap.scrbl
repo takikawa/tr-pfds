@@ -14,9 +14,9 @@ worst case running time of @bold{@italic{O(1)}} for the operations
 @italic{insert find-min merge}. And @italic{delete-min} has a amortized
 running time of @bold{@italic{O(log(n))}}.
 
-@section{Pairing Heap Construction and Operations}
+@;section{Pairing Heap Construction and Operations}
 
-@subsection{pairingheap}
+@defproc[(pairingheap [comp (A A -> Boolean)] [a A] ...) (Heap A)]{
 The function @scheme[pairingheap] creates a Pairing Heap with the given 
 inputs. 
 @examples[#:eval evaluate
@@ -25,10 +25,10 @@ inputs.
 ]
 
 In the above example, the pairing heap obtained will have elements 1 thru' 6 
-with < as the comparison function.
+with < as the comparison function.}
 
 
-@subsection{empty?}
+@defproc[(empty? [heap (Heap A)]) Boolean]{
 The function @scheme[empty?] checks if the given pairing heap is empty or not.
 
 @examples[#:eval evaluate
@@ -36,9 +36,9 @@ The function @scheme[empty?] checks if the given pairing heap is empty or not.
 (empty? (pairingheap < 1 2 3 4 5 6))
 
 (empty? (pairingheap <))
-]
+]}
 
-@subsection{insert}
+@defproc[(insert [a A] [heap (Heap A)] ...) (Heap A)]{
 The function @scheme[insert] takes an element and a pairing heap and inserts 
 the given element into the pairing heap. 
 @examples[#:eval evaluate
@@ -47,9 +47,9 @@ the given element into the pairing heap.
 ]
 
 In the above example, @scheme[(insert 10 (pairingheap < 1 2 3 4 5 6))] adds 
-the element 10 to @scheme[(pairingheap < 1 2 3 4 5 6)].
+the element 10 to @scheme[(pairingheap < 1 2 3 4 5 6)].}
 
-@subsection{find-min/max}
+@defproc[(find-min/max [heap (Heap A)]) A]{
 The function @scheme[find-min/max] takes a pairing heap and gives the 
 largest or the smallest element in the heap if pairing heap is not empty
 else throws an error. The element returned is max or min depends on the
@@ -59,9 +59,9 @@ comparison function of the heap. For
 (find-min/max (pairingheap < 1 2 3 4 5 6))
 (find-min/max (pairingheap > 1 2 3 4 5 6))
 (find-min/max (pairingheap >))
-]
+]}
 
-@subsection{delete-min/max}
+@defproc[(delete-min/max [heap (Heap A)]) (Heap A)]{
 The function @scheme[delete-min/max] takes a pairing heap and returns the 
 same heap with out the min or max element in the given heap. The element 
 removed from the heap is max or min depends on the comparison function of the
@@ -76,40 +76,39 @@ heap. For
 In the above example, @scheme[(delete-min/max (pairingheap < 1 2 3 4 5 6))], 
 deletes the smallest element 1 in the heap @scheme[(pairingheap < 1 2 3 4 5 6)]. 
 And @scheme[(delete-min/max (pairingheap > 1 2 3 4 5 6))] deletes the largest
-element which is 6.
+element which is 6.}
 
-@subsection{merge}
+@defproc[(merge [pheap1 (Heap A)] [pheap2 (Heap A)]) (Heap A)]{
 The function @scheme[merge] takes two pairing heaps and returns a 
 merged pairing heap. Uses the comparison function in the first heap for
 merging and the same function becomes the comparison function for the 
-merged heap. 
+merged heap.
+
+@margin-note{If the comparison
+functions do not have the same properties, merged heap might lose its 
+heap-order.}
+
 @examples[#:eval evaluate
 
 (define pheap1 (pairingheap < 1 2 3 4 5 6))
 (define pheap2 (pairingheap (λ: ([a : Integer] 
-                                  [b : Integer]) 
-                                 (< a b))
-                             10 20 30 40 50 60))
+                                 [b : Integer]) 
+                                (< a b))
+                            10 20 30 40 50 60))
 (merge pheap1 pheap2)
 
 ]
 
 In the above example, @scheme[(merge pheap1 pheap2)], merges the heaps and
-< will become the comparison function for the merged heap. If the comparison
-functions do not have the same properties, merged heap might lose its 
-heap-order. 
+< will become the comparison function for the merged heap.}
 
 
 
-@subsection{sorted-list}
+@defproc[(sorted-list [heap (Heap A)]) (Listof A)]{
 The function @scheme[sorted-list] takes a pairing heap and returns a list 
 which is sorted according to the comparison function of the heap. For 
 @examples[#:eval evaluate
 
-(define pheap (pairingheap > 1 2 3 4 5 6))
-
-(sorted-list pheap)
-]
-
-In the above example, @scheme[(sorted-list pheap)], returns 
-@scheme[(6 5 4 3 2 1)].
+(sorted-list (pairingheap > 1 2 3 4 5 6))
+(sorted-list (pairingheap < 1 2 3 4 5 6))
+]}

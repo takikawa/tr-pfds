@@ -1,37 +1,39 @@
 #lang typed-scheme
 
 (provide empty empty? insert merge find-min/max 
-         delete-min/max sorted-list splayheap)
+         delete-min/max sorted-list splayheap Heap)
 
 (require scheme/match)
 
 (define-struct: Mt ())
 
-(define-struct: (A) Tree ([left : (Heap A)]
+(define-struct: (A) Tree ([left : (IntHeap A)]
                           [elem : A]
-                          [right : (Heap A)]))
+                          [right : (IntHeap A)]))
 
-(define-type-alias (Heap A) (U Mt (Tree A)))
+(define-type-alias (IntHeap A) (U Mt (Tree A)))
 
 (define-struct: (A) SplayHeap ([comparer : (A A -> Boolean)]
-                               [heap : (Heap A)]))
+                               [heap : (IntHeap A)]))
+
+(define-type-alias (Heap A) (SplayHeap A))
 
 (define empty (make-Mt))
 
 (: partition : 
-   (All (A) (A (Heap A) (A A -> Boolean) -> (Pair (Heap A) (Heap A)))))
+   (All (A) (A (IntHeap A) (A A -> Boolean) -> (Pair (IntHeap A) (IntHeap A)))))
 (define (partition pivot heap func)
   (if (Mt? heap)
       (cons empty empty)
       (partition-helper pivot heap func)))
 
 (: partition-helper : 
-   (All (A) (A (Tree A) (A A -> Boolean) -> (Pair (Heap A) (Heap A)))))
+   (All (A) (A (Tree A) (A A -> Boolean) -> (Pair (IntHeap A) (IntHeap A)))))
 (define (partition-helper pivot tree func)
   (let ([elem (Tree-elem tree)]
         [left (Tree-left tree)]
         [right (Tree-right tree)])
-    (: phelp-rgt : (Heap A) -> (Pair (Heap A) (Heap A)))
+    (: phelp-rgt : (IntHeap A) -> (Pair (IntHeap A) (IntHeap A)))
     (define (phelp-rgt rheap)
       (match rheap 
         [(struct Mt ()) (cons tree empty)]
@@ -43,7 +45,7 @@
              (let ([pair (partition pivot l func)])
                (cons (make-Tree left elem (car pair))
                      (make-Tree (cdr pair) e r))))]))
-    (: phelp-lft : (Heap A) -> (Pair (Heap A) (Heap A)))
+    (: phelp-lft : (IntHeap A) -> (Pair (IntHeap A) (IntHeap A)))
     (define (phelp-lft lheap)
       (match lheap
         [(struct Mt ()) (cons empty tree)]
@@ -77,7 +79,7 @@
         [func (SplayHeap-comparer sheap1)])
     (make-SplayHeap func (merge-help heap1 heap2 func))))
 
-(: merge-help : (All (A) ((Heap A) (Heap A) (A A -> Boolean) -> (Heap A))))
+(: merge-help : (All (A) ((IntHeap A) (IntHeap A) (A A -> Boolean) -> (IntHeap A))))
 (define (merge-help heap1 heap2 func)
   (let ([pair (cons heap1 heap2)])
     (match pair

@@ -16,9 +16,9 @@ operations @italic{insert find-min merge} and worst case running time of
 implementation abstracts over Skew Binomila Heaps. For Skew Binomila Heaps,
 see @secref["skewbh"]
 
-@section{Bootstrapped Heap Construction and Operations}
+@;section{Bootstrapped Heap Construction and Operations}
 
-@subsection{bootstrapped-heap}
+@defproc[(bootstrapped-heap [comp (A A -> Boolean)] [a A] ...) (Heap A)]{
 The function @scheme[bootstrapped-heap] creates a Bootstrapped Heap with the
 given inputs.    
 @examples[#:eval evaluate
@@ -27,10 +27,10 @@ given inputs.
 ]
 
 In the above example, the bootstrapped heap obtained will have elements 
-1 thru' 6 with < as the comparison function.
+1 thru' 6 with < as the comparison function.}
 
 
-@subsection{empty?}
+@defproc[(empty? [heap (Heap A)]) Boolean]{
 The function @scheme[empty?] checks if the given bootstrapped heap is empty 
 or not.    
 @examples[#:eval evaluate
@@ -39,10 +39,10 @@ or not.
 
 (empty? (bootstrapped-heap <))
 
-]
+]}
 
 
-@subsection{insert}
+@defproc[(insert [a A] [heap (Heap A)] ...) (Heap A)]{
 The function @scheme[insert] takes an element and a bootstrapped heap and inserts 
 the given element into the bootstrapped heap.    
 @examples[#:eval evaluate
@@ -51,9 +51,9 @@ the given element into the bootstrapped heap.
 ]
 
 In the above example, insert adds the element 10 to the heap 
-@scheme[(bootstrapped-heap < 1 2 3 4 5 6)].
+@scheme[(bootstrapped-heap < 1 2 3 4 5 6)].}
 
-@subsection{find-min/max}
+@defproc[(find-min/max [heap (Heap A)]) A]{
 The function @scheme[find-min/max] takes a bootstrapped heap and gives the 
 largest or the smallest element in the heap if bootstrapped heap is not empty
 else throws an error. The element returned is largest or smallest depends on
@@ -63,9 +63,9 @@ the comparison function of the heap.
 (find-min/max (bootstrapped-heap < 1 2 3 4 5 6))
 (find-min/max (bootstrapped-heap > 1 2 3 4 5 6))
 (find-min/max (bootstrapped-heap <))
-]
+]}
 
-@subsection{delete-min/max}
+@defproc[(delete-min/max [heap (Heap A)]) (Heap A)]{
 The function @scheme[delete-min/max] takes a bootstrapped heap and returns the 
 same heap without the min or max element in the given heap. The element 
 removed from the heap is max or min depends on the comparison function of the
@@ -82,42 +82,44 @@ In the above example,
 @scheme[(delete-min/max (bootstrapped-heap < 1 2 3 4 5 6))], deletes element
 1 from @scheme[(bootstrapped-heap < 1 2 3 4 5 6)]. And 
 @scheme[(delete-min/max (bootstrapped-heap > 1 2 3 4 5 6))], deletes element
-6 from @scheme[(bootstrapped-heap > 1 2 3 4 5 6)]. 
+6 from @scheme[(bootstrapped-heap > 1 2 3 4 5 6)].}
 
-@subsection{merge}
+@defproc[(merge [heap1 (Heap A)] [heap2 (Heap A)]) (Heap A)]{
 The function @scheme[merge] takes two bootstrapped heaps and returns a 
 merged bootstrapped heap. Uses the comparison function in the first heap for
 merging and the same function becomes the comparison function for the 
-merged heap.   
+merged heap.
+
+@margin-note{If the comparison
+functions do not have the same properties, merged heap might lose its 
+heap-order.}
+
 @examples[#:eval evaluate
 
 (define bheap1 (bootstrapped-heap < 1 2 3 4 5 6))
 (define bheap2 (bootstrapped-heap (λ: ([a : Integer] 
-                                  [b : Integer]) 
-                                 (< a b))
-                             10 20 30 40 50 60))
+                                       [b : Integer]) 
+                                      (< a b))
+                                  10 20 30 40 50 60))
 (merge bheap1 bheap2)
 
 ]
 
 In the above example, @scheme[(merge bheap1 bheap2)], merges the heaps and
 < will become the comparison function for the merged heap. 
-@margin-note{If the comparison
-functions do not have the same properties, merged heap might lose its 
-heap-order.}
+}
 
 
 
-@subsection{sorted-list}
+@defproc[(sorted-list [heap (Heap A)]) (Listof A)]{
 The function @scheme[sorted-list] takes a bootstrapped heap and returns a 
 list which is sorted according to the comparison function of the heap. 
    
 @examples[#:eval evaluate
 
-(define bheap (bootstrapped-heap > 1 2 3 4 5 6))
-
-(sorted-list bheap)
+(sorted-list (bootstrapped-heap > 1 2 3 4 5 6))
+(sorted-list (bootstrapped-heap < 1 2 3 4 5 6))
 ]
 
 In the above example, @scheme[(sorted-list bheap)], returns 
-@scheme[(6 5 4 3 2 1)].
+@scheme[(6 5 4 3 2 1)].}

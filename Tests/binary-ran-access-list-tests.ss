@@ -16,15 +16,15 @@
 (check-expect (ralist->list (tail (tail (ralist 1 2 3 4 5 6 7))))
               (list 3 4 5 6 7))
 
-(check-expect (drop (ralist 1) 1) (ralist))
-(check-expect (ralist->list (drop (ralist 1 2 3 4 5 6 7) 2)) 
+(check-expect (drop 1 (ralist 1)) (ralist))
+(check-expect (ralist->list (drop 2 (ralist 1 2 3 4 5 6 7))) 
               (list 3 4 5 6 7))
 
-(check-expect (ralist->list (drop (ralist 1 2 3 4 5 6 7) 0))
+(check-expect (ralist->list (drop 0 (ralist 1 2 3 4 5 6 7)))
               (list 1 2 3 4 5 6 7))
-(check-error (drop (ralist 1 2 3 4 5 6 7) 8) 
+(check-error (drop 8 (ralist 1 2 3 4 5 6 7)) 
              "drop: Not enough elements to drop")
-(check-error (drop (ralist 1 2 3 4 5 6 7) -1) 
+(check-error (drop -1 (ralist 1 2 3 4 5 6 7)) 
              "drop: Not enough elements to drop")
 
 (check-expect (ralist->list (update 2 (ralist 1 2 3 4 5 6 7) 1234))

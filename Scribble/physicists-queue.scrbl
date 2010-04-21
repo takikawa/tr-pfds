@@ -15,10 +15,10 @@ running time of @bold{@italic{O(1)}} for @italic{head, tail and enqueue}
 operations. Physicists's Queue uses lazy evaluation and memoization to get 
 this amortized running time.
 
-@section{Physicist's Queue Construction and Operations}
+@;section{Physicist's Queue Construction and Operations}
 
-@subsection{queue}
-The function @scheme[pqueue] creates a Physicist's Queue with the given inputs.
+@defproc[(queue [a A] ...) (Queue A)]{
+The function @scheme[queue] creates a Physicist's Queue with the given inputs.
 
 @examples[#:eval evaluate
 
@@ -26,13 +26,13 @@ The function @scheme[pqueue] creates a Physicist's Queue with the given inputs.
 ]
 
 In the above example, the queue obtained will have 1 as its head element,
-2 as the head of its tail and so on.
+2 as the head of its tail and so on.}
 
 
-@subsection{empty}
-An empty queue
+@defform/none[empty]{
+An empty queue.}
 
-@subsection{empty?}
+@defproc[(empty? [que (Queue A)]) Boolean]{
 The function @scheme[empty?] checks if the given queue is empty or not.
 
 @examples[#:eval evaluate
@@ -40,30 +40,30 @@ The function @scheme[empty?] checks if the given queue is empty or not.
 (empty? (queue 1 2 3 4 5 6))
 
 (empty? empty)
-]
+]}
 
 
-@subsection{enqueue}
-the function @scheme[enqueue] takes an element and a queue and enqueues 
+@defproc[(enqueue [a A] [que (Queue A)]) (Queue A)]{
+The function @scheme[enqueue] takes an element and a queue and enqueues 
 the given element into the queue. 
 @examples[#:eval evaluate
 
 (enqueue 10 (queue 1 2 3 4 5 6))
 ]
 
-In the above example, enqueue adds the element 10 to the end of the
-@scheme[(queue 1 2 3 4 5 6)].
+In the above example, enqueue adds the element 10 to 
+@scheme[(queue 1 2 3 4 5 6)] and returns @scheme[(queue 1 2 3 4 5 6 10)].}
 
-@subsection{head}
+@defproc[(head [que (Queue A)]) A]{
 The function @scheme[head] takes a queue and gives the first element in the
 queue if its a non empty queue else throws an error. 
 @examples[#:eval evaluate
 
 (head (queue 1 2 3 4 5 6))
 (head empty)
-]
+]}
 
-@subsection{tail}
+@defproc[(tail [que (Queue A)]) (Queue A)]{
 The function @scheme[tail] takes a queue and returns a queue with rest 
 elements if its a non empty queue else throws an error. 
 @examples[#:eval evaluate
@@ -74,31 +74,33 @@ elements if its a non empty queue else throws an error.
 ]
 
 In the above example, @scheme[(tail (queue 1 2 3 4 5 6))], returns 
-@scheme[(queue 2 3 4 5 6)].
+@scheme[(queue 2 3 4 5 6)].}
 
 
-@subsection{queue->list}
+@defproc[(queue->list [que (Queue A)]) (Queue A)]{
 The function @scheme[queue->list] takes a queue and returns a list of 
 elements. The list will have head of the given queue as its first element.
 If the given queue is empty, then it returns an empty list. 
 
 @examples[#:eval evaluate
 
-(define que (queue 10 2 34 4 15 6))
+(queue->list (queue 10 2 34 4 15 6))
 
-(queue->list que)
-]
+(queue->list empty)
+]}
 
 
-@subsection{list->queue}
-The function @scheme[list->queue] takes a list and returns a queue of 
-elements. The queue will be such that its head will have car of the list.
+@;
+@;subsection{list->queue}
+@;The function @scheme[list->queue] takes a list and returns a queue of 
+@;elements. The queue will be such that its head will have car of the list.
 
-@examples[#:eval evaluate
+@;examples[#:eval evaluate
 
-(list->queue (list 10 2 34 4 15 6))
+@;(list->queue (list 10 2 34 4 15 6))
 
-]
+@;]
 
-In the above example, @scheme[(list->queue (list 10 2 34 4 15 6))], returns 
-the queue @scheme[(queue 10 2 34 4 15 6)].
+@;In the above example, @scheme[(list->queue (list 10 2 34 4 15 6))], returns 
+@;the queue @scheme[(queue 10 2 34 4 15 6)].
+@;

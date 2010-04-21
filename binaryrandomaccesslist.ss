@@ -16,9 +16,9 @@
 
 (define empty-tree (make-Leaf null))
 
-(define-struct: Null-RaList ([Null : Any]))
+(define-struct: Null-RaList ())
 
-(define empty (make-Null-RaList ""))
+(define empty (make-Null-RaList))
 
 (define One 1)
 (define Zero 0)
@@ -161,8 +161,8 @@
                    (make-Root newsize right ralist))
         (tree-drop newsize right (- pos 1 newsize) ralist))))
 
-(: drop : (All (A) ((RAList A) Integer -> (RAList A))))
-(define (drop ralist pos)
+(: drop : (All (A) (Integer (RAList A) -> (RAList A))))
+(define (drop pos ralist)
   (cond
     [(zero? pos) ralist]
     [(Root? ralist) (drop-help ralist pos)]
@@ -175,7 +175,7 @@
         [rst (Root-rst ralist)])
     (if (< pos size)
         (tree-drop size fst pos rst)
-        (drop  rst (- pos size)))))
+        (drop (- pos size) rst))))
     
 (: ralist->list : (All (A) ((RAList A) -> (Listof A))))
 (define (ralist->list ralist)

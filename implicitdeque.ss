@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide empty empty? head tail last init deque->rev-list
-         enqueue-rear enqueue deque->list deque)
+         enqueue-front enqueue deque->list deque)
 
 (require scheme/promise scheme/match)
 
@@ -16,19 +16,19 @@
 (define-type-alias D1 (All (A) (U Zero (One A) (Two A))))
 (define-struct: (A) Shallow ([elem : (D A)]))
 (define-struct: (A) Deep ([F : (D A)]
-                          [M : (Promise (Pair (ImplDeque A) (ImplDeque A)))]
+                          [M : (Promise (Pair (Deque A) (Deque A)))]
                           [R : (D A)]))
 
-(define-type-alias ImplDeque (All (A) (U (Shallow A) (Deep A))))
+(define-type-alias Deque (All (A) (U (Shallow A) (Deep A))))
 
 (define empty (make-Shallow (make-Zero)))
 
-(: empty? : (All (A) ((ImplDeque A) -> Boolean)))
+(: empty? : (All (A) ((Deque A) -> Boolean)))
 (define (empty? que)
   (and (Shallow? que) (Zero? (Shallow-elem que))))
 
-(: enqueue-rear : (All (A) (A (ImplDeque A) -> (ImplDeque A))))
-(define (enqueue-rear elem que)
+(: enqueue-front : (All (A) (A (Deque A) -> (Deque A))))
+(define (enqueue-front elem que)
   (match que    
     [(struct Shallow ((struct Zero ()))) (make-Shallow (make-One elem))]
     [(struct Shallow ((struct One (a)))) (make-Shallow (make-Two elem a))]
@@ -45,10 +45,10 @@
             [fst (car forced-mid)]
             [snd (cdr forced-mid)])
           (make-Deep (make-Two elem f) 
-                     (delay (cons (enqueue-rear s fst) (enqueue-rear t snd)))
+                     (delay (cons (enqueue-front s fst) (enqueue-front t snd)))
                      r))]))
 
-(: enqueue : (All (A) (A (ImplDeque A) -> (ImplDeque A))))
+(: enqueue : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue elem que)
   (match que    
     [(struct Shallow ((struct Zero ()))) (make-Shallow (make-One elem))]
@@ -69,7 +69,7 @@
                      (delay (cons (enqueue f fst) (enqueue s snd)))
                      (make-Two t elem)))]))
 
-(: head : (All (A) ((ImplDeque A) -> A)))
+(: head : (All (A) ((Deque A) -> A)))
 (define (head que)
   (match que    
     [(struct Shallow ((struct Zero ()))) (error 'head "Given deque is empty")]
@@ -81,7 +81,7 @@
     [(struct Deep ((struct Two (f s)) m r)) f]
     [(struct Deep ((struct Three (f s t)) m r)) f]))
 
-(: last : (All (A) ((ImplDeque A) -> A)))
+(: last : (All (A) ((Deque A) -> A)))
 (define (last que)
   (match que    
     [(struct Shallow ((struct Zero ()))) (error 'last "Given deque is empty")]
@@ -94,7 +94,7 @@
     [(struct Deep (fi m (struct Three (f s t)))) t]))
 
 
-(: tail : (All (A) ((ImplDeque A) -> (ImplDeque A))))
+(: tail : (All (A) ((Deque A) -> (Deque A))))
 (define (tail que)
   (match que    
     [(struct Shallow ((struct Zero ()))) (error 'tail "Given deque is empty")]
@@ -117,7 +117,7 @@
      (make-Deep (make-Two s t) m r)]))
 
 
-(: init : (All (A) ((ImplDeque A) -> (ImplDeque A))))
+(: init : (All (A) ((Deque A) -> (Deque A))))
 (define (init que)
   (match que
     [(struct Shallow ((struct Zero ()))) (error 'init "Given deque is empty")]
@@ -141,18 +141,18 @@
      (make-Deep fi m (make-Two f s))]))
 
 
-(: deque->list : (All (A) ((ImplDeque A) -> (Listof A))))
+(: deque->list : (All (A) ((Deque A) -> (Listof A))))
 (define (deque->list que)
   (if (empty? que)
       null
       (cons (head que) (deque->list (tail que)))))
 
-(: deque->rev-list : (All (A) ((ImplDeque A) -> (Listof A))))
+(: deque->rev-list : (All (A) ((Deque A) -> (Listof A))))
 (define (deque->rev-list que)
   (if (and (Shallow? que) (Zero? (Shallow-elem que)))
       null
       (cons (last que) (deque->rev-list (init que)))))
 
-(: deque : (All (A) (A * -> (ImplDeque A))))
+(: deque : (All (A) (A * -> (Deque A))))
 (define (deque . lst)
   (foldl (inst enqueue A) empty lst))

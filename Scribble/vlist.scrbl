@@ -21,9 +21,9 @@ paper @italic{Fast Functional Lists, Hash-Lists, vlists and
               Variable Length Arrays} by  Phil Bagwell.
 VLists implementation internally uses @secref["bral"].
 
-@section{VList Construction and Operations}
+@;section{VList Construction and Operations}
 
-@subsection{vlist}
+@defproc[(vlist [a A] ...) (VList A)]{
 The function @scheme[vlist] creates a vlist with the given inputs. 
 
 @examples[#:eval evaluate
@@ -31,13 +31,13 @@ The function @scheme[vlist] creates a vlist with the given inputs.
 (vlist 1 2 3 4 5 6)
 ]
 
-In the above example, the vlist obtained will have 1 as its first element.
+In the above example, the vlist obtained will have 1 as its first element.}
 
 
-@subsection{empty}
-An empty vlist
+@defform/none[empty]{
+An empty vlist.}
 
-@subsection{empty?}
+@defproc[(empty? [vlst (VList A)]) Boolean]{
 The function @scheme[empty?] checks if the given vlist is empty or not.
 
 @examples[#:eval evaluate
@@ -45,9 +45,9 @@ The function @scheme[empty?] checks if the given vlist is empty or not.
 (empty? (vlist 1 2 3 4 5 6))
 
 (empty? empty)
-]
+]}
 
-@subsection{vcons}
+@defproc[(vcons [a A] [vlst (VList A)]) (VList A)]{
 The function @scheme[vcons] takes an element and a vlist and adds 
 the given element to the vlist. 
 @examples[#:eval evaluate
@@ -56,9 +56,9 @@ the given element to the vlist.
 ]
 
 In the above example, @scheme[vcons] adds the element 10 to 
-@scheme[(vlist 1 2 3 4 5 6)] and returns @scheme[(vlist 10 1 2 3 4 5 6)].
+@scheme[(vlist 1 2 3 4 5 6)] and returns @scheme[(vlist 10 1 2 3 4 5 6)].}
 
-@subsection{first}
+@defproc[(first [vlst (VList A)]) A]{
 The function @scheme[first] takes a vlist and gives the first element 
 of the given vlist if vlist is not empty else throws an error. 
 
@@ -67,9 +67,9 @@ of the given vlist if vlist is not empty else throws an error.
 (first (vlist 1 2 3 4 5 6))
 
 (first empty)
-]
+]}
 
-@subsection{last}
+@defproc[(last [vlst (VList A)]) A]{
 The function @scheme[last] takes a vlist and gives the last element in the
 vlist if vlist is not empty else throws an error. 
 @examples[#:eval evaluate
@@ -77,9 +77,9 @@ vlist if vlist is not empty else throws an error.
 (last (vlist 1 2 3 4 5 6))
 
 (last empty)
-]
+]}
 
-@subsection{rest}
+@defproc[(rest [vlst (VList A)]) (VList A)]{
 The function @scheme[rest] takes a vlist and returns a vlist without the 
 first element if the given vlist is not empty. Else throws an error. 
 
@@ -91,10 +91,10 @@ first element if the given vlist is not empty. Else throws an error.
 ]
 
 In the above example, @scheme[(rest (vlist 1 2 3 4 5 6))], removes the head
-and returns @scheme[(vlist 2 3 4 5 6)].
+and returns @scheme[(vlist 2 3 4 5 6)].}
 
 
-@subsection{get}
+@defproc[(get [index Integer] [vlst (VList A)]) A]{
 The function @scheme[get] takes an integer(say n) and a vlist and gives
 the nth element of the given vlist
 
@@ -104,10 +104,10 @@ the nth element of the given vlist
 (get 0 (vlist 1 2 3 4 5 6))
 (get 3 (vlist 1 2 3 4 5 6))
 (get 10 (vlist 1 2 3 4 5 6))
-]
+]}
 
 
-@subsection{size}
+@defproc[(size [vlst (VList A)]) Integer]{
 The function @scheme[size] takes a vlist and gives the number of elements in 
 the given vlist. 
 
@@ -115,20 +115,20 @@ the given vlist.
 
 (size (vlist 1 2 3 4 5 6))
 (size empty)
-]
+]}
 
 
-@subsection{vlist->list}
+@defproc[(vlist->list [vlst (VList A)]) (Listof A)]{
 The function @scheme[vlist->list] takes a vlist and returns a normal
 scheme list. 
 @examples[#:eval evaluate
 
 (vlist->list (vlist 1 2 3 4 5 6))
 (vlist->list empty)
-]
+]}
 
 
-@subsection{vreverse}
+@defproc[(vreverse [vlst (VList A)]) (VList A)]{
 The function @scheme[vreverse] takes a vlist and returns a reverses vlist. 
 
 @examples[#:eval evaluate
@@ -137,10 +137,10 @@ The function @scheme[vreverse] takes a vlist and returns a reverses vlist.
 ]
 
 In the above example, @scheme[(vreverse (vlist 1 2 3 4 5 6))], returns the 
-reversed vlist @scheme[(vlist 6 5 4 3 2 1)].
+reversed vlist @scheme[(vlist 6 5 4 3 2 1)].}
 
 
-@subsection{vmap}
+@defproc[(vmap [func (A ... -> C)] [vlst1 (VList A)] ...) (VList A)]{
 The function @scheme[vmap] is same as @scheme[map] except that 
 @scheme[vmap] works on vlists. 
 @examples[#:eval evaluate
@@ -154,10 +154,13 @@ In the above example, @scheme[(vmap add1 (vlist 1 2 3 4 5 6))] adds 1 to
 each element of the given vlist and returns @scheme[(vlist 2 3 4 5 6 7)].
 @scheme[(vmap * (vlist 1 2 3 4 5 6) (vlist 1 2 3 4 5 6))] multiplies 
 corresponding elements in the two vlists 
-and returns the vlist @scheme[(vlist 1 4 9 16 25 36)].
+and returns the vlist @scheme[(vlist 1 4 9 16 25 36)].}
 
 
-@subsection{vfoldl}
+@defproc[(vfoldl [func (C A B ... -> C)] 
+                 [init C] 
+                 [vlst1 (VList A)] 
+                 [vlst2 (VList B)] ... ) C]{
 The function @scheme[vfoldl] is same as @scheme[foldl] except that 
 @scheme[vfoldl] works on vlists.
 @margin-note{vfoldl currently does not produce correct results when the 
@@ -168,10 +171,13 @@ The function @scheme[vfoldl] is same as @scheme[foldl] except that
 (vfoldl + 0 (vlist 1 2 3 4 5 6))
 
 (vfoldl * 1 (vlist 1 2 3 4 5 6) (vlist 1 2 3 4 5 6))
-]
+]}
 
 
-@subsection{vfoldr}
+@defproc[(vfoldr [func (C A B ... -> C)] 
+                 [init C] 
+                 [vlst1 (VList A)] 
+                 [vlst2 (VList B)] ... ) C]{
 The function @scheme[vfoldr] is same as @scheme[foldr] except that 
 @scheme[vfoldr] works on vlists. 
 @margin-note{vfoldr currently does not produce correct results when the 
@@ -182,9 +188,9 @@ The function @scheme[vfoldr] is same as @scheme[foldr] except that
 (vfoldr + 0 (vlist 1 2 3 4 5 6))
 
 (vfoldr * 1 (vlist 1 2 3 4 5 6) (vlist 1 2 3 4 5 6))
-]
+]}
 
-@subsection{vfilter}
+@defproc[(vfilter [func (A -> Boolean)] [vlst (VList A)]) (VList A)]{
 The function @scheme[vfilter] is same as @scheme[filter] except that 
 @scheme[vfilter] works on vlists. 
 @examples[#:eval evaluate
@@ -204,4 +210,4 @@ gives @scheme[(vlist 6)].}}
 @itemlist{@item{@scheme[(vfilter (λ:([x : Integer]) (< x 5)) vlst)] gives
 @scheme[(vlist 1 2 3 4)].}}
 @itemlist{@item{@scheme[(vfilter (λ:([x : Integer]) (<= x 4)) vlst)] gives
-@scheme[(vlist 1 2 3 4)].}}
+@scheme[(vlist 1 2 3 4)].}}}

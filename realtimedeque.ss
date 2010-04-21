@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide empty empty? enqueue enqueue-front init 
-         last head tail deque deque->list)
+         last head tail deque deque->list Deque)
 
 (require "stream.ss")
 
@@ -13,6 +13,8 @@
    [lenr   : Integer]
    [scdulR : (Stream A)]))
 
+
+(define-type-alias (Deque A) (RTDeque A))
 (define inv-c 2)
 
 (define empty (make-RTDeque empty-stream 0 empty-stream

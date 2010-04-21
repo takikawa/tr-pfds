@@ -7,12 +7,13 @@
 ;; Physicists Queue
 ;; Maintains invariant lenr <= lenf
 ;; pref is empty only if lenf = 0
-(define-struct: (A) PQueue 
-  ([preF  : (Listof A)]
-   [front : (Promise (Listof A))]
-   [lenf  : Integer]
-   [rear  : (Listof A)]
-   [lenr  : Integer]))
+(define-struct: (A) PQueue ([preF  : (Listof A)]
+                            [front : (Promise (Listof A))]
+                            [lenf  : Integer]
+                            [rear  : (Listof A)]
+                            [lenr  : Integer]))
+
+(define-type-alias (Queue A) (PQueue A))
 
 ;; Empty PQueue
 (define empty (make-PQueue '() (delay '()) 0 '() 0))

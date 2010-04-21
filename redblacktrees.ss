@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide RBTree member? delete insert redblacktree 
-         redblacktree->list root delete-root empty?)
+         redblacktree->list root delete-root empty? RedBlackTree)
 (require scheme/match)
 (define-struct: Red ())
 (define-struct: Black ())
@@ -15,6 +15,9 @@
 (define-type-alias Tree (All (A) (U Mt (RBNode A))))
 (define-struct: (A) RBTree ([comparer : (A A -> Boolean)]
                             [tree : (Tree A)]))
+
+(define-type-alias (RedBlackTree A) (RBTree A))
+
 (define black (make-Black))
 (define red (make-Red))
 (define empty (make-Mt black))

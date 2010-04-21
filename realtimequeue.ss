@@ -1,16 +1,16 @@
 #lang typed-scheme
 
 (provide queue queue->list empty empty? 
-         head tail enqueue RealTimeQueue list->queue)
+         head tail enqueue Queue list->queue)
 
 (require "stream.ss")
 
-(define-struct: (A) RTQueue
-  ([front : (Stream A)]
-   [rear  : (Listof A)]
-   [scdul : (Stream A)]))
+(define-struct: (A) RTQueue ([front : (Stream A)]
+                             [rear  : (Listof A)]
+                             [scdul : (Stream A)]))
 
-(define-type-alias RealTimeQueue (All (A) (RTQueue A)))
+
+(define-type-alias (Queue A) (RTQueue A))
 (define empty (make-RTQueue empty-stream null empty-stream))
 
 

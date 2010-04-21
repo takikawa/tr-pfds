@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide empty? insert find-min/max delete-min/max empty
+(provide empty? insert find-min/max delete-min/max
          merge sorted-list binomialheap BinomialHeap)
 
 (define-struct: (A) Node ([rank : Integer]

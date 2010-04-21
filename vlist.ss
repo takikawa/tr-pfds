@@ -134,7 +134,7 @@
   (if (ormap empty? lst)
       empty
       (vcons (apply func (map first lst)) 
-                (apply vmap func (map rest lst)))))
+             (apply vmap func (map rest lst)))))
 
 (: vfoldl : 
    (All (C A B ...) ((C A B ... -> C) C (VList A) (VList B) ... B -> C)))

@@ -16,9 +16,9 @@ have been used in some of the below mentioned data structures. Since
 each suspention comes with a little overhead, Streams should be used
 only when there is a good enough reason to do so.
 
-@section{Stream Constructor and Operations}
+@;section{Stream Constructor and Operations}
 
-@subsection{stream}
+@defproc[(stream [a A] ...) (Stream A)]{
 The function stream creates a Stream with the given inputs. 
 
 @examples[#:eval evaluate
@@ -27,23 +27,23 @@ The function stream creates a Stream with the given inputs.
 ]
 
 In the above example, the stream obtained will be similar to lists but will
-lazy in nature. It will have 1 as its first element.
+lazy in nature. It will have 1 as its first element.}
 
-@subsection{empty-stream}
-A empty stream
+@defform/none[empty-stream]{
+An empty stream.}
 
-@subsection{empty-stream?}
-The function @scheme[empty-stream?] takes a Stream checks if the given stream is 
-empty. 
+@defproc[(empty-stream? [strm (Stream A)]) Boolean]{ 
+The function @scheme[empty-stream?] takes a Stream checks if the given 
+stream is empty. 
 @examples[#:eval evaluate
 
 (empty-stream? (stream 1 2 3 4 5 6))
 (empty-stream? empty-stream)
 
-]
+]}
 
 
-@subsection{stream-cons}
+@defproc[(stream-cons [a A] [strm (Stream A)]) (Stream A)]{
 The function @scheme[stream-cons] takes an element and a stream and adds 
 the given element to the given stream. 
 @examples[#:eval evaluate
@@ -52,10 +52,10 @@ the given element to the given stream.
 ]
 
 In the above example, @scheme[(stream-cons 10 (stream 1 2 3 4 5 6))] 
-returns the stream @scheme[(stream 10 1 2 3 4 5 6)].
+returns the stream @scheme[(stream 10 1 2 3 4 5 6)].}
 
 
-@subsection{stream-car}
+@defproc[(stream-car [strm (Stream A)]) A]{
 The function @scheme[stream-car] takes a stream and returns the first element
 of the given stream. If the given stream is empty, then it throws an error.
 
@@ -63,10 +63,10 @@ of the given stream. If the given stream is empty, then it throws an error.
 
 (stream-car (stream 1 2 3 4 5 6))
 (stream-car empty-stream)
-]
+]}
 
 
-@subsection{stream-cdr}
+@defproc[(stream-cdr [strm (Stream A)]) (Stream A)]{
 The function @scheme[stream-cdr] takes a stream and returns the same stream 
 but without the first element of the given stream. 
 @examples[#:eval evaluate
@@ -76,10 +76,10 @@ but without the first element of the given stream.
 ]
 
 In the above example, @scheme[(stream-cdr strm)] returns 
-@scheme[(stream 2 3 4 5 6)].
+@scheme[(stream 2 3 4 5 6)].}
 
 
-@subsection{stream-append}
+@defproc[(stream-append [strm1 (Stream A)] [strm2 (Stream A)]) (Stream A)]{
 The function @scheme[stream-append] takes two streams and creates a new 
 stream by appending the second stream to the end of first stream. 
 
@@ -93,10 +93,10 @@ stream by appending the second stream to the end of first stream.
 ]
 
 In the above example, @scheme[(stream-append strm1 strm2)] returns the stream,
-@scheme[(stream 1 2 3 4 5 6 51 32 42)].
+@scheme[(stream 1 2 3 4 5 6 51 32 42)].}
 
 
-@subsection{stream-reverse}
+@defproc[(stream-reverse [strm (Stream A)]) (Stream A)]{
 The function @scheme[stream-reverse] takes a streams and gives a reversed
 stream back. 
 @examples[#:eval evaluate
@@ -105,20 +105,20 @@ stream back.
 ]
 
 In the above example, @scheme[(stream-reverse (stream 1 2 3 4 5 6))] returns
-@scheme[(stream 6 5 4 3 2 1)].
+@scheme[(stream 6 5 4 3 2 1)].}
 
 
-@subsection{stream->list}
+@defproc[(stream->list [strm (Stream A)]) (Listof A)]{
 The function @scheme[stream->list] takes a stream and returns a list
 of elements which are in the same order as in the stream. 
 @examples[#:eval evaluate
 
 (stream->list (stream 1 2 3 4 5 6))
 (stream->list empty-stream)
-]
+]}
 
 
-@subsection{drop}
+@defproc[(drop [num Integer] [strm (Stream A)]) (Stream A)]{
 The function @scheme[drop] takes an integer(say n) and a stream and creates a
 new stream which is same as the given stream but without the first n elements
 of the input stream. If the number of elements in the given stream is less 
@@ -131,18 +131,18 @@ than n, then @scheme[drop] throws an error.
 ]
 
 In the above example, @scheme[(drop 3 (stream 1 2 3 4 5 6))] returns 
-@scheme[(stream 4 5 6)].
+@scheme[(stream 4 5 6)].}
 
 
 
-@subsection{take}
+@defproc[(take [num Integer] [strm (Stream A)]) (Stream A)]{
 The function @scheme[take] takes an integer(say n) and a stream and creates a
 new stream with the first n elements of the input stream. If the number of 
 elements in the given stream is less than n, then @scheme[take] throws an 
 error. 
 @margin-note{@scheme[(take 5 (stream 1))] does not
-throw any error because @scheme[take] returns a suspension rather than 
-finishing the whole computation.}
+throw any error because of its lazy nature. @scheme[take] returns a suspension
+rather than finishing the whole computation.}
 @examples[#:eval evaluate
 
 (take 3 (stream 1 2 3 4 5 6))
@@ -150,4 +150,4 @@ finishing the whole computation.}
 ]
 
 In the above example, @scheme[(take 3 (stream 1 2 3 4 5 6))] returns
-@scheme[(stream 1 2 3)].
+@scheme[(stream 1 2 3)].}
