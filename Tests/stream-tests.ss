@@ -8,11 +8,11 @@
 
 (check-expect (stream-car (stream 1)) 1)
 (check-expect (stream-car (stream 2 3 1)) 2)
-(check-error (stream-car empty-stream) "stream-car: Given stream is empty")
+(check-error (stream-car empty-stream) "stream-car: given stream is empty")
 
 (check-expect (stream->list (stream-cdr (stream 1))) null)
 (check-expect (stream->list (stream-cdr (stream 2 3 1))) (list 3 1))
-(check-error (stream-cdr empty-stream) "stream-cdr: Given stream is empty")
+(check-error (stream-cdr empty-stream) "stream-cdr: given stream is empty")
 
 (define lst1 (build-list 100 (λ: ([x : Integer]) x)))
 (define lst2 (build-list 100 (λ: ([x : Integer]) (+ x 100))))

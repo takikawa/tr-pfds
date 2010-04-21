@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide pairingheap merge insert find-min/max
+(provide heap merge insert find-min/max
          delete-min/max sorted-list empty?)
 
 (require scheme/promise
@@ -54,14 +54,15 @@
 (define (insert elem pheap)
   (let ([func (PairingHeap-comparer pheap)]
         [heap (PairingHeap-heap pheap)])
-    (make-PairingHeap func (merge-help (make-IntHeap elem (make-Mt) (delay (make-Mt)))
+    (make-PairingHeap func (merge-help (make-IntHeap elem (make-Mt)
+                                                     (delay (make-Mt)))
                                        heap func))))
 
 (: find-min/max : (All (A) ((PairingHeap A) -> A)))
 (define (find-min/max pheap)
   (let ([heap (PairingHeap-heap pheap)])
     (if (Mt? heap)
-        (error 'find-min/max "Given heap is empty")
+        (error 'find-min/max "given heap is empty")
         (IntHeap-elem heap))))
 
 (: delete-min/max : (All (A) ((PairingHeap A) -> (PairingHeap A))))
@@ -69,13 +70,13 @@
   (let ([heap (PairingHeap-heap pheap)]
         [func (PairingHeap-comparer pheap)])
     (if (Mt? heap)
-        (error 'delete-min/max "Given heap is empty")
+        (error 'delete-min/max "given heap is empty")
         (make-PairingHeap func (merge-help (IntHeap-heap heap) 
                                            (force (IntHeap-lazy heap)) 
                                            func)))))
 
-(: pairingheap : (All (A) ((A A -> Boolean) A * -> (PairingHeap A))))
-(define (pairingheap comparer . lst)
+(: heap : (All (A) ((A A -> Boolean) A * -> (PairingHeap A))))
+(define (heap comparer . lst)
   (let ([first ((inst make-PairingHeap A) comparer (make-Mt))])
     (foldl (inst insert A) first lst)))
 

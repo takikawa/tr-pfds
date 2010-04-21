@@ -44,14 +44,14 @@
 (: head : (All (A) ((Queue A) -> A)))
 (define (head bsq)
   (if (EmptyBSQueue? bsq)
-      (error 'head "Given queue is empty")
+      (error 'head "given queue is empty")
       (car (IntQue-F bsq))))
 
 
 (: tail : (All (A) ((Queue A) -> (Queue A))))
 (define (tail bsq)
   (if (EmptyBSQueue? bsq)
-      (error 'tail "Given queue is empty")
+      (error 'tail "given queue is empty")
       (internal-queue (cdr (IntQue-F bsq)) 
                       (IntQue-M bsq) 
                       (sub1 (IntQue-LenFM bsq)) 

@@ -13,10 +13,10 @@
 (check-expect (head (tail (init (deque 4 5 1 2 -1)))) 2)
 (check-expect (last (tail (init (deque 4 5 1 2 -1)))) 5)
 
-(check-error (head empty) "head: Given deque is empty")
-(check-error (last empty) "last: Given deque is empty")
-(check-error (tail empty) "tail: Given deque is empty")
-(check-error (init empty) "init: Given deque is empty")
+(check-error (head empty) "head: given deque is empty")
+(check-error (last empty) "last: given deque is empty")
+(check-error (tail empty) "tail: given deque is empty")
+(check-error (init empty) "init: given deque is empty")
 
 (check-expect (deque->list (tail (deque 1))) null)
 (check-expect (deque->list (init (deque 1))) null)

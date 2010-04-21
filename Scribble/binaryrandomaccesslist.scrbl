@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(require (for-label "../binaryrandomaccesslist.ss"))
 
 @(require scribble/eval)
 
@@ -12,12 +13,13 @@ Random Access Lists are list data structures that provide array-like lookup
 and update operations. They have been implemented as a framework of binary 
 numerical representation using complete binary leaf trees. It has a worst 
 case running time of @bold{@italic{O(log(n))}} for the operations
-@italic{kons, head, tail, lookup and update}.
+@scheme[kons], @scheme[head], @scheme[tail], @scheme[lookup] and
+@scheme[update].
 
 @;section{Binary Random Access List Constructor and Operations}
 
 @defproc[(ralist [a A] ...) (RAList A)]{
-The function ralist creates a Binary Random Access List with the given 
+Function @scheme[ralist] creates a Binary Random Access List with the given 
 inputs.
 @examples[#:eval evaluate
 
@@ -28,11 +30,11 @@ In the above example, @scheme[(ralist 1 2 3 4 5 6)] gives a Binary Random
 Access List which is similar to lists but comes with efficient lookup and 
 update operations.}
 
-@defform/none[empty]{
+@defthing[empty (RAList Nothing)]{
 A empty random access list}
 
 @defproc[(empty? [ral (RAList A)]) Boolean]{
-The function @scheme[empty?] takes a Binary Random Access List checks if the 
+Function @scheme[empty?] takes a Binary Random Access List checks if the 
 given ralist is empty.   
 @examples[#:eval evaluate
 
@@ -42,7 +44,7 @@ given ralist is empty.
 ]}
 
 @defproc[(kons [a A] [ral (RAList A)]) (RAList A)]{
-The function @scheme[kons] takes an element and a ralist and adds the given 
+Function @scheme[kons] takes an element and a ralist and adds the given 
 element to the front of the given list.   
 @examples[#:eval evaluate
 
@@ -54,7 +56,7 @@ In the above example, @scheme[(kons 10 (ralist 5 3 5 6))] returns
 }
 
 @defproc[(head [ral (RAList A)]) A]{
-The function @scheme[head] takes a ralist and returns the first element
+Function @scheme[head] takes a ralist and returns the first element
 of the given ralist if its not empty else throws an error.   
 @examples[#:eval evaluate
 
@@ -66,7 +68,7 @@ of the given ralist if its not empty else throws an error.
 
 
 @defproc[(tail [ral (RAList A)]) (RAList A)]{
-The function @scheme[tail] takes a ralist and returns the given ralist but
+Function @scheme[tail] takes a ralist and returns the given ralist but
 without its first element if the given ralist is not empty. If it is empty,
 @scheme[tail] throws an error
 @examples[#:eval evaluate
@@ -81,7 +83,7 @@ ralist, @scheme[(ralist 2 3 4 5 6)].
 }
 
 @defproc[(lookup [index Integer] [ral (RAList A)]) A]{
-The function @scheme[lookup] takes an integer(say n) and a ralist and gives
+Function @scheme[lookup] takes an integer(say n) and a ralist and gives
 the nth element of the given ralist. If the given n is larger than the size 
 of the list, @scheme[lookup] throws an error.
   
@@ -95,7 +97,7 @@ of the list, @scheme[lookup] throws an error.
 
 
 @defproc[(update [index Integer] [ral (RAList A)] [newval A]) (RAList A)]{
-The function @scheme[update] takes an integer(say n), ralist and a new
+Function @scheme[update] takes an integer(say n), ralist and a new
 element. And updates the nth element of the ralist with the new element.
 
   
@@ -112,7 +114,7 @@ In the above example, @scheme[(update 2 (ralist 1 2 3 4 5 6) 10)] returns
 }
 
 @defproc[(ralist->list [ral (RAList A)]) (Listof A)]{
-The function @scheme[ralist->list] takes a ralist and returns a list
+Function @scheme[ralist->list] takes a ralist and returns a list
 of elements which are in the same order as in the ralist.   
 @examples[#:eval evaluate
 
@@ -126,25 +128,25 @@ In the above example, @scheme[(ralist->list ral)] returns
 }
 
 @defproc[(drop [ral (RAList A)] [num Integer]) (RAList A)]{
-The function @scheme[drop] takes a ralist and an integer(say n) and drops 
+Function @scheme[drop] takes a ralist and an integer(say n) and drops 
 the first n elements of the input ralist and returns the rest of the list. 
   
 @examples[#:eval evaluate
 
-(drop (ralist 1 2 3 4 5 6) 3)
+(drop 3 (ralist 1 2 3 4 5 6))
 
-(drop (ralist 1 2 3 4 5 6) 10)
+(drop 10 (ralist 1 2 3 4 5 6))
 ]
 
-In the above example, @scheme[(drop (ralist 1 2 3 4 5 6) 3)] returns the 
-ralist @scheme[(ralist 4 5 6)]. @scheme[(drop (ralist 1 2 3 4 5 6) 10)] 
+In the above example, @scheme[(drop 3 (ralist 1 2 3 4 5 6))] returns the 
+ralist @scheme[(ralist 4 5 6)]. @scheme[(drop 10 (ralist 1 2 3 4 5 6))]
 throws an error since 10 is larger than the number of 
 elements in the ralist.
 }
 
 
 @defproc[(list-length [ral (RAList A)]) Integer]{
-The function @scheme[list-length] takes a ralist and gives the number of 
+Function @scheme[list-length] takes a ralist and gives the number of 
 elements in in the given ralist. 
   
 @examples[#:eval evaluate

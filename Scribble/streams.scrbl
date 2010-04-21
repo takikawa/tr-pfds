@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(require (for-label "../stream.ss"))
 
 @(require scribble/eval)
 
@@ -19,7 +20,7 @@ only when there is a good enough reason to do so.
 @;section{Stream Constructor and Operations}
 
 @defproc[(stream [a A] ...) (Stream A)]{
-The function stream creates a Stream with the given inputs. 
+Function stream creates a Stream with the given inputs. 
 
 @examples[#:eval evaluate
 
@@ -29,11 +30,11 @@ The function stream creates a Stream with the given inputs.
 In the above example, the stream obtained will be similar to lists but will
 lazy in nature. It will have 1 as its first element.}
 
-@defform/none[empty-stream]{
+@defthing[empty-stream (Stream Nothing)]{
 An empty stream.}
 
 @defproc[(empty-stream? [strm (Stream A)]) Boolean]{ 
-The function @scheme[empty-stream?] takes a Stream checks if the given 
+Function @scheme[empty-stream?] takes a Stream checks if the given 
 stream is empty. 
 @examples[#:eval evaluate
 
@@ -44,7 +45,7 @@ stream is empty.
 
 
 @defproc[(stream-cons [a A] [strm (Stream A)]) (Stream A)]{
-The function @scheme[stream-cons] takes an element and a stream and adds 
+Function @scheme[stream-cons] takes an element and a stream and adds 
 the given element to the given stream. 
 @examples[#:eval evaluate
 
@@ -56,7 +57,7 @@ returns the stream @scheme[(stream 10 1 2 3 4 5 6)].}
 
 
 @defproc[(stream-car [strm (Stream A)]) A]{
-The function @scheme[stream-car] takes a stream and returns the first element
+Function @scheme[stream-car] takes a stream and returns the first element
 of the given stream. If the given stream is empty, then it throws an error.
 
 @examples[#:eval evaluate
@@ -67,7 +68,7 @@ of the given stream. If the given stream is empty, then it throws an error.
 
 
 @defproc[(stream-cdr [strm (Stream A)]) (Stream A)]{
-The function @scheme[stream-cdr] takes a stream and returns the same stream 
+Function @scheme[stream-cdr] takes a stream and returns the same stream 
 but without the first element of the given stream. 
 @examples[#:eval evaluate
 
@@ -80,7 +81,7 @@ In the above example, @scheme[(stream-cdr strm)] returns
 
 
 @defproc[(stream-append [strm1 (Stream A)] [strm2 (Stream A)]) (Stream A)]{
-The function @scheme[stream-append] takes two streams and creates a new 
+Function @scheme[stream-append] takes two streams and creates a new 
 stream by appending the second stream to the end of first stream. 
 
 @examples[#:eval evaluate
@@ -97,7 +98,7 @@ In the above example, @scheme[(stream-append strm1 strm2)] returns the stream,
 
 
 @defproc[(stream-reverse [strm (Stream A)]) (Stream A)]{
-The function @scheme[stream-reverse] takes a streams and gives a reversed
+Function @scheme[stream-reverse] takes a streams and gives a reversed
 stream back. 
 @examples[#:eval evaluate
 
@@ -109,7 +110,7 @@ In the above example, @scheme[(stream-reverse (stream 1 2 3 4 5 6))] returns
 
 
 @defproc[(stream->list [strm (Stream A)]) (Listof A)]{
-The function @scheme[stream->list] takes a stream and returns a list
+Function @scheme[stream->list] takes a stream and returns a list
 of elements which are in the same order as in the stream. 
 @examples[#:eval evaluate
 
@@ -119,7 +120,7 @@ of elements which are in the same order as in the stream.
 
 
 @defproc[(drop [num Integer] [strm (Stream A)]) (Stream A)]{
-The function @scheme[drop] takes an integer(say n) and a stream and creates a
+Function @scheme[drop] takes an integer(say n) and a stream and creates a
 new stream which is same as the given stream but without the first n elements
 of the input stream. If the number of elements in the given stream is less 
 than n, then @scheme[drop] throws an error.
@@ -136,7 +137,7 @@ In the above example, @scheme[(drop 3 (stream 1 2 3 4 5 6))] returns
 
 
 @defproc[(take [num Integer] [strm (Stream A)]) (Stream A)]{
-The function @scheme[take] takes an integer(say n) and a stream and creates a
+Function @scheme[take] takes an integer(say n) and a stream and creates a
 new stream with the first n elements of the input stream. If the number of 
 elements in the given stream is less than n, then @scheme[take] throws an 
 error. 

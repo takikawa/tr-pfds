@@ -33,7 +33,7 @@
 (define (stream-car strem)
   (let ([instr (force strem)])
     (if (Mt? instr)
-        (error 'stream-car "Given stream is empty")
+        (error 'stream-car "given stream is empty")
         (InStream-fst instr))))
 
 
@@ -41,7 +41,7 @@
 (define (stream-cdr strem)
   (let ([instr (force strem)])
     (if (Mt? instr)
-        (error 'stream-cdr "Given stream is empty")
+        (error 'stream-cdr "given stream is empty")
         (InStream-rst instr))))
 
 (: drop : (All (A) (Integer (Stream A) -> (Stream A))))

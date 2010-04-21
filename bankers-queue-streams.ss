@@ -45,14 +45,14 @@
 (: head : (All (A) ((Queue A) -> A)))
 (define (head que)
   (if (empty? que)
-      (error 'head "Given queue is empty")
+      (error 'head "given queue is empty")
       (stream-car (Queue-front que))))
 
 ;; Dequeue operation. Removes the head and returns the rest of the queue
 (: tail : (All (A) ((Queue A) -> (Queue A))))
 (define (tail que)
   (if (empty? que)
-      (error 'tail "Given queue is empty")
+      (error 'tail "given queue is empty")
       (internal-queue (stream-cdr (Queue-front que))
                       (sub1 (Queue-lenf que))
                       (Queue-rear que)

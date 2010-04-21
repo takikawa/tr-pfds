@@ -4,16 +4,16 @@
 
 
 (check-expect 
- (sorted-list (apply pairingheap 
+ (sorted-list (apply heap 
                      (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                      (build-list 100 (λ: ([x : Integer]) x))))
  (build-list 100 (λ(x) x)))
 
 (check-expect 
- (sorted-list (merge (apply pairingheap 
+ (sorted-list (merge (apply heap 
                             (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                             (build-list 100 (λ: ([x : Integer]) x)))
-                     (apply pairingheap 
+                     (apply heap 
                             (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                             (build-list 100 (λ: ([x : Integer]) (+ 100 x))))))
  (append (build-list 100 (λ(x) x)) 
@@ -22,10 +22,10 @@
 (check-expect 
  (sorted-list 
   (delete-min/max
-   (merge (apply pairingheap 
+   (merge (apply heap 
                  (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                  (build-list 100 (λ: ([x : Integer]) x)))
-          (apply pairingheap 
+          (apply heap 
                  (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                  (build-list 100 (λ: ([x : Integer]) (+ 100 x)))))))
  (append (cdr (build-list 100 (λ(x) x)))
@@ -36,10 +36,10 @@
  (sorted-list 
   (delete-min/max
    (delete-min/max
-   (merge (apply pairingheap 
+   (merge (apply heap 
                  (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                  (build-list 100 (λ: ([x : Integer]) x)))
-          (apply pairingheap 
+          (apply heap 
                  (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                  (build-list 100 (λ: ([x : Integer]) (- x 100))))))))
  (append (build-list 98 (λ: ([x : Integer]) (- x 98)))
@@ -51,10 +51,10 @@
    500
    (delete-min/max
     (delete-min/max
-     (merge (apply pairingheap 
+     (merge (apply heap 
                    (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                    (build-list 100 (λ: ([x : Integer]) x)))
-            (apply pairingheap 
+            (apply heap 
                    (λ: ([a : Integer] [b : Integer]) (<= a b)) 
                    (build-list 100 (λ: ([x : Integer]) (- x 100)))))))))
   (append (build-list 98 (λ: ([x : Integer]) (- x 98)))
@@ -62,11 +62,11 @@
           (cons 500 null)))
 
 (check-error 
- (delete-min/max (pairingheap (λ: ([a : Integer] [b : Integer]) (<= a b))))
- "delete-min/max: Given heap is empty")
+ (delete-min/max (heap (λ: ([a : Integer] [b : Integer]) (<= a b))))
+ "delete-min/max: given heap is empty")
 
 (check-error 
- (find-min/max (pairingheap (λ: ([a : Integer] [b : Integer]) (<= a b))))
- "find-min/max: Given heap is empty")
+ (find-min/max (heap (λ: ([a : Integer] [b : Integer]) (<= a b))))
+ "find-min/max: given heap is empty")
  
 (test)

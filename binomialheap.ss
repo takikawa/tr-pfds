@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide empty? insert find-min/max delete-min/max
-         merge sorted-list binomialheap BinomialHeap)
+         merge sorted-list heap heap Heap)
 
 (define-struct: (A) Node ([rank : Integer]
                           [val : A]
@@ -10,7 +10,6 @@
 (define-struct: (A) Heap ([comparer : (A A -> Boolean)]
                           [trees : (Listof (Node A))]))
 
-(define-type-alias (BinomialHeap A) (Heap A))
 
 (: empty? : (All (A) ((Heap A) -> Boolean)))
 (define (empty? heap)
@@ -95,7 +94,7 @@
 (define (find-min/max heap)
   (let ([trees (Heap-trees heap)])
     (cond
-      [(null? trees) (error 'find-min/max "Given heap is empty")]
+      [(null? trees) (error 'find-min/max "given heap is empty")]
       [(null? (cdr trees)) (Node-val (car trees))]
       [else (let* ([comparer (Heap-comparer heap)]
                    [x (root (car trees))]
@@ -120,7 +119,7 @@
                 (make-Heap func (cons fst-pair 
                                       (cons fst-trees rst-pair))))))))
   (if (null? (Heap-trees heap))
-      (error 'delete-min/max "Given heap is empty")
+      (error 'delete-min/max "given heap is empty")
        (let* ([func (Heap-comparer heap)]
               [newpair (getMin (Heap-trees heap) func)]
               [newpair-trees (Heap-trees newpair)])
@@ -133,6 +132,6 @@
       null
       (cons (find-min/max heap) (sorted-list (delete-min/max heap)))))
 
-(: binomialheap : (All (A) ((A A -> Boolean) A * -> (Heap A))))
-(define (binomialheap func . lst)
+(: heap : (All (A) ((A A -> Boolean) A * -> (Heap A))))
+(define (heap func . lst)
   (foldl (inst insert A) ((inst make-Heap A) func empty) lst))

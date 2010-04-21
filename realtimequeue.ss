@@ -5,18 +5,18 @@
 
 (require "stream.ss")
 
-(define-struct: (A) RTQueue ([front : (Stream A)]
+(define-struct: (A) Queue ([front : (Stream A)]
                              [rear  : (Listof A)]
                              [scdul : (Stream A)]))
 
 
-(define-type-alias (Queue A) (RTQueue A))
-(define empty (make-RTQueue empty-stream null empty-stream))
+;(define-type-alias (Queue A) (Queue A))
+(define empty (make-Queue empty-stream null empty-stream))
 
 
-(: empty? : (All (A) ((RTQueue A) -> Boolean)))
+(: empty? : (All (A) ((Queue A) -> Boolean)))
 (define (empty? rtq)
-  (empty-stream? (RTQueue-front rtq)))
+  (empty-stream? (Queue-front rtq)))
 
 
 (: rotate : (All (A) ((Stream A) (Listof A) (Stream A) -> (Stream A))))
@@ -29,46 +29,46 @@
                              (cdr rer) 
                              (stream-cons carrer accum))))))
 
-(: internal-queue : (All (A) ((Stream A) (Listof A) (Stream A) -> (RTQueue A))))
+(: internal-queue : (All (A) ((Stream A) (Listof A) (Stream A) -> (Queue A))))
 (define (internal-queue front rear schdl)
   (if (empty-stream? schdl)
       (let ([newf (rotate front rear schdl)])
-        (make-RTQueue newf null newf))
-      (make-RTQueue front rear (stream-cdr schdl))))
+        (make-Queue newf null newf))
+      (make-Queue front rear (stream-cdr schdl))))
 
 
-(: enqueue : (All (A) (A (RTQueue A) -> (RTQueue A))))
+(: enqueue : (All (A) (A (Queue A) -> (Queue A))))
 (define (enqueue elem rtq)
-  (internal-queue (RTQueue-front rtq)
-                  (cons elem (RTQueue-rear rtq))
-                  (RTQueue-scdul rtq)))
+  (internal-queue (Queue-front rtq)
+                  (cons elem (Queue-rear rtq))
+                  (Queue-scdul rtq)))
 
 
-(: head : (All (A) ((RTQueue A) -> A)))
+(: head : (All (A) ((Queue A) -> A)))
 (define (head rtq)
   (if (empty? rtq)
-      (error 'head "Given queue is empty")
-      (stream-car (RTQueue-front rtq))))
+      (error 'head "given queue is empty")
+      (stream-car (Queue-front rtq))))
 
 
-(: tail : (All (A) ((RTQueue A) -> (RTQueue A))))
+(: tail : (All (A) ((Queue A) -> (Queue A))))
 (define (tail rtq)
   (if (empty? rtq)
-      (error 'tail "Given queue is empty")
-      (internal-queue (stream-cdr (RTQueue-front rtq)) 
-                      (RTQueue-rear rtq) 
-                      (RTQueue-scdul rtq))))
+      (error 'tail "given queue is empty")
+      (internal-queue (stream-cdr (Queue-front rtq)) 
+                      (Queue-rear rtq) 
+                      (Queue-scdul rtq))))
 
-(: queue->list : (All (A) ((RTQueue A) -> (Listof A))))
+(: queue->list : (All (A) ((Queue A) -> (Listof A))))
 (define (queue->list rtq)
   (if (empty? rtq)
       null
       (cons (head rtq) (queue->list (tail rtq)))))
 
-(: list->queue : (All (A) ((Listof A) -> (RTQueue A))))
+(: list->queue : (All (A) ((Listof A) -> (Queue A))))
 (define (list->queue lst)
   (foldl (inst enqueue A) empty lst))
 
-(: queue : (All (A) (A * -> (RTQueue A))))
+(: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
   (foldl (inst enqueue A) empty lst))

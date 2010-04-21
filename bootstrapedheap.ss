@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide empty? insert find-min/max delete-min/max empty
-         merge sorted-list bootstrapped-heap BSHeap)
+         merge sorted-list heap BSHeap)
 
 (require (prefix-in bh: "skewbinomialheap.ss")
          scheme/match)
@@ -9,7 +9,7 @@
 (define-struct: Mt ())
 
 (define-struct: (A) IntHeap ([elem : A]
-                             [heap : (bh:BinomialHeap (IntHeap A))]))
+                             [heap : (bh:Heap (IntHeap A))]))
 
 (define-type-alias (Heaps A) (U Mt (IntHeap A)))
 
@@ -58,9 +58,9 @@
         [else (func (IntHeap-elem h1) (IntHeap-elem h2))]))
     (make-BSHeap func 
                  (merge-help (make-IntHeap elem 
-                                        (ann ((inst bh:binomialheap (IntHeap A)) 
+                                        (ann ((inst bh:heap (IntHeap A)) 
                                               comp)
-                                             (bh:BinomialHeap (IntHeap A))))
+                                             (bh:Heap (IntHeap A))))
                              inheap func))))
 
 
@@ -68,7 +68,7 @@
 (define (find-min/max bsheap)
   (let ([heap (BSHeap-heap bsheap)])
     (if (Mt? heap)
-        (error 'find-min/max "Given heap is empty")
+        (error 'find-min/max "given heap is empty")
         (IntHeap-elem heap))))
 
 (: delete-min/max : (All (A) ((BSHeap A) -> (BSHeap A))))
@@ -76,7 +76,7 @@
   (let ([heap (BSHeap-heap bsheap)]
         [func (BSHeap-comparer bsheap)])
     (if (Mt? heap)
-        (error 'delete-min/max "Given heap is empty")
+        (error 'delete-min/max "given heap is empty")
         (let ([bheap (IntHeap-heap heap)])
           (if (bh:empty? bheap)
               ((inst make-BSHeap A) func (ann (make-Mt) (Heaps A)))
@@ -87,8 +87,8 @@
                                         (bh:merge (IntHeap-heap min-heap) 
                                                   del)))))))))
 
-(: bootstrapped-heap : (All (A) ((A A -> Boolean) A * -> (BSHeap A))))
-(define (bootstrapped-heap func . lst)
+(: heap : (All (A) ((A A -> Boolean) A * -> (BSHeap A))))
+(define (heap func . lst)
   (: comp : ((Heaps A) (Heaps A) -> Boolean))
   (define (comp h1 h2)
     (cond

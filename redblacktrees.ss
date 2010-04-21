@@ -54,7 +54,7 @@
 (: elem : (All (A) ((Tree A) -> A)))
 (define (elem tree)
   (if (Mt? tree)
-      (error 'root "Given tree is empty")
+      (error 'root "given tree is empty")
       (RBNode-elem tree)))
 
 (: root : (All (A) ((RBTree A) -> A)))
@@ -143,7 +143,7 @@
 (: delete-root : (All (A) ((RBTree A) -> (RBTree A))))
 (define (delete-root redblacktree)
   (if (empty? redblacktree)
-      (error 'delete-root "Given tree is empty")
+      (error 'delete-root "given tree is empty")
       (delete (root redblacktree) redblacktree)))
 
 (: delete : (All (A) (A (RBTree A) -> (RBTree A))))
@@ -155,7 +155,7 @@
 (: delete-helper : (All (A) (A (Tree A) (A A -> Boolean) -> (Tree A))))
 (define (delete-helper key tre func)
   (if (Mt? tre)
-      (error 'delete "Given key not found in the tree")
+      (error 'delete "given key not found in the tree")
       (del-help key tre func)))
 
 (: del-help : (All (A) (A (RBNode A) (A A -> Boolean) -> (Tree A))))

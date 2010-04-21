@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(require (for-label "../hood-melville-queue.ss"))
 @(require scribble/eval)
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/scheme))
@@ -9,12 +10,12 @@ Similar to Real-Time Queues in many ways. But the implementation is
 much more complicated than Real-Time Queue. Uses a technique called 
 @italic{Global Rebuilding}. The data structure gives a worst case 
 running time of @bold{@italic{O(1)}} for the operations 
-@italic{head, tail and enqueue}.
+@scheme[head], @scheme[tail] and @scheme[enqueue].
 
 @;section{Hood-Melville Construction and Operations}
 
 @defproc[(queue [a A] ...) (Queue A)]{
-The function @scheme[queue] creates a Hood-Melville with the 
+Function @scheme[queue] creates a Hood-Melville with the 
 given inputs. 
 @examples[#:eval evaluate
 
@@ -24,11 +25,11 @@ given inputs.
 In the above example, the queue obtained will have 1 as its head element.}
 
 
-@defform/none[empty]{
+@defthing[empty (Queue Nothing)]{
 An empty queue.}
 
 @defproc[(empty? [que (Queue A)]) Boolean]{
-The function @scheme[empty?] checks if the given queue is empty or not.
+Function @scheme[empty?] checks if the given queue is empty or not.
 
 @examples[#:eval evaluate
 
@@ -38,7 +39,7 @@ The function @scheme[empty?] checks if the given queue is empty or not.
 ]}
 
 @defproc[(enqueue [a A] [que (Queue A)]) (Queue A)]{
-The function @scheme[enqueue] takes an element and a queue and enqueues 
+Function @scheme[enqueue] takes an element and a queue and enqueues 
 the given element into the queue. 
 @examples[#:eval evaluate
 
@@ -49,7 +50,7 @@ In the above example, enqueue adds the element 10 to
 @scheme[(queue 1 2 3 4 5 6)] and returns @scheme[(queue 1 2 3 4 5 6 10)].}
 
 @defproc[(head [que (Queue A)]) A]{
-The function @scheme[head] takes a queue and gives the first element in the
+Function @scheme[head] takes a queue and gives the first element in the
 queue if queue is not empty else throws an error. 
 @examples[#:eval evaluate
 
@@ -58,7 +59,7 @@ queue if queue is not empty else throws an error.
 ]}
 
 @defproc[(tail [que (Queue A)]) (Queue A)]{
-The function @scheme[tail] takes a queue and returns a queue with rest 
+Function @scheme[tail] takes a queue and returns a queue with rest 
 elements if its a non empty queue else throws an error. 
 @examples[#:eval evaluate
 
@@ -72,7 +73,7 @@ In the above example, @scheme[(tail (queue 1 2 3 4 5 6))], returns
 
 
 @defproc[(queue->list [que (Queue A)]) (Queue A)]{
-The function @scheme[queue->list] takes a queue and returns a list of 
+Function @scheme[queue->list] takes a queue and returns a list of 
 elements. The list will have head of the given queue as its first element.
 If the given queue is empty, then it returns an empty list. 
 For 

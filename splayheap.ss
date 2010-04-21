@@ -1,7 +1,7 @@
 #lang typed-scheme
 
 (provide empty empty? insert merge find-min/max 
-         delete-min/max sorted-list splayheap Heap)
+         delete-min/max sorted-list heap Heap)
 
 (require scheme/match)
 
@@ -13,10 +13,10 @@
 
 (define-type-alias (IntHeap A) (U Mt (Tree A)))
 
-(define-struct: (A) SplayHeap ([comparer : (A A -> Boolean)]
+(define-struct: (A) Heap ([comparer : (A A -> Boolean)]
                                [heap : (IntHeap A)]))
 
-(define-type-alias (Heap A) (SplayHeap A))
+;(define-type-alias (Heap A) (Heap A))
 
 (define empty (make-Mt))
 
@@ -62,22 +62,22 @@
         (phelp-rgt right)
         (phelp-lft left))))
 
-(: empty? : (All (A) ((SplayHeap A) -> Boolean)))
+(: empty? : (All (A) ((Heap A) -> Boolean)))
 (define (empty? heap)
-  (Mt? (SplayHeap-heap heap)))
+  (Mt? (Heap-heap heap)))
 
-(: insert : (All (A) (A (SplayHeap A) -> (SplayHeap A))))
+(: insert : (All (A) (A (Heap A) -> (Heap A))))
 (define (insert elem sheap)
-  (let* ([comparer (SplayHeap-comparer sheap)]
-         [pair (partition elem (SplayHeap-heap sheap) comparer)])
-    (make-SplayHeap comparer (make-Tree (car pair) elem (cdr pair)))))
+  (let* ([comparer (Heap-comparer sheap)]
+         [pair (partition elem (Heap-heap sheap) comparer)])
+    (make-Heap comparer (make-Tree (car pair) elem (cdr pair)))))
 
-(: merge : (All (A) ((SplayHeap A) (SplayHeap A) -> (SplayHeap A))))
+(: merge : (All (A) ((Heap A) (Heap A) -> (Heap A))))
 (define (merge sheap1 sheap2)
-  (let ([heap1 (SplayHeap-heap sheap1)]
-        [heap2 (SplayHeap-heap sheap2)]
-        [func (SplayHeap-comparer sheap1)])
-    (make-SplayHeap func (merge-help heap1 heap2 func))))
+  (let ([heap1 (Heap-heap sheap1)]
+        [heap2 (Heap-heap sheap2)]
+        [func (Heap-comparer sheap1)])
+    (make-Heap func (merge-help heap1 heap2 func))))
 
 (: merge-help : (All (A) ((IntHeap A) (IntHeap A) (A A -> Boolean) -> (IntHeap A))))
 (define (merge-help heap1 heap2 func)
@@ -91,38 +91,38 @@
                     elem
                     (merge-help (cdr in-pair) b func)))])))
 
-(: find-min/max : (All (A) ((SplayHeap A) -> A)))
+(: find-min/max : (All (A) ((Heap A) -> A)))
 (define (find-min/max sheap)
-  (let ([heap (SplayHeap-heap sheap)]
-        [func (SplayHeap-comparer sheap)])
+  (let ([heap (Heap-heap sheap)]
+        [func (Heap-comparer sheap)])
     (match heap
-      [(struct Mt ()) (error 'find-min/max "Given heap is empty")]
+      [(struct Mt ()) (error 'find-min/max "given heap is empty")]
       [(struct Tree ((struct Mt ()) elem b)) elem]
-      [(struct Tree (a elem b)) (find-min/max (make-SplayHeap func a))])))
+      [(struct Tree (a elem b)) (find-min/max (make-Heap func a))])))
 
-(: delete-min/max : (All (A) ((SplayHeap A) -> (SplayHeap A))))
+(: delete-min/max : (All (A) ((Heap A) -> (Heap A))))
 (define (delete-min/max sheap)
-  (let ([heap (SplayHeap-heap sheap)]
-        [func (SplayHeap-comparer sheap)])
+  (let ([heap (Heap-heap sheap)]
+        [func (Heap-comparer sheap)])
     (match heap
-      [(struct Mt ()) (error 'delete-min/max "Given heap is empty")]
-      [(struct Tree ((struct Mt ()) elem b)) (make-SplayHeap func b)]
+      [(struct Mt ()) (error 'delete-min/max "given heap is empty")]
+      [(struct Tree ((struct Mt ()) elem b)) (make-Heap func b)]
       [(struct Tree ((struct Tree ((struct Mt ()) el a)) elem b))
-       (make-SplayHeap func (make-Tree a elem b))]
+       (make-Heap func (make-Tree a elem b))]
       [(struct Tree ((struct Tree (a el b)) elem c)) 
-       (make-SplayHeap func 
+       (make-Heap func 
                        (make-Tree 
-                        (SplayHeap-heap (delete-min/max (make-SplayHeap func a)))
+                        (Heap-heap (delete-min/max (make-Heap func a)))
                         el 
                         (make-Tree b elem c)))])))
 
-(: sorted-list : (All (A) ((SplayHeap A) -> (Listof A))))
+(: sorted-list : (All (A) ((Heap A) -> (Listof A))))
 (define (sorted-list sheap)
-  (if (Mt? (SplayHeap-heap sheap))
+  (if (Mt? (Heap-heap sheap))
       null
       (cons (find-min/max sheap) (sorted-list (delete-min/max sheap)))))
 
-(: splayheap : (All (A) ((A A -> Boolean) A * -> (SplayHeap A))))
-(define (splayheap func . rst)
-  (let ([sheap ((inst make-SplayHeap A) func (make-Mt))])
+(: heap : (All (A) ((A A -> Boolean) A * -> (Heap A))))
+(define (heap func . rst)
+  (let ([sheap ((inst make-Heap A) func (make-Mt))])
     (foldl (inst insert A) sheap rst)))

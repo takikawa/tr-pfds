@@ -1,4 +1,5 @@
 #lang scribble/manual
+@;(require (for-label and have the type (RAList A).
 
 @title{Random Access Lists}
 Following Random Access List structures implement 

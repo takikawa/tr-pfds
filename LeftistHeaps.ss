@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide leftistheap merge insert find-min/max delete-min/max sorted-list)
+(provide heap merge insert find-min/max delete-min/max sorted-list)
 
 (define-struct: Mt ())
 (define-struct: (A) Tree ([rank : Integer]
@@ -75,7 +75,7 @@
   (let ([heap (LeftistHeap-heap lheap)]
         [comparer (LeftistHeap-comparer lheap)])
     (if (Mt? heap)
-        (error 'find-min/max "Given heap is empty")
+        (error 'find-min/max "given heap is empty")
         (Tree-elem heap))))
 
 (: delete-min/max : (All (A) ((LeftistHeap A) -> (LeftistHeap A))))
@@ -83,7 +83,7 @@
   (let ([heap (LeftistHeap-heap lheap)]
         [comparer (LeftistHeap-comparer lheap)])
     (if (Mt? heap)
-        (error 'delete-min/max "Given heap is empty")
+        (error 'delete-min/max "given heap is empty")
         (make-LeftistHeap comparer
                           (in-merge (Tree-left heap) 
                                     (Tree-right heap) 
@@ -95,7 +95,7 @@
       null
       (cons (find-min/max lheap) (sorted-list (delete-min/max lheap)))))
 
-(: leftistheap : (All (A) ((A A -> Boolean) A * -> (LeftistHeap A))))
-(define (leftistheap comparer . lst)
+(: heap : (All (A) ((A A -> Boolean) A * -> (LeftistHeap A))))
+(define (heap comparer . lst)
   (let ([first ((inst make-LeftistHeap A) comparer empty)])
     (foldl (inst insert A) first lst)))

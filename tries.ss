@@ -23,13 +23,13 @@
   (if (null? keys)
       (let ([opt (Trie-opt map)])
         (if (Mt? opt)
-            (error 'lookup "Given key not found in the trie")
+            (error 'lookup "given key not found in the trie")
             (Some-elem opt)))
       (let ([fst (car keys)]
             [hash (Trie-map map)])
         (with-handlers
             ([exn:fail? (lambda (error?) 
-                          (error 'lookup "Given key not found in the trie"))])
+                          (error 'lookup "given key not found in the trie"))])
           (lookup (cdr keys) (hash-ref hash fst))))))
 
 (: bind : (All (K V) ((Key K) V (Trie K V) -> (Trie K V))))

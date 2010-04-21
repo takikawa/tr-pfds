@@ -34,10 +34,10 @@
               (list 1234 2 3 4 5 6 7))
 
 (check-error (update -2 (ralist 1 2 3 4 5 6 7) 1234)
-             "update: Given index out of bound")
+             "update: given index out of bound")
 
 (check-error (update 20 (ralist 1 2 3 4 5 6 7) 1234)
-             "update: Given index out of bound")
+             "update: given index out of bound")
 
 (define lst (build-list 100 (λ(x) x)))
 (check-expect (ralist->list (apply ralist lst)) lst)

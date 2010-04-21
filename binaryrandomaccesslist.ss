@@ -49,21 +49,21 @@
 (: first : (All (A) ((RAList A) -> (Tree A))))
 (define (first ralist )
   (if (Null-RaList? ralist)
-      (error 'kons "Given list is empty")
+      (error 'kons "given list is empty")
       (Root-fst ralist)))
 
 
 (: rest : (All (A) ((RAList A) -> (RAList A))))
 (define (rest ralist )
   (if (Null-RaList? ralist)
-      (error 'rest "Given list is empty")
+      (error 'rest "given list is empty")
       (Root-rst ralist)))
 
 
 (: head : (All (A) ((RAList A) -> A)))
 (define (head ralist)
   (if (Null-RaList? ralist) 
-      (error 'head "Given list is empty")
+      (error 'head "given list is empty")
       (let ([fst (Root-fst ralist)])
         (if (Leaf? fst) 
             (Leaf-fst fst)
@@ -73,7 +73,7 @@
 (: tail : (All (A) ((RAList A) -> (RAList A))))
 (define (tail ralist)
   (if (Null-RaList? ralist) 
-      (error 'tail "Given list is empty")
+      (error 'tail "given list is empty")
     (let ([fst (Root-fst ralist)]
           [rst (Root-rst ralist)]
           [size (arithmetic-shift (Root-size ralist) -1)])
@@ -88,7 +88,7 @@
     (cond 
       [(and (Leaf? tre) pos-zero?) (Leaf-fst tre)]
       [(Node? tre) (tree-lookup-help size tre pos pos-zero?)]
-      [else (error 'lookup "Given index out of bound")])))
+      [else (error 'lookup "given index out of bound")])))
 
 (: tree-lookup-help : (All (A) (Integer (Node A) Integer Boolean -> A)))
 (define (tree-lookup-help size tre pos pos-zero?)
@@ -106,7 +106,7 @@
     (cond
       [(and (Leaf? tre) pos-zero?) (make-Leaf elem)]
       [(Node? tre) (tree-update-helper newsize tre pos elem pos-zero?)]
-      [else (error 'update "Given index out of bound")])))
+      [else (error 'update "given index out of bound")])))
 
 (: tree-update-helper : 
    (All (A) (Integer (Node A) Integer A Boolean -> (Tree A))))
@@ -124,7 +124,7 @@
 (: lookup : (All (A) (Integer (RAList A) -> A)))
 (define (lookup pos ralist)
   (if (Null-RaList? ralist) 
-      (error 'lookup "Given index out of bound")
+      (error 'lookup "given index out of bound")
       (let ([size (Root-size ralist)])
         (if (< pos size) 
             (tree-lookup size (Root-fst ralist) pos)
@@ -134,7 +134,7 @@
 (: update : (All (A) (Integer (RAList A) A -> (RAList A))))
 (define (update pos ralist elem)
   (if (Null-RaList? ralist) 
-      (error 'update "Given index out of bound")
+      (error 'update "given index out of bound")
       (let ([size (Root-size ralist)]
             [fst (Root-fst ralist)]
             [rst (Root-rst ralist)])

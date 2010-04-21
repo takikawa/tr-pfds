@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(require (for-label "../bankers-queue-streams.ss"))
 @(require scribble/eval)
 @(provide (for-label (all-from-out)))
 @(define evaluate (make-base-eval))
@@ -9,7 +10,8 @@
 
 A Queue is nothing but a FIFO data structure. A Banker's Queue is a
 amortized queue obtained using Bankers method. It provides a amortized
-running time of @bold{@italic{O(1)}} for @italic{head, tail and enqueue}
+running time of @bold{@italic{O(1)}} for @scheme[head],
+@scheme[tail] and @scheme[enqueue]
 operations. To obtain this amortized running time, the data structure
 uses the techniques, lazy evaluation and memoization. Banker's Queue
 internally uses Streams for lazy evaluation. For Streams, see 
@@ -18,7 +20,7 @@ internally uses Streams for lazy evaluation. For Streams, see
 @;section{Banker's Queue Construction and Operations}
 
 @defproc[(queue [a A] ...) (Queue A)]{
-The function @scheme[queue] creates a Banker's Queue with the given inputs.
+Function @scheme[queue] creates a Banker's Queue with the given inputs.
 
 @examples[#:eval evaluate
 
@@ -28,11 +30,11 @@ The function @scheme[queue] creates a Banker's Queue with the given inputs.
 In the above example, the queue obtained will have 1 as its head element.
 }
 
-@defform/none[empty]{
+@defthing[empty (Queue Nothing)]{
 An empty queue}
 
 @defproc[(empty? [que (Queue A)]) Boolean]{
-The function @scheme[empty?] checks if the given queue is empty or not.
+Function @scheme[empty?] checks if the given queue is empty or not.
    
 @examples[#:eval evaluate
 (empty? (queue 1 2 3 4 5 6))
@@ -41,7 +43,7 @@ The function @scheme[empty?] checks if the given queue is empty or not.
 
 
 @defproc[(enqueue [a A] [que (Queue A)]) (Queue A)]{
-The function @scheme[enqueue] takes an element and a queue and adds the given
+Function @scheme[enqueue] takes an element and a queue and adds the given
 element into the @scheme[queue].    
 @examples[#:eval evaluate
 
@@ -53,7 +55,7 @@ end of the queue and returns  @scheme[(queue 4 5 6 10)].
 }
 
 @defproc[(head [que (Queue A)]) A]{
-The function @scheme[head] takes a @scheme[queue] and returns the first element
+Function @scheme[head] takes a @scheme[queue] and returns the first element
 in the queue if its a non empty queue else throws an error.
 @examples[#:eval evaluate
 
@@ -64,7 +66,7 @@ in the queue if its a non empty queue else throws an error.
 
 
 @defproc[(tail [que (Queue A)]) (Queue A)]{
-The function @scheme[tail] takes a queue and returns the same queue 
+Function @scheme[tail] takes a queue and returns the same queue 
 without the first element. If the queue is empty it throws an error. 
    
 @examples[#:eval evaluate
@@ -79,7 +81,7 @@ In the above example, @scheme[(tail (queue 4 5 6))], returns
 }
 
 @defproc[(queue->list [que (Queue A)]) (Queue A)]{
-The function @scheme[queue->list] takes a queue and returns a list of 
+Function @scheme[queue->list] takes a queue and returns a list of 
 elements. The list will have head of the given queue as its first element.
 
 @examples[#:eval evaluate

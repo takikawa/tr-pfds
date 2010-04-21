@@ -32,15 +32,15 @@
 
 (check-expect (get 0 vlst) (first vlst))
 
-(check-error (get (+ 5 (size vlst)) vlst) "get: Given index out of bounds")
+(check-error (get (+ 5 (size vlst)) vlst) "get: given index out of bounds")
 
 (check-expect (vlist->list (rest vlst)) (cdr lst))
 
-(check-error (first empty) "first: Given vlist is empty")
+(check-error (first empty) "first: given vlist is empty")
 
-(check-error (last empty) "last: Given vlist is empty")
+(check-error (last empty) "last: given vlist is empty")
 
-(check-error (rest empty) "rest: Given vlist is empty")
+(check-error (rest empty) "rest: given vlist is empty")
 
 (check-expect (size empty) 0)
 

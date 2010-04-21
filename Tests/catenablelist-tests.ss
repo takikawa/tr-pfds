@@ -10,8 +10,8 @@
 (check-expect (empty? (tail (clist 1))) #t)
 (check-expect (empty? (tail (clist 2 1))) #f)
 (check-expect (empty? empty) #t)
-(check-error (head empty) "head: Given list is empty")
-(check-error (tail empty) "tail: Given list is empty")
+(check-error (head empty) "head: given list is empty")
+(check-error (tail empty) "tail: given list is empty")
 (check-expect (clist->list (tail (clist 1 2 3 4 5 6 7)))
               (list 2 3 4 5 6 7))
 

@@ -4,7 +4,7 @@
 
 (provide empty? empty enqueue-front head tail
          deque enqueue last init deque->list)
-         
+
 ;; A Banker's Queue (Maintains length of front >= length of rear)
 
 (define-struct: (A) Deque
@@ -77,7 +77,7 @@
 (: head : (All (A) ((Deque A) -> A)))
 (define (head deq)
   (if (empty? deq)
-      (error 'head "Given deque is empty")
+      (error 'head "given deque is empty")
       (let ([front (Deque-front deq)])
         (if (empty-stream? front) 
             (stream-car (Deque-rear deq))
@@ -88,7 +88,7 @@
 (: last : (All (A) ((Deque A) -> A)))
 (define (last deq)
   (if (empty? deq) 
-      (error 'last "Given deque is empty")
+      (error 'last "given deque is empty")
       (let ([rear (Deque-rear deq)])
         (if (empty-stream? rear) 
             (stream-car (Deque-front deq))
@@ -98,7 +98,7 @@
 (: tail : (All (A) ((Deque A) -> (Deque A))))
 (define (tail deq)
   (if (empty? deq) 
-      (error 'tail "Given deque is empty")
+      (error 'tail "given deque is empty")
       (let ([front (Deque-front deq)])
         (if (empty-stream? front) 
             empty
@@ -111,7 +111,7 @@
 (: init : (All (A) ((Deque A) -> (Deque A))))
 (define (init deq)
   (if (empty? deq)
-      (error 'init "Given deque is empty")
+      (error 'init "given deque is empty")
       (let ([rear (Deque-rear deq)])
         (if (empty-stream? rear)
             empty
