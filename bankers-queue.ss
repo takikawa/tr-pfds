@@ -1,138 +1,70 @@
 #lang typed-scheme
 
+(require "stream.ss")
+
+(provide Queue empty empty? enqueue head tail queue queue->list)
+         
 ;; A Banker's Queue (Maintains length of front >= length of rear)
 
-(define-struct: Queue 
-  ([front : ( -> (Listof Any))]
+(define-struct: (A) Queue
+  ([front : (Stream A)]
    [lenf  : Integer]
-   [rear  : ( -> (Listof Any))]
+   [rear  : (Stream A)]
    [lenr  : Integer]))
-
-;; Suspends an operation for later execution
-(: susp : ((Listof Any) -> (-> (Listof Any))))
-(define susp
-  (lambda (lst)
-    (lambda () lst)))
-
-
-;; Executes a suspended operation
-(: exec : ((-> (Listof Any)) -> (Listof Any)))
-(define exec
-  (lambda (func)
-    (func)))
 
 
 ;; Constants
 (define ZERO 0)
-(define nul (susp '()))
-(define empty (make-Queue nul ZERO nul ZERO))
+(define empty (make-Queue empty-stream ZERO empty-stream ZERO))
 
 ;; Checks if the given queue is empty
-(: empty? : (Queue -> Boolean))
-(define empty?
-  (lambda (que)
-    (eq? (Queue-lenf que) ZERO)))
+(: empty? : (All (A) ((Queue A) -> Boolean)))
+(define (empty? que)
+  (zero? (Queue-lenf que)))
 
 
 ;; A Pseudo-constructor. Maintains the invariant lenf >= lenr
-(: internal-queue : (Queue -> Queue))
-(define internal-queue
-  (lambda (que)
-    (if (>= (Queue-lenf que) (Queue-lenr que))
-        que
-        (make-Queue (susp (append (exec (Queue-front que)) 
-                                  (reverse (exec (Queue-rear que)))))
-                    (+ (Queue-lenf que) (Queue-lenr que))
-                    nul ZERO))))
+(: internal-queue : 
+   (All (A) ((Stream A) Integer (Stream A) Integer -> (Queue A))))
+(define (internal-queue front lenf rear lenr)
+  (if (>= lenf lenr)
+      (make-Queue front lenf rear lenr)
+      (make-Queue (stream-append front (stream-reverse rear))
+                  (+ lenf lenr)
+                  empty-stream ZERO)))
 
 ;; Pushes an element into the queue
-(: enqueue : (Any Queue -> Queue))
-(define enqueue
-  (lambda (elem que)
-    (internal-queue (make-Queue (Queue-front que) 
-                                (Queue-lenf que) 
-                                (susp (cons elem (exec (Queue-rear que))))
-                                (add1 (Queue-lenr que))))))
+(: enqueue : (All (A) (A (Queue A) -> (Queue A))))
+(define (enqueue elem que)
+  (internal-queue (Queue-front que) 
+                  (Queue-lenf que) 
+                  (stream-cons elem (Queue-rear que))
+                  (add1 (Queue-lenr que))))
 
 ;; Retrieves the head element of the queue
-(: head : (Queue -> Any))
-(define head
-  (lambda (que)
-    (if (empty? que)
-        (error "Queue is empty" 'head)
-        (car (exec (Queue-front que))))))
+(: head : (All (A) ((Queue A) -> A)))
+(define (head que)
+  (if (empty? que)
+      (error 'head "given queue is empty")
+      (stream-car (Queue-front que))))
 
 ;; Dequeue operation. Removes the head and returns the rest of the queue
-(: tail : (Queue -> Queue))
-(define tail
-  (lambda (que)
-    (if (empty? que)
-        (error "Queue is empty" 'head)
-        (internal-queue (make-Queue (susp (cdr (exec (Queue-front que)))) 
-                                    (sub1 (Queue-lenf que))
-                                    (Queue-rear que)
-                                    (Queue-lenf que))))))
+(: tail : (All (A) ((Queue A) -> (Queue A))))
+(define (tail que)
+  (if (empty? que)
+      (error 'tail "given queue is empty")
+      (internal-queue (stream-cdr (Queue-front que))
+                      (sub1 (Queue-lenf que))
+                      (Queue-rear que)
+                      (Queue-lenr que))))
+
+(: queue->list : (All (A) ((Queue A) -> (Listof A))))
+(define (queue->list que)
+  (if (zero? (Queue-lenf que))
+      null
+      (cons (head que) (queue->list (tail que)))))
 
 ;; A Queue constructor with the given element
-(: queue : (Any * -> Queue))
+(: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
-  (if (null? lst) 
-      empty
-      (foldl enqueue empty lst)))
-
-
-;;------------------------------------------------------------------------
-;; Checks if the given two Queues are equal. (Defined for tests)
-(: check-eq? : (Queue Queue -> Boolean))
-(define check-eq?
-  (lambda (que1 que2)
-    (and (andmap equal? (exec (Queue-front que1)) (exec (Queue-front que2)))
-         (andmap equal? (exec (Queue-rear que1)) (exec (Queue-rear que2))))))
-
-(and 
- (eq? (empty? empty) #t)
- (eq? (empty? (make-Queue (susp '(4 2)) 2 (susp '(4)) 0)) #f)
- 
- (eq? (head (make-Queue (susp '(4 2)) 2 (susp '(4)) 1)) 4)
- (eq? (head (make-Queue (susp '(2)) 1 (susp '(4)) 1)) 2)  
- 
- (check-eq? (tail (make-Queue (susp '(4)) 1 (susp '(2)) 1)) 
-            (make-Queue (susp '(2)) 1 (susp '()) 0))
- (check-eq? (tail (make-Queue (susp '(4 2)) 2 (susp '(4)) 1)) 
-            (make-Queue (susp '(2 4)) 2 (susp '()) 0))
- (check-eq? (tail (make-Queue (susp '(4 2)) 2 (susp '(4 5)) 2)) 
-            (make-Queue (susp '(2 5 4)) 3 nul 0))
- 
- (check-eq? (internal-queue empty) empty)
- (check-eq? (internal-queue (make-Queue (susp '(4 2)) 2 (susp '(4)) 1)) 
-            (make-Queue (susp '(4 2)) 2 (susp '(4)) 1))
- (check-eq? (internal-queue (make-Queue (susp '(4 2)) 2 (susp '(4 5)) 2)) 
-            (make-Queue (susp '(4 2)) 2 (susp '(4 5)) 2))
- (check-eq? (internal-queue (make-Queue (susp '(4 2)) 2 (susp '(4 5 6)) 3)) 
-            (make-Queue (susp '(4 2 6 5 4)) 5 nul 0))
- 
- (check-eq? (enqueue 1 empty) (make-Queue (susp '(1)) 1 nul 0))
- (check-eq? (enqueue 4 (make-Queue (susp '(4 2)) 2 nul 0)) 
-            (make-Queue (susp '(4 2)) 2 (susp '(4)) 1))
- (check-eq? (enqueue 5 (make-Queue (susp '(4 2)) 2 (susp '(4)) 1)) 
-            (make-Queue (susp '(4 2)) 2 (susp '(5 4)) 2))
- (check-eq? (enqueue "6" (make-Queue (susp '(4 2)) 2 (susp '(4 5)) 2)) 
-            (make-Queue (susp '(4 2 5 4 "6")) 5 nul 0))
- 
- (check-eq? (queue) empty)
- (check-eq? (queue 1 2 3) 
-            (make-Queue (susp '(1 2 3)) 3 (susp '()) 0))
- (check-eq? (queue 1) 
-            (make-Queue (susp '(1)) 1 nul 0))
- (check-eq? (queue 1 2 3 4) 
-            (make-Queue (susp '(1 2 3)) 3 (susp '(4)) 1))
- (check-eq? (queue 1 2 3 4 5) 
-            (make-Queue (susp '(1 2 3)) 3 (susp '(5 4)) 2))
- (check-eq? (queue 1 2 3 4 5 6) 
-            (make-Queue (susp '(1 2 3)) 3 (susp '(6 5 4)) 3))
- (check-eq? (queue 1 2 3 4 5 6 7) 
-            (make-Queue (susp '(1 2 3 4 5 6 7)) 7 (susp '()) 0))
- 
- ;; Problem in check-eq?
- (check-eq? (queue '(1) '(2 2) '(3 4) '(5 6 7) '(5)) 
-            (make-Queue (susp (list '(1) '(2 2) '(3 4))) 3 (susp (list '(5) '(5 6 7))) 2)))
+  (foldl (inst enqueue A) empty lst))
