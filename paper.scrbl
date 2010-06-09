@@ -1,6 +1,6 @@
 #lang scribble/sigplan
 @(require scribble/manual)
-@title{Purely Functional Data Structures in Typed Scheme}
+@title{Functional Data Structures in Typed Scheme}
 
 @(authorinfo "Hari Prashanth K R"
              "Northeastern University"
@@ -105,8 +105,10 @@ worst-case running time of O(1) for the operations @scheme[head],
 @subsubsection{Implicit Queue}
 Implicit Queue is a queue data structure obtained by applying a technique 
 called Implicit Recursive 
-Slowdown. Implicit Recursive Slowdown combines laziness with a technique 
-called Recursive Slow-down developed by Kaplan and Tarjan. An advantage of
+Slowdown @cite{1}. Implicit Recursive Slowdown combines laziness with a 
+technique 
+called Recursive Slow-down @cite{2} developed by Kaplan and Tarjan. 
+An advantage of
 this technique is that it is simpler than @italic{recursive slow-down}. And 
 the disadvantage of this technique is that the data structure gives a amortized
 running time. It provides a amortized running time of O(1) for the operations
@@ -489,7 +491,7 @@ access of arrays. The indexing and length operations of the VList have a
 worst-case 
 running time of O(1) and O(lg N) respectively as against 
 O(N) for lists. The paper Fast Functional Lists, Hash-Lists, vlists and Variable
-Length Arrays by Phil Bagwell describes the VLists. 
+Length Arrays by Phil Bagwell @cite{2} describes the VLists. 
 Our VList implementation internally uses Binary Random Access List. 
 The VLists have the type 
 @scheme[(VList A)] and provides all the functions that list provides. 
@@ -618,68 +620,108 @@ Red-Black Tree data structure
 
 @section{Comparison with the Original Work}
 The implementation of the data structures are very faithful to the original
-implementations of Purly Functional Data Structures by Okasaki and VLists and
-others by Bagwell. 
-@(itemlist
-  @item{We added more functions to the data structures to make
+implementations of Purly Functional Data Structures by Okasaki @cite{1} 
+and VLists and others by Bagwell @cite{2}. 
+@para{We added more functions to the data structures to make
 them much more useful. For example, to each data structure we added a function
-to convert the data structure into a list.
+to convert the data structure into a list.}
 @(evaluate '(require "bankers-queue.ss"))
 @examples[#:eval evaluate
-(queue->list (queue 1 2 3 4 5 6))]}
-  @item{We added function to delete elements from the @italic{Red-Black Trees}
-        which was missing in the original implementation}
-  @item{All the heap constructor functions take a comparison function of the 
-        type @scheme[A A -> Boolean] as their first argument followed by the 
-        elements for the data structure. This implementation of this feature 
-        is slightly different in the original work.}) 
-Except for these minor changes/additions, the implementation pretty much 
+                 (queue->list (queue 1 2 3 4 5 6))]
+@para{We added function to delete elements from the 
+      @italic{Red-Black Trees}
+      which was missing in the original implementation}
+@para{All the heap constructor functions take a comparison function of the 
+      type @scheme[A A -> Boolean] as their first argument followed by the 
+      elements for the data structure. This implementation of this feature 
+      is slightly different in the original work.}
+Except for these changes/additions, the implementation is 
 structurally similar the original work.
 
-@section{Experiance with Typed Scheme}
+@section{Experience with Typed Scheme}
+@subsection{Benefits of Typed Scheme}
 Several nice features of Typed Scheme together made programming in Typed Scheme 
 quiet enjoyable. Firstly, the type error messages in Typed Scheme are very 
 clear and easy 
 to understand. Exact locations in the code are blamed by the type checker in 
 case of type errors. This makes it very easy to debug the type errors. 
-Typed Scheme has a very intuitive syntax. For example, the infix operator 
+@para{Typed Scheme has a very intuitive syntax. 
+      For example, the infix operator 
 @scheme[->] which is used to write the type of a function. To the left of 
 @scheme[->] goes the types of inputs to the function and to its right is the
 type of the function's output. Kleene star or Kleene operator, @scheme[*] is 
 used to indicate zero or more elements. @scheme[All] or @scheme[∀] is the 
-type constructor used by the polymorphic functions etc. 
-Typed Scheme comes with a pretty good test engine which makes it 
-pretty easy to test the code. Documentation and help manual of PLT Scheme
-in general and Typed Scheme in particular is very well documented and quiet
-easy to follow and understand.
-@para{Even though overall experiance with Typed Scheme was nice, there were
-      things in Typed Scheme that bothered me.}
-@(itemlist
-  @item{Because of the limitations imposed by Typed Scheme's type system on
-        variable-arity functions, it is currently not possible to correctly 
-        implement Scheme functions such as foldr and foldl.}
-  @item{Typed Scheme's type system do not allow non-uniform recursive 
-        datatype definitions. Because of this limitation, many definitions had
-        to be first converted to uniform recursive datatypes before being 
-        implemented. For instance, the following definition of Seq 
-        structure is not possible in Typed Scheme.
-        @schememod[typed/scheme
-                   (define-struct: (A) Seq 
-                     ([elem : (Seq (Pair A A))]))]}
-  @item{Typed Scheme treats type @italic{Integer} and 
-        @italic{Exact-Positive-Integer} to be different in some 
-        cases. For example,
-        @schememod[typed/scheme
-                   (vector-append (vector -1 2) 
-                                  (vector 1 2))]
-        results in the following error
-        @para{@schemeerror{Type Checker: Polymorphic function vector-append 
-                           could not be applied to arguments:}}
-        @para{@schemeerror{Domain: (Vectorof a) *}}
-        @para{@schemeerror{Arguments: (Vectorof Integer) (Vectorof 
-                           Exact-Positive-Integer)}}
-        This behavior was quiet unexpected.}
-  @;{item{Even though Typed Scheme test engine is pretty good, there are couple 
+type constructor used by the polymorphic functions etc.} 
+@para{Typed Scheme comes with a pretty good test engine which makes it 
+      pretty easy to test the code.}
+
+@;(evaluate '(require typed/test-engine/scheme-tests))
+@;(evaluate '(require "bankers-queue1.ss"))
+@schememod[typed/scheme
+           (require typed/test-engine/scheme-tests)
+           (require "bankers-queue.ss")
+           
+           (check-expect (head (queue 4 5 2 3)) 4)
+           
+           (check-expect (tail (queue 4 5 2 3)) 
+                               (queue 5 2 3))]
+Above examples illustrate how the tests are written.
+
+@para{Documentation and help manual of PLT Scheme
+      in general and Typed Scheme in particular is very well 
+      documented and quiet easy to follow and understand.}
+
+@subsection{Disadvantages of Typed Scheme}
+Even though overall experience with Typed Scheme was nice, there were
+things in Typed Scheme that could bother a programmer.
+For instance, it is currently not possible to correctly 
+implement Scheme functions such as foldr and foldl because of the 
+limitations imposed by Typed Scheme's type system on
+variable-arity functions.
+@para{The Typed Scheme's type system does not allow polymorphic non-uniform 
+      recursive 
+      datatype definitions. Because of this limitation, many definitions had
+      to be first converted to uniform recursive datatypes before being 
+      implemented. For instance, the following definition of Seq 
+      structure @cite{1} is not possible in Typed Scheme.}
+      @schememod[typed/scheme
+                 
+                 (define-struct: (A) Seq 
+                   ([elem : A]
+                    [recur : (Seq (Pair A A))]))
+                                                ]
+      @para{It has to be converted to not have such a polymorphic recursion 
+      before one could continue. Following definition is the converted 
+      version of the above definition}
+      
+      @schememod[typed/scheme
+                 
+                 (define-struct: (A) Elem ([elem : A]))
+                 
+                 (define-struct: (A) Pare 
+                   ([pair : (Pair (EP A) (EP A))]))
+                 
+                 (define-type-alias (EP A) 
+                   (U (Elem A) (Pare A)))      
+                 
+                 (define-struct: (A) Seq
+                   ([elem  : (EP A)]
+                    [recur : (Seq A)]))]
+
+@para{Typed Scheme treats type @italic{Integer} and 
+@italic{Exact-Positive-Integer} to be different in some 
+cases. For example,}
+@schememod[typed/scheme
+           (vector-append (vector -1 2) 
+                          (vector 1 2))]
+@para{results in the following error}
+@para{@schemeerror{Type Checker: Polymorphic function vector-append 
+                   could not be applied to arguments:}}
+@para{@schemeerror{Domain: (Vectorof a) *}}
+@para{@schemeerror{Arguments: (Vectorof Integer) (Vectorof 
+                   Exact-Positive-Integer)}}
+@para{This behavior was quiet unexpected.}
+@;{item{Even though Typed Scheme test engine is pretty good, there are couple 
         of draw backs in it. For example,
         @schememod[typed/scheme
                    (require "bankers-queue.ss")
@@ -693,13 +735,33 @@ easy to follow and understand.
               function which converts the data structure into a list. For
               example, all queue data structures have the function 
               @scheme[queue->list].}}}
-  @item{Whenever a union of two types is to be given a alias, Typed Scheme 
-        allows the programmer to do so by providing the function 
-        @italic{define-type-alias}. But when errors are thrown, or the alias is
-        to be displayed, Typed Scheme displays the union of original two types
-        instead of displaying the alias name. This made the types confusingly 
-        long many times.})
+@para{Whenever a union of polymorphic types is to be given a alias, 
+      Typed Scheme 
+      allows the programmer to do so by providing the function 
+      @italic{define-type-alias}. But when errors are thrown, or the alias is
+      to be displayed, Typed Scheme displays the union of original two types
+      instead of displaying the alias name. This made the types confusingly 
+      long many times. For example,}
+@;(evaluate '(require typed/scheme))
+@schememod[typed/scheme
+           
+           (define-struct: (A) Type1 ([elem : A]))
+           
+           (define-struct: Mt ())
+           
+           (define-type-alias (Union A) (U (Type1 A) Mt))
+           
+           (: id : (All (A) (A Integer -> (Union A))))
+           (define (id elem int)
+             (if (> int 5)
+                 (make-Type1 elem)
+                 (make-Mt)))]
 
+@(evaluate '(require typed/scheme))
+@(evaluate '(require "test1.ss"))
+@examples[#:eval evaluate
+                 (id 5 1)]
+                                   
 @(bibliography
   @(bib-entry #:key "1"
               #:title "Purely Functional Data Structures"
@@ -708,20 +770,30 @@ easy to follow and understand.
   @(bib-entry #:key "2"
               #:title "Fast Functional Lists, Hash-Lists, Deques and Variable Length Arrays"
               #:is-book? #f
-              #:author "Phil Bagwell")
+              #:author "Phil Bagwell"
+              #:location "In Implementation of Functional Languages, 14th International Workshop"
+              #:date "Sept. 2002")
   @(bib-entry #:key "3"
               #:title "Fast And Space Efficient Trie Searches"
               #:is-book? #f
-              #:author "Phil Bagwell")
+              #:author "Phil Bagwell"
+              #:location "Technical report, 2000/334, Ecole Polytechnique  F´ed´erale de Lausanne"
+              #:date "March 2000")
   @(bib-entry #:key "4"
               #:title "Persistent lists with catenation via recursive slow-down"
               #:is-book? #f
-              #:author "Haim Kaplan and Robert E. Tarjan")
+              #:author "Haim Kaplan and Robert E. Tarjan"
+              #:location "Proceedings of the twenty-seventh annual ACM symposium on Theory of computing"
+              #:date "1995")
   @(bib-entry #:key "5"
               #:title "Red-Black Trees in Functional Setting"
               #:is-book? #f
-              #:author "Chris Okasaki")
+              #:author "Chris Okasaki"
+              #:location "Journal Functional Programming"
+              #:date "July 1999")
   @(bib-entry #:key "6"
               #:title "Finger trees: a simple general-purpose data structure"
               #:is-book? #f
-              #:author "Ralf Hinze and Ross Paterson"))
+              #:author "Ralf Hinze and Ross Paterson"
+              #:location "Journal Functional Programming"
+              #:date "2006"))
