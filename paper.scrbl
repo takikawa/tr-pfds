@@ -1,5 +1,6 @@
 #lang scribble/sigplan
-@(require scribble/manual)
+@(require (except-in scribble/manual cite) scriblib/autobib
+          "bib.rkt")
 @title{Functional Data Structures in Typed Scheme}
 
 @(authorinfo "Hari Prashanth K R"
@@ -10,14 +11,28 @@
              "Northeastern University"
              "samth@ccs.neu.edu")
 
-@(authorinfo "Matthias Felleisen"
+@;{@(authorinfo "Matthias Felleisen"
              "Northeastern University"
-             "matthias@ccs.neu.edu")
+             "matthias@ccs.neu.edu")}
 
-@;(abstract "In past decade or so there have been impressive advances in the" 
-@;           "field of functional data structures. In this paper we are trying to show that"
-@;           "these functional data structures can be implemented in Typed Scheme a" 
-@;           "statically typed variant of Scheme.")
+@abstract{
+Scheme provides excellent base language support for programming in a
+functional style, but little in the way of library support.  In this
+paper, we present a comprehensive library of functional data
+structures, drawing from several sources.  We have implemented the
+library in Typed Scheme, a typed variant of PLT Scheme, allowing us to
+maintain the type invariants of the original definitions.}
+
+@section{Functional Data Structures for a Functional Language}
+
+Functional programming requires more than just @racket[lambda].  In
+addition, library support for programming in a functional style is
+necessary.  In particular, efficient persistent functional data
+structures are needed in almost every program.  
+
+Fortunately, Scheme provides one supremely valuable functional
+datastructure---the linked list.  This is sufficient to support many
+forms of functional programming
 
 @section{Introduction to Functional Data Structures}
 
@@ -105,9 +120,9 @@ worst-case running time of O(1) for the operations @scheme[head],
 @subsubsection{Implicit Queue}
 Implicit Queue is a queue data structure obtained by applying a technique 
 called Implicit Recursive 
-Slowdown @cite{1}. Implicit Recursive Slowdown combines laziness with a 
+Slowdown @cite[oka]. Implicit Recursive Slowdown combines laziness with a 
 technique 
-called Recursive Slow-down @cite{2} developed by Kaplan and Tarjan. 
+called Recursive Slow-down @cite[kaplan-tarjan] developed by Kaplan and Tarjan. 
 An advantage of
 this technique is that it is simpler than @italic{recursive slow-down}. And 
 the disadvantage of this technique is that the data structure gives a amortized
@@ -491,7 +506,7 @@ access of arrays. The indexing and length operations of the VList have a
 worst-case 
 running time of O(1) and O(lg N) respectively as against 
 O(N) for lists. The paper Fast Functional Lists, Hash-Lists, vlists and Variable
-Length Arrays by Phil Bagwell @cite{2} describes the VLists. 
+Length Arrays by Phil Bagwell @cite[bagwell-lists] describes the VLists. 
 Our VList implementation internally uses Binary Random Access List. 
 The VLists have the type 
 @scheme[(VList A)] and provides all the functions that list provides. 
@@ -552,7 +567,7 @@ two portions - the data and the hash table. Both the portions have to grow for
 the hash-list to grow. The running time provided by the Hash-Lists for the 
 operations insert
 and lookup times are very close to the standard chained hash tables. 
-Hash-List has been described in @cite{2}. The Hash-Lists provide functions to 
+Hash-List has been described in @cite[bagwell-lists]. The Hash-Lists provide functions to 
 insert, delete, lookup elements of the hash-list.
 
 @subsection{Tries}
@@ -620,8 +635,8 @@ Red-Black Tree data structure
 
 @section{Comparison with the Original Work}
 The implementation of the data structures are very faithful to the original
-implementations of Purly Functional Data Structures by Okasaki @cite{1} 
-and VLists and others by Bagwell @cite{2}. 
+implementations of Purly Functional Data Structures by Okasaki @cite[oka]
+and VLists and others by Bagwell @cite[bagwell-lists bagwell-trie]. 
 @para{We added more functions to the data structures to make
 them much more useful. For example, to each data structure we added a function
 to convert the data structure into a list.}
@@ -683,7 +698,7 @@ variable-arity functions.
       datatype definitions. Because of this limitation, many definitions had
       to be first converted to uniform recursive datatypes before being 
       implemented. For instance, the following definition of Seq 
-      structure @cite{1} is not possible in Typed Scheme.}
+      structure @cite[oka] is not possible in Typed Scheme.}
       @schememod[typed/scheme
                  
                  (define-struct: (A) Seq 
@@ -762,38 +777,4 @@ cases. For example,}
 @examples[#:eval evaluate
                  (id 5 1)]
                                    
-@(bibliography
-  @(bib-entry #:key "1"
-              #:title "Purely Functional Data Structures"
-              #:is-book? #t
-              #:author "Chris Okasaki")
-  @(bib-entry #:key "2"
-              #:title "Fast Functional Lists, Hash-Lists, Deques and Variable Length Arrays"
-              #:is-book? #f
-              #:author "Phil Bagwell"
-              #:location "In Implementation of Functional Languages, 14th International Workshop"
-              #:date "Sept. 2002")
-  @(bib-entry #:key "3"
-              #:title "Fast And Space Efficient Trie Searches"
-              #:is-book? #f
-              #:author "Phil Bagwell"
-              #:location "Technical report, 2000/334, Ecole Polytechnique  F´ed´erale de Lausanne"
-              #:date "March 2000")
-  @(bib-entry #:key "4"
-              #:title "Persistent lists with catenation via recursive slow-down"
-              #:is-book? #f
-              #:author "Haim Kaplan and Robert E. Tarjan"
-              #:location "Proceedings of the twenty-seventh annual ACM symposium on Theory of computing"
-              #:date "1995")
-  @(bib-entry #:key "5"
-              #:title "Red-Black Trees in Functional Setting"
-              #:is-book? #f
-              #:author "Chris Okasaki"
-              #:location "Journal Functional Programming"
-              #:date "July 1999")
-  @(bib-entry #:key "6"
-              #:title "Finger trees: a simple general-purpose data structure"
-              #:is-book? #f
-              #:author "Ralf Hinze and Ross Paterson"
-              #:location "Journal Functional Programming"
-              #:date "2006"))
+@gen-bib[]
