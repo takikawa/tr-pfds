@@ -42,3 +42,13 @@
             #:author "Ralf Hinze and Ross Paterson"
             #:location "Journal Functional Programming"
             #:date "2006"))
+
+(define srfi/1
+  (make-bib #:title "SRFI-1: List Library"
+            #:author "Olin Shivers"
+            #:date "1999"))
+(define thf-popl
+  (make-bib #:title "The Design and Implementation of Typed Scheme"
+            #:author (authors (author-name "Sam" "Tobin-Hochstadt") "Matthias Felleisen")
+            #:location (proceedings-location "Symposium on Principles of Programming Languages")
+            #:date "2008"))
