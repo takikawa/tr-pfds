@@ -635,47 +635,50 @@ rbt
 
 @;(require scribble/core)
 @section{Benchmarks}
-@;{(make-table @(make-style 'centered
-                          (list @(make-table-columns (list plain plain))))
-             (list (list @(make-paragraph @(make-style 'boxed null) "bench1") 
-                         @(make-paragraph @(make-style 'boxed null) "bench2")) 
-                   (list @(make-paragraph @(make-style 'boxed null) "bench3") 
-                         @(make-paragraph @(make-style 'boxed null) "bench4"))))}
+All the below mentioned times are CPU times required to obtain the result. 
+It includes the time spent on garbage collection and all the times are in 
+milliseconds. The results are average of 10 runs and in 
+each run the operation is performed 100000 times. 
+@subsection{Queue Performance}
 Here is the comparison of the time taken by lists to perform some queue 
-operations with the time taken by the Banker's Queue. All the below mentioned 
-times are CPU times required to obtain the result. It includes CPU time spent
-on garbage collection too. And the time is in milliseconds.
+operations with the time taken by the Banker's Queue.
 @;para{For the @scheme[head] operation}
 @para{For 1000 elements}
-@para{@scheme[head] : Lists : 0. Banker's Queue : 0.}
-@para{@scheme[tail] : Lists : 0. Banker's Queue : 0.}
+@para{@scheme[head] : Lists : 7.4. Banker's Queue : 46.}
+@para{@scheme[tail] : Lists : 15. Banker's Queue : 88.}
+@para{@scheme[enqueue] : Lists : 6478. Banker's Queue : 81.}
 @para{For 10000 elements}
-@para{@scheme[head] : Lists : 0. Banker's Queue : 0.}
-@para{@scheme[tail] : Lists : 0. Banker's Queue : 0.}
+@para{@scheme[head] : Lists : 7.6. Banker's Queue : 46.}
+@para{@scheme[tail] : Lists : 15. Banker's Queue : 91.}
+@para{@scheme[enqueue] : Lists : 48687. Banker's Queue : 84.}
 @para{For 100000 elements}
-@para{@scheme[head] : Lists : 0. Banker's Queue : 0.}
-@para{@scheme[tail] : Lists : 3. Banker's Queue : 0.}
+@para{@scheme[head] : Lists : 7.7. Banker's Queue : 47.}
+@para{@scheme[tail] : Lists : 15. Banker's Queue : 93.}
+@para{@scheme[enqueue] : Lists : 524257. Banker's Queue : 85.}
 @para{For 1000000 elements}
-@para{@scheme[head] : Lists : 177. Banker's Queue : 0.}
-@para{@scheme[tail] : Lists : 192. Banker's Queue : 0.}
-Following is the time taken by the Binomial Heaps to perform some of its 
+@para{@scheme[head] : Lists : 7.8. Banker's Queue : 53.}
+@para{@scheme[tail] : Lists : 16. Banker's Queue : 94.}
+@para{@scheme[enqueue] : Lists : Took too long to finish. Banker's Queue : 87.}
+
+@subsection{Heap Performance}
+Following is the time taken by the Leftist Heap to perform some of its 
 operations. 
 @para{For 1000 elements}
-@para{@scheme[find-min/max] : 0.}
-@para{@scheme[delete-min/max] : 0.}
-@para{@scheme[merge] : 0.}
+@para{@scheme[find-min/max] : 23.}
+@para{@scheme[delete-min/max] : 31.}
+@para{@scheme[merge] : 1451.}
 @para{For 10000 elements}
-@para{@scheme[find-min/max] : 0.}
-@para{@scheme[delete-min/max] : 0.}
-@para{@scheme[merge] : 0.}
+@para{@scheme[find-min/max] : 26.}
+@para{@scheme[delete-min/max] : 4018.}
+@para{@scheme[merge] : 2109.}
 @para{For 100000 elements}
-@para{@scheme[find-min/max] : 0.}
-@para{@scheme[delete-min/max] : 0.}
-@para{@scheme[merge] : 0.}
+@para{@scheme[find-min/max] : 27.}
+@para{@scheme[delete-min/max] : 4867.}
+@para{@scheme[merge] : 2655.}
 @para{For 1000000 elements}
-@para{@scheme[find-min/max] : 0.}
-@para{@scheme[delete-min/max] : 2.}
-@para{@scheme[merge] : 0.}
+@para{@scheme[find-min/max] : 27.}
+@para{@scheme[delete-min/max] : 6142.}
+@para{@scheme[merge] : 3229.}
 
 @section{Experience with Typed Scheme}
 @subsection{Benefits of Typed Scheme}
@@ -789,7 +792,7 @@ cases. For example,}
 @section{Comparison with Other Implementations}
 The implementation of the data structures are very faithful to the original
 implementations of Purly Functional Data Structures by @citet[oka]
-and VLists and others by  @citet[bagwell-trie bagwell-lists]. 
+and VLists and others by  @citet[bagwell-trie] @citet[bagwell-lists]. 
 @para{We added more functions to the data structures to make
 them much more useful. For example, to each data structure we added a function
 to convert the data structure into a list.}
