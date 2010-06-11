@@ -1,5 +1,6 @@
 #lang scribble/sigplan
 @(require (except-in scribble/manual cite) scriblib/autobib
+          scribble/core
           "bib.rkt")
 @title{Functional Data Structures in Typed Scheme}
 
@@ -14,6 +15,10 @@
 @;{@(authorinfo "Matthias Felleisen"
              "Northeastern University"
              "matthias@ccs.neu.edu")}
+
+@(define (lpara . items)
+   (make-element (make-style "paragraph" '(exact-chars))
+                 items))
 
 @abstract{
 Scheme provides excellent base language support for programming in a
@@ -62,9 +67,9 @@ Functions of the queue interface are as follows.
 @(evaluate '(require typed/scheme))
 @(evaluate '(require "bankers-queue.ss"))
 @examples[#:eval evaluate
-(queue -1 0 1 2 3 4)
-
 (define que (queue -1 0 1 2 3 4))
+
+que
 
 (head que)
 
@@ -75,7 +80,7 @@ Functions of the queue interface are as follows.
 
 @;(close-eval evaluate)
 
-@subsubsection{Banker's Queue}
+@lpara{Banker's Queue}
 A Banker’s Queue is a amortized queue obtained using a method of amortization 
 called the Banker's method. The Banker's Queue combines the techniques of lazy 
 evaluation and memoization to obtain good amortized running times. The Banker’s
@@ -86,7 +91,7 @@ provides a
 amortized running time of O(1) for the operations @scheme[head], @scheme[tail]
 and @scheme[enqueue].
 
-@subsubsection{Physicist's Queue}
+@lpara{Physicist's Queue}
 A Physicist's queue is a amortized queue obtained using a method of amortization 
 called the Physicist's method. The Physicist's Queue uses the techniques of lazy 
 evaluation and memoization to achieve excellent amortized running times for 
@@ -96,7 +101,7 @@ an amortized running time of O(1) for the operations @scheme[head],
 @scheme[tail] and @scheme[enqueue].
 
 
-@subsubsection{Real-Time Queue}
+@lpara{Real-Time Queue}
 The Real-Time Queue eliminates the amortization in the Banker's Queue to 
 produce the 
 worst-case queues. The Real-Time Queues employ lazy evaluation and a technique 
@@ -110,7 +115,7 @@ worst-case running time of O(1) for the operations @scheme[head],
 @scheme[tail] and @scheme[enqueue].
 
 
-@subsubsection{Implicit Queue}
+@lpara{Implicit Queue}
 Implicit Queue is a queue data structure obtained by applying a technique 
 called Implicit Recursive 
 Slowdown @cite[oka]. Implicit Recursive Slowdown combines laziness with a 
@@ -123,7 +128,7 @@ running time. It provides a amortized running time of O(1) for the operations
 @scheme[head], @scheme[tail] and @scheme[enqueue].
 
 
-@subsubsection{Bootstrapped Queue}
+@lpara{Bootstrapped Queue}
 The technique of bootstrapping refers to situations where 
 problems whose solutions require solutions to simpler instances of the same
 problem. Bootstrapped Queue is a queue data structure which is developed using 
@@ -135,7 +140,7 @@ operation @scheme[head] and O(log*(n)) for @scheme[tail] and @scheme[enqueue].
 Bootstrapped Queue uses Real-Time Queue for bootstrapping.
 
 
-@subsubsection{Hood-Melville Queue}
+@lpara{Hood-Melville Queue}
 The Hood-Melville Queue is similar to the Real-Time Queues in many ways. But the
 implementation of the Hood-Melville Queue is much more complicated than the 
 Real-Time Queue implementation. The Hood-Melville Queue uses a technique 
@@ -204,7 +209,7 @@ The deque interface has following functions
 ]
 
 
-@subsubsection{Banker's Deque}
+@lpara{Banker's Deque}
 The Banker's Deques are amortized double ended queues. The Banker's Deque uses 
 the Banker's method and employs the techniques used in the Banker's Queues 
 to achieve a amortized running time of O(1) for the operations @scheme[head], 
@@ -212,7 +217,7 @@ to achieve a amortized running time of O(1) for the operations @scheme[head],
 @scheme[init], @scheme[enqueue-front] and @scheme[enqueue].
 
 
-@subsubsection{Implicit Deque}
+@lpara{Implicit Deque}
 Technique used by Implicit Deques are same as that used in Implicit Queues i.e.
 Implicit Recursive Slowdown. Implicit Deque provides a 
 amortized running time of O(1) for the operations @scheme[head], 
@@ -220,7 +225,7 @@ amortized running time of O(1) for the operations @scheme[head],
 @scheme[init], @scheme[enqueue-front] and @scheme[enqueue].
 
 
-@subsubsection{Real-Time Deque}
+@lpara{Real-Time Deque}
 The Real-Time Deques eliminate the amortization in the Banker's Deque to 
 produce worst-case deques. The Real-Time Deques employ the same techniques
 employed by the Real-Time Queues to ensure 
@@ -277,7 +282,7 @@ functions of the heap interface.
 ]
 
 
-@subsubsection{Binomial Heap}
+@lpara{Binomial Heap}
 A Binomial Heap is a heap-ordered, binomial tree. The Binomial Heaps support 
 quick 
 and efficient merge operation. This fast merging in the Binomial Heap can be 
@@ -287,7 +292,7 @@ worst-case running time of O(log(n)) for the operations @scheme[insert],
 @scheme[delete-min/max] and @scheme[merge].
 
 
-@subsubsection{Leftist Heap}
+@lpara{Leftist Heap}
 The Leftist heaps are heap-ordered binary trees that satisfy the leftist 
 property. 
 Each node in the tree is assigned a value usually called a rank or a s-value. 
@@ -301,7 +306,7 @@ operations
 running time of O(1) for 
 @scheme[find-min/max].
 
-@subsubsection{Pairing Heap}
+@lpara{Pairing Heap}
 A Pairing Heap is a type of heap which has a very simple implementation and has 
 extremely good amortized performance in practice. But it has been proved that 
 its very difficult to come up with exact asymptotic running time of this data
@@ -312,7 +317,7 @@ worst-case running time of O(1) for the operations @scheme[insert],
 @scheme[find-min/max] and @scheme[merge]. 
 And @scheme[delete-min/max] has a amortized running time of O(log(n)).
 
-@subsubsection{Splay Heap}
+@lpara{Splay Heap}
 The Splay Heaps are very similar to the balanced binary search trees. 
 The difference 
 between the two data structures lies in the fact that the Splay Heaps do not 
@@ -324,7 +329,7 @@ shown that the amortized running time of is O(log(n)) for the
 operations @scheme[insert], @scheme[find-min/max], 
 @scheme[delete-min/max] and @scheme[merge].
 
-@subsubsection{Skew Binomial Heap}
+@lpara{Skew Binomial Heap}
 The Skew Binomial Heaps are similar to the Binomial Heaps. The only difference 
 between the 
 two is that they both have different representations. The Skew Binomial
@@ -338,7 +343,7 @@ O(log(n)) for the operations @scheme[find-min/max], @scheme[delete-min/max]
 and @scheme[merge]. And a 
 worst-case running time of O(1) for the @scheme[insert] operation.
 
-@subsubsection{Lazy Pairing Heap}
+@lpara{Lazy Pairing Heap}
 The Lazy Pairing Heaps are same as normal pairing heaps except for the fact that 
 Lazy Pairing Heaps use lazy evaluation and hence are lazy in nature.
 The lazy evaluation has been used in this data structure so that the Pairing 
@@ -352,7 +357,7 @@ Pairing Heaps provide a worst-case running time of O(1) for the operations
 the @scheme[delete-min/max] operation has a amortized
 running time of O(log(n)).
 
-@subsubsection{Bootstrapped Heap}
+@lpara{Bootstrapped Heap}
 The Bootstrapped Heaps use a technique of bootstrapping called the Structural
 Abstraction. In @italic{structural abstraction}, the data structure 
 abstracts over a less efficient heap implementation to get a better running 
@@ -417,14 +422,14 @@ lst
 (head (cons 50 lst))
 ]
 
-@subsubsub*section{Binary Random Access List}
+@lpara{Binary Random Access List}
 Random Access Lists implemented as a framework of binary numerical 
 representation using complete binary leaf trees are known as Binary 
 Random Access List. It has a worst-case running time of O(log(n)) for the 
 operations @scheme[cons], 
 @scheme[head], @scheme[tail], @scheme[lookup] and @scheme[update]. 
 
-@subsubsub*section{Skew Binary Random Access List}
+@lpara{Skew Binary Random Access List}
 Binary Random Access Lists which are implemented using a numerical 
 representation based on skew binary numbers are known as Skew Binary Random
 Access Lists. This representation of the data structure helps to improve the
@@ -585,7 +590,9 @@ alternating black and red nodes, is no more then twice as long as the shortest
 possible path, the one with black nodes only. This balancing helps in achieving 
 good running times for the tree operations. The operations (explained below) 
 @scheme[member?], @scheme[insert] 
-and @scheme[delete] have worst-case running time of O(log(n)). It has the type 
+and @scheme[delete] have worst-case running time of O(log(n)). 
+@;{
+It has the type 
 @scheme[(RedBlackTree A)]. Following are the functions implemented by the 
 Red-Black Tree data structure
 
@@ -624,26 +631,8 @@ rbt
 (root (delete (root rbt) rbt))
 
 ]
+}
 
-@section{Comparison with the Original Work}
-The implementation of the data structures are very faithful to the original
-implementations of Purly Functional Data Structures by Okasaki @cite[oka]
-and VLists and others by Bagwell @cite[bagwell-lists bagwell-trie]. 
-@para{We added more functions to the data structures to make
-them much more useful. For example, to each data structure we added a function
-to convert the data structure into a list.}
-@(evaluate '(require "bankers-queue.ss"))
-@examples[#:eval evaluate
-                 (queue->list (queue 1 2 3 4 5 6 -4))]
-@para{We added function to delete elements from the 
-      @italic{Red-Black Trees}
-      which was missing in the original implementation}
-@para{All the heap constructor functions take a comparison function of the 
-      type @scheme[A A -> Boolean] as their first argument followed by the 
-      elements for the data structure. This implementation of this feature 
-      is slightly different in the original work.}
-Except for these changes/additions, the implementation is 
-structurally similar the original work.
 @;(require scribble/core)
 @section{Benchmarks}
 @;{(make-table @(make-style 'centered
@@ -797,7 +786,26 @@ cases. For example,}
 @interaction[#:eval evaluate
                  (id 5 1)]
 
-@section{Related Work}
+@section{Comparison with Other Implementations}
+The implementation of the data structures are very faithful to the original
+implementations of Purly Functional Data Structures by @citet[oka]
+and VLists and others by  @citet[bagwell-trie bagwell-lists]. 
+@para{We added more functions to the data structures to make
+them much more useful. For example, to each data structure we added a function
+to convert the data structure into a list.}
+@(evaluate '(require "bankers-queue.ss"))
+@examples[#:eval evaluate
+                 (queue->list (queue 1 2 3 4 5 6 -4))]
+@para{We added function to delete elements from the 
+      @italic{Red-Black Trees}
+      which was missing in the original implementation}
+@para{All the heap constructor functions take a comparison function of the 
+      type @scheme[(A A -> Boolean)] as their first argument followed by the 
+      elements for the data structure. This implementation of this feature 
+      is slightly different in the original work.}
+Except for these changes/additions, the implementation is 
+structurally similar the original work.
+
 
 @section{Conclusion}
                                    
