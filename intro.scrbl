@@ -33,3 +33,6 @@ performance of the library. We
 then detail the experience of using Typed Scheme for this project,
 both positive and negative.  Finally, we discuss other implementations
 and conclude.
+
+
+@include-section["ts.scrbl"]

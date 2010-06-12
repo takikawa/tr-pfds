@@ -75,3 +75,36 @@
             #:author "Sam Tobin-Hochstadt"
             #:location (dissertation-location #:institution "Northeastern University")
             #:date "2010"))
+
+#|
+@article{pierce:lti,
+ author = {Benjamin C. Pierce and David N. Turner},
+ title = {Local type inference},
+ journal = toplas,
+ volume = {22},
+ number = {1},
+ year = {2000},
+ pages = {1--44},
+ publisher = acmpress,
+ address = nyny,
+}
+|#
+
+(define (toplas p n v) 
+  (journal-location "ACM Transactions on Programming Languages and Systems"
+		    #:pages p
+		    #:number (if (number? n) (number->string n) n)
+		    #:volume (if (number? v) (number->string v) v)))
+
+(define lti-journal
+  (make-bib #:title "Local type inference"
+	    #:location (toplas '(1 44) 1 22)
+	    #:date "2000"
+	    #:author (authors "Benjamin C. Pierce" "David N. Turner")))
+
+(define plt-manual
+  (make-bib #:title "Reference: PLT Scheme"
+	    #:author (authors "Matthew Flatt" "PLT")
+	    #:date "2010"
+	    #:location (techrpt-location #:number "PLT-TR2010-reference-v4.2.5"
+					 #:institution "PLT Scheme Inc.")))

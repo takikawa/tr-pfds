@@ -30,8 +30,6 @@ maintain the type invariants of the original definitions.}
 
 @include-section["intro.scrbl"]
 
-@include-section["ts.scrbl"]
-
 @section{Introduction to Functional Data Structures}
 
 This section introduces the functional data structures that are
