@@ -55,3 +55,23 @@
             #:author (authors "Sam Tobin-Hochstadt" "Matthias Felleisen")
             #:location (proceedings-location "Symposium on Principles of Programming Languages")
             #:date "2008"))
+(define thf-dls
+  (make-bib #:title "Interlanguage Refactoring: From Scripts to Programs"
+            #:author (authors "Sam Tobin-Hochstadt" "Matthias Felleisen")
+            #:location (proceedings-location "Dynamic Languages Symposium")
+            #:date "2006"))
+(define ctf-scheme
+  (make-bib #:title "Advanced Macrology and the Implementation of Typed Scheme"
+            #:author (authors "Ryan Culpepper" "Sam Tobin-Hochstadt" "Matthias Felleisen")
+            #:location (proceedings-location "Scheme and Functional Programming")
+            #:date "2007"))
+(define stf-esop
+  (make-bib #:title "Practical Variable-Arity Polymorphism"
+            #:author (authors "T. Stephen Strickland" "Sam Tobin-Hochstadt" "Matthias Felleisen")
+            #:location (proceedings-location "European Symposium on Programming")
+            #:date "2009"))
+(define th-diss
+  (make-bib #:title "Typed Scheme: From Scripts to Programs"
+            #:author "Sam Tobin-Hochstadt"
+            #:location (dissertation-location #:institution "Northeastern University")
+            #:date "2010"))

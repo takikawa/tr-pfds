@@ -792,7 +792,7 @@ cases. For example,}
 @section{Comparison with Other Implementations}
 The implementation of the data structures are very faithful to the original
 implementations of Purly Functional Data Structures by @citet[oka]
-and VLists and others by  @citet[bagwell-trie] @citet[bagwell-lists]. 
+and VLists and others by  @citet[bagwell-trie bagwell-lists]. 
 @para{We added more functions to the data structures to make
 them much more useful. For example, to each data structure we added a function
 to convert the data structure into a list.}
