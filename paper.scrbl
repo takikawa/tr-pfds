@@ -346,7 +346,7 @@ The Lazy Pairing Heaps are same as normal pairing heaps except for the fact that
 Lazy Pairing Heaps use lazy evaluation and hence are lazy in nature.
 The lazy evaluation has been used in this data structure so that the Pairing 
 Heap can
-adapte to cope with the persistence efficiently. Analysis of the Lazy Pairing
+adapt to cope with the persistence efficiently. Analysis of the Lazy Pairing
 Heap to 
 obtain an exact asymptotic running time is as difficult as that for the 
 Pairing Heaps. The Lazy 
@@ -789,7 +789,7 @@ cases. For example,}
 
 @section{Comparison with Other Implementations}
 The implementation of the data structures are very faithful to the original
-implementations of Purly Functional Data Structures by @citet[oka]
+implementations of Purely Functional Data Structures by @citet[oka]
 and VLists and others by  @citet[bagwell-trie bagwell-lists]. 
 @para{We added more functions to the data structures to make
 them much more useful. For example, to each data structure we added a function
@@ -809,5 +809,13 @@ structurally similar the original work.
 
 
 @section{Conclusion}
-                                   
+
+Efficient and productive functional programming requires efficient and
+expressive functional data structures.  In this paper, we present a
+comprehensive library of functional data structures, implemented and
+available in Typed Scheme. We hope that this enables programmers to
+write functional programs, and inspires library writers to use
+functional designs and to produce new libraries to enable functional
+programming.  
+
 @gen-bib[]
