@@ -30,41 +30,53 @@ maintain the type invariants of the original definitions.}
 
 @include-section["intro.scrbl"]
 
-@section{Introduction to Functional Data Structures}
+@section{An Introduction to Functional Data Structures}
 
-This section introduces the functional data structures that are
-implemented in this work. It includes several variants of Queues, 
-Deques or Double-Ended Queues, Heaps or Priority Queues, Lists, Tries, 
-Hash-Lists, Red-Black Trees etc. All these data structures are polymorphic.
+Purely functional data structures, like all data structures, come in
+many varieties.  For this work, we have selected a wide variety that
+provide different APIs and performance characteristics.  They include
+several variants of queues, deques (or double-ended queues), heaps
+(or priority queues), lists, tries, hash lists, red-black trees and
+others. All of the implemented data structures are polymorphic in
+their element type.
+
+The following subsections describe each of these data structures, many
+with a number of different implementations with distinct performance
+characteristics.  Each subsection introduces the data structure,
+specifies its API, provides examples, and then discusses each
+implementation variant and relevant performance characteristics.  
 
 @subsection{Queues}
-Queues are simple First In First Out (FIFO) data structures. Several 
-variants of queues are implemented. Each variant that is
-implemented is discussed below. All the queue variants
-implement the the queue interface and have the type @scheme[(Queue A)]. 
-Functions of the queue interface are as follows.
+@emph{Queues} are simple First In First Out (FIFO) data structures. We have
+implemented a wide variety of queues, each implementing the interface
+given below. Each queue provides a polymorphic type @racket[(Queue
+A)], as well as the following functions:
 
-@(itemlist 
-  @item{@italic{queue} : @scheme[(∀ (A) (A * -> (Queue A)))] 
-         @para{The Queue constructor function. Constructs a queue from 
-         the given elements. In the @scheme[queue] signature,  
-         @scheme[All] is a type constructor used for polymorphic 
-                functions. @scheme[->] is the delimiter which separates inputs 
-                and the output of a function. The above signature implies that
-                the function takes zero or more elements of type @scheme[A]
-                and gives a queue of type @scheme[(Queue A)]}}
-  @item{@italic{enqueue} : @scheme[(∀ (A) (A (Queue A) -> (Queue A)))]
-         @para{Inserts the given element into the queue.}}
-  @item{@italic{head} : @scheme[(∀ (A) ((Queue A) -> A))]
-         @para{Returns the first element in the queue.}}
-  @item{@italic{tail} : @scheme[(∀ (A) ((Queue A) -> (Queue A)))]
-         @para{Removes the first element from the given queue.}})
+@(itemlist
+  @item{@italic{queue} : @scheme[(∀ (A) (A * → (Queue A)))]
+    @para{Constructs a queue with
+      the given elements in order. In the @scheme[queue] signature,  
+      @scheme[∀] is a type constructor used for polymorphic types, binding
+      the given type variables, here @racket[A].
+      @scheme[→], written infix between arguments and results, is the
+      function type constructor. The annotation @racket[*] in the
+      function type specifies that @racket[queue] accepts arbitrarily
+      many elements, all of type @racket[A], producing a queue of type
+      @scheme[(Queue A)].}}
+  @item{@italic{enqueue} : @scheme[(∀ (A) (A (Queue A) → (Queue A)))]
+    @para{Inserts the given element (the first argument) into the
+      given queue (the second argument), producing a new queue.}}
+  @item{@italic{head} : @scheme[(∀ (A) ((Queue A) → A))]
+    @para{Returns the first element in the queue.  The queue is unchanged.}}
+  @item{@italic{tail} : @scheme[(∀ (A) ((Queue A) → (Queue A)))]
+    @para{Removes the first element from the given queue, producing a
+      new queue.}})
 
 @(require scribble/eval)
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/scheme))
 @(evaluate '(require "bankers-queue.ss"))
-@examples[#:eval evaluate
+@interaction[#:eval evaluate
 (define que (queue -1 0 1 2 3 4))
 
 que
@@ -165,30 +177,30 @@ structures implement the deque interface and have the type @scheme[(Deque A)].
 The deque interface has following functions 
 
 @(itemlist 
-  @item{@italic{deque} : @scheme[(∀ (A) (A * -> (Deque A)))] 
+  @item{@italic{deque} : @scheme[(∀ (A) (A * → (Deque A)))] 
          @para{Deque constructor function. Constructs a double ended 
          queue from the given elements.}}
-  @item{@italic{enqueue} : @scheme[(∀ (A) (A (Deque A) -> (Deque A)))] 
+  @item{@italic{enqueue} : @scheme[(∀ (A) (A (Deque A) → (Deque A)))] 
          @para{Inserts the given element to the rear end of the 
          deque.}}
-  @item{@italic{enqueue-front} : @scheme[(∀ (A) (A (Deque A) -> (Deque A)))]
+  @item{@italic{enqueue-front} : @scheme[(∀ (A) (A (Deque A) → (Deque A)))]
          @para{Inserts the given element to the front-end of 
          the deque.}}
-  @item{@italic{head} : @scheme[(∀ (A) ((Deque A) -> A))]
+  @item{@italic{head} : @scheme[(∀ (A) ((Deque A) → A))]
          @para{Returns the first element from the front-end of the 
          deque.}}
-  @item{@italic{last} : @scheme[(∀ (A) ((Deque A) -> A))]
+  @item{@italic{last} : @scheme[(∀ (A) ((Deque A) → A))]
          @para{Returns the first element from the rear-end of the deque.}}
-  @item{@italic{tail} : @scheme[(∀ (A) ((Deque A) -> (Deque A)))]
+  @item{@italic{tail} : @scheme[(∀ (A) ((Deque A) → (Deque A)))]
          @para{Removes the first element from the front-end of the
          given queue.}}
-  @item{@italic{init} : @scheme[(∀ (A) ((Deque A) -> (Deque A)))]
+  @item{@italic{init} : @scheme[(∀ (A) ((Deque A) → (Deque A)))]
          @para{Removes the first element from the rear-end of the
          given queue.}})
 
 
 @(evaluate '(require "bankers-deque.ss"))
-@examples[#:eval evaluate
+@interaction[#:eval evaluate
 (deque -1 1 3 4 5 6)
 
 (define dque (deque -1 0 1 2 3 4))
@@ -249,23 +261,23 @@ All the variants have the type @scheme[(Heap A)] and implement the following
 functions of the heap interface.
 
 @(itemlist 
-  @item{@italic{heap} : @scheme[(∀ (A) ((A A -> Bool) A * -> (Heap A)))]
+  @item{@italic{heap} : @scheme[(∀ (A) ((A A → Bool) A * → (Heap A)))]
          @para{Heap constructor function. Constructs a heap from the 
          given elements and the comparison function.}}
-  @item{@italic{find-min/max} : @scheme[(∀ (A) ((Heap A) -> A))]
+  @item{@italic{find-min/max} : @scheme[(∀ (A) ((Heap A) → A))]
          @para{Returns the min or max element of the given
          heap.}}
-  @item{@italic{delete-min/max} : @scheme[(∀ (A) ((Heap A) -> (Heap A)))]
+  @item{@italic{delete-min/max} : @scheme[(∀ (A) ((Heap A) → (Heap A)))]
          @para{Deletes the min or max element of the given 
          heap.}}
-  @item{@italic{insert} : @scheme[(∀ (A) (A (Heap A) -> (Heap A)))]
+  @item{@italic{insert} : @scheme[(∀ (A) (A (Heap A) → (Heap A)))]
          @para{Inserts an element into the heap.}}
-  @item{@italic{merge} : @scheme[(∀ (A) ((Heap A) (Heap A) -> (Heap A)))]
+  @item{@italic{merge} : @scheme[(∀ (A) ((Heap A) (Heap A) → (Heap A)))]
          @para{Merges the two given heaps.}})
 
 
 @(evaluate '(require "binomialheap.ss"))
-@examples[#:eval evaluate
+@interaction[#:eval evaluate
 (heap < 1 2 3 4 5 -1)
 
 (define hep (heap < 1 2 3 4 5 -1))
@@ -382,29 +394,29 @@ and update operations. All random access list variants have the type
 @scheme[(RAList A)] and implement the Random Access List interface which 
 include the following functions.
 @(itemlist 
-  @item{@italic{list} : @scheme[(∀ (A) (A * -> (RAList A)))]
+  @item{@italic{list} : @scheme[(∀ (A) (A * → (RAList A)))]
          @para{Random Access List constructor function. Constructs 
          a random access list from the given elements.}}
-  @item{@italic{head} : @scheme[(∀ (A) ((RAList A) -> A))]
+  @item{@italic{head} : @scheme[(∀ (A) ((RAList A) → A))]
          @para{Returns the first element of the given random access
          list.}}
-  @item{@italic{tail} : @scheme[(∀ (A) ((RAList A) -> (RAList A)))]
+  @item{@italic{tail} : @scheme[(∀ (A) ((RAList A) → (RAList A)))]
          @para{Deletes the first element of the given random access 
          list and returns the rest of the list.}}
-  @item{@italic{lookup} : @scheme[(∀ (A) (Integer (RAList A) -> A))]
+  @item{@italic{lookup} : @scheme[(∀ (A) (Integer (RAList A) → A))]
          @para{Returns the element at a given location in the 
          random access list.}}
   @item{@italic{update} : 
-         @schemeblock[(∀ (A) (Integer (RAList A) A -> 
+         @schemeblock[(∀ (A) (Integer (RAList A) A → 
                                         (RAList A)))]
          @para{Updates the element at a given location in the 
          random access list with a new element.}}
-  @item{@italic{cons} : @scheme[(∀ (A) (A (RAList A) -> (RAList A)))]
+  @item{@italic{cons} : @scheme[(∀ (A) (A (RAList A) → (RAList A)))]
          @para{Inserts a given element into the random access list.}})
 
 
 @(evaluate '(require "binaryrandomaccesslist1.ss"))
-@examples[#:eval evaluate
+@interaction[#:eval evaluate
 (define lst (list 1 2 3 4 -5 -6))
 
 lst
@@ -447,32 +459,32 @@ an amortized running time of O(1) for the following operations
 except for @scheme[clist].
 
 @(itemlist 
-  @item{@italic{clist} : @scheme[(∀ (A) (A * -> (CList A)))] 
+  @item{@italic{clist} : @scheme[(∀ (A) (A * → (CList A)))] 
          @para{Catenable List constructor function. Constructs 
                a catenable list from the given elements.}}
-  @item{@italic{head} : @scheme[(∀ (A) ((CList A) -> A))]
+  @item{@italic{head} : @scheme[(∀ (A) ((CList A) → A))]
          @para{Returns the first element of the given catenable list.}}
-  @item{@italic{tail} : @scheme[(∀ (A) ((CList A) ->
+  @item{@italic{tail} : @scheme[(∀ (A) ((CList A) →
                                                    (CList A)))]
          @para{Deletes the first element of the given catenable list and 
                returns the rest of the list.}}
-  @item{@italic{kons} : @scheme[(∀ (A) (A (CList A) -> 
+  @item{@italic{kons} : @scheme[(∀ (A) (A (CList A) → 
                                                  (CList A)))]
          @para{Inserts a given element to the front of the catenable 
                list.}}
-  @item{@italic{kons-rear} : @scheme[(∀ (A) (A (CList A) -> 
+  @item{@italic{kons-rear} : @scheme[(∀ (A) (A (CList A) → 
                                                       (CList A)))]
          @para{Inserts a given element to the rear end of the
                catenable list.}}
   @item{@italic{append} : @scheme[(∀ (A) ((CList A) 
-                                                 (CList A) -> 
+                                                 (CList A) → 
                                                       (CList A)))]
          @para{Appends a catenable list to the end of another 
                catenable list.}})
 
 
 @(evaluate '(require "catenablelist.ss"))
-@examples[#:eval evaluate
+@interaction[#:eval evaluate
 (clist -1 0 1 2 3 4)
 
 (define cal (clist -1 0 1 2 3 4))
@@ -508,23 +520,23 @@ The VLists have the type
 Some of them are listed below.
 
 @(itemlist 
-  @item{@italic{vlist} : @scheme[(∀ (A) (A * -> (VList A)))] 
+  @item{@italic{vlist} : @scheme[(∀ (A) (A * → (VList A)))] 
          @para{VList constructor function. Constructs 
                a VList from the given elements.}}
-  @item{@italic{first} : @scheme[(∀ (A) ((VList A) -> A))]
+  @item{@italic{first} : @scheme[(∀ (A) ((VList A) → A))]
          @para{Returns the first element of the given vlist.}}
-  @item{@italic{last} : @scheme[(∀ (A) ((VList A) -> A))]
+  @item{@italic{last} : @scheme[(∀ (A) ((VList A) → A))]
          @para{Returns the last element of the given vlist.}}
-  @item{@italic{rest} : @scheme[(∀ (A) ((VList A) -> (VList A)))]
+  @item{@italic{rest} : @scheme[(∀ (A) ((VList A) → (VList A)))]
          @para{Deletes the first element of the given vlist and 
                returns the rest of the list.}}
-  @item{@italic{vcons} : @scheme[(∀ (A) (A (VList A) -> (VList A)))]
+  @item{@italic{vcons} : @scheme[(∀ (A) (A (VList A) → (VList A)))]
          @para{Inserts the given element to the front of the vlist.}}
-  @item{@italic{get} : @scheme[(∀ (A) (Integer (VList A) -> A))]
+  @item{@italic{get} : @scheme[(∀ (A) (Integer (VList A) → A))]
          @para{Gets the element at the given index in the vlist.}})
 
 @(evaluate '(require "vlist.ss"))
-@examples[#:eval evaluate
+@interaction[#:eval evaluate
 (define vlst (vlist -1 1 3 4 5))
 
 vlst
@@ -596,26 +608,26 @@ Red-Black Tree data structure
 
 @(itemlist 
   @item{@italic{redblacktree} : 
-         @schemeblock[(∀ (A) ((A A -> Boolean) A * -> 
+         @schemeblock[(∀ (A) ((A A → Boolean) A * → 
                                           (RedBlackTree A)))] 
          The Red-Black Tree constructor function. Constructs 
          a red-black tree from the given elements and the
          comparison function.}
-  @item{@italic{insert} : @schemeblock[(∀ (A) (A (RedBlackTree A) -> 
+  @item{@italic{insert} : @schemeblock[(∀ (A) (A (RedBlackTree A) → 
                                                    (RedBlackTree A)))] 
          @para{Inserts a given element into the red-black tree.}}
-  @item{@italic{root} : @scheme[(∀ (A) ((RedBlackTree A) -> A))] 
+  @item{@italic{root} : @scheme[(∀ (A) ((RedBlackTree A) → A))] 
          @para{Returns the root element of the given red-black tree.}}
-  @item{@italic{member?} : @schemeblock[(∀ (A) (A (RedBlackTree A) -> Boolean))] 
+  @item{@italic{member?} : @schemeblock[(∀ (A) (A (RedBlackTree A) → Boolean))] 
          Checks if the given element is a member of the 
          red-black tree.}
-  @item{@italic{delete} : @schemeblock[(∀ (A) (A (RedBlackTree A) -> 
+  @item{@italic{delete} : @schemeblock[(∀ (A) (A (RedBlackTree A) → 
                                                    (RedBlackTree A)))] 
          @para{Deletes the given element from the given red-black 
          tree.}})
 
 @(evaluate '(require "redblacktrees.ss"))
-@examples[#:eval evaluate
+@interaction[#:eval evaluate
 (define rbt (redblacktree < -1 3 4 5 6))
 
 rbt
@@ -687,8 +699,8 @@ to understand. Exact locations in the code are blamed by the type checker in
 case of type errors. This makes it very easy to debug the type errors. 
 @para{Typed Scheme has a very intuitive syntax. 
       For example, the infix operator 
-@scheme[->] which is used to write the type of a function. To the left of 
-@scheme[->] goes the types of inputs to the function and to its right is the
+@scheme[→] which is used to write the type of a function. To the left of 
+@scheme[→] goes the types of inputs to the function and to its right is the
 type of the function's output. Kleene star or Kleene operator, @scheme[*] is 
 used to indicate zero or more elements. @scheme[All] or @scheme[∀] is the 
 type constructor used by the polymorphic functions etc.} 
@@ -778,7 +790,7 @@ cases. For example,}
 (define-struct: Mt ())  
 (define-type-alias (Union A) 
    (U (Type1 A) Mt))
-(: id : (∀ (A) (A Integer -> (Union A))))
+(: id : (∀ (A) (A Integer → (Union A))))
 (define (id elem int)
   (if (> int 5) (make-Type1 elem) (make-Mt)))]
 
@@ -795,13 +807,13 @@ and VLists and others by  @citet[bagwell-trie bagwell-lists].
 them much more useful. For example, to each data structure we added a function
 to convert the data structure into a list.}
 @(evaluate '(require "bankers-queue.ss"))
-@examples[#:eval evaluate
+@interaction[#:eval evaluate
                  (queue->list (queue 1 2 3 4 5 6 -4))]
 @para{We added function to delete elements from the 
       @italic{Red-Black Trees}
       which was missing in the original implementation}
 @para{All the heap constructor functions take a comparison function of the 
-      type @scheme[(A A -> Boolean)] as their first argument followed by the 
+      type @scheme[(A A → Boolean)] as their first argument followed by the 
       elements for the data structure. This implementation of this feature 
       is slightly different in the original work.}
 Except for these changes/additions, the implementation is 
