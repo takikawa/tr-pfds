@@ -27,6 +27,12 @@
              #:author bagwell
              #:location "Technical report, 2000/334, Ecole Polytechnique  F´ed´erale de Lausanne"
              #:date "2000"))
+(define hood-mel
+  (make-bib  #:title "Real-time queue operations in pure Lisp"
+             #:is-book? #f
+             #:author (authors "Robert Hood" "Robert Melville")
+             #:location "Information Processing Letters, 13(2):50-53"
+             #:date "1981"))
 (define kaplan-tarjan
   (make-bib #:title "Persistent lists with catenation via recursive slow-down"
             #:is-book? #f
