@@ -399,24 +399,22 @@ and update operations. All random access list variants have the type
 @scheme[(RAList A)] and implement the Random Access List interface which 
 include the following functions.
 @(itemlist 
-  @item{@italic{list} : @scheme[(∀ (A) (A * → (RAList A)))]
+  @item{@italic{list} : @scheme[(∀ (A) A * → (RAList A))]
          @para{Random Access List constructor function. Constructs 
          a random access list from the given elements.}}
-  @item{@italic{head} : @scheme[(∀ (A) ((RAList A) → A))]
+  @item{@italic{head} : @scheme[(∀ (A) (RAList A) → A)]
          @para{Returns the first element of the given random access
          list.}}
-  @item{@italic{tail} : @scheme[(∀ (A) ((RAList A) → (RAList A)))]
+  @item{@italic{tail} : @scheme[(∀ (A) (RAList A) → (RAList A))]
          @para{Deletes the first element of the given random access 
          list and returns the rest of the list.}}
-  @item{@italic{lookup} : @scheme[(∀ (A) (Integer (RAList A) → A))]
+  @item{@italic{lookup} : @scheme[(∀ (A) Int (RAList A) → A)]
          @para{Returns the element at a given location in the 
          random access list.}}
-  @item{@italic{update} : 
-         @schemeblock[(∀ (A) (Integer (RAList A) A → 
-                                        (RAList A)))]
+  @item{@italic{update} : @scheme[(∀ (A) Int (RAList A) A → (RAList A))]
          @para{Updates the element at a given location in the 
          random access list with a new element.}}
-  @item{@italic{cons} : @scheme[(∀ (A) (A (RAList A) → (RAList A)))]
+  @item{@italic{cons} : @scheme[(∀ (A) A (RAList A) → (RAList A))]
          @para{Inserts a given element into the random access list.}})
 
 
@@ -465,28 +463,22 @@ an amortized running time of O(1) for the following operations
 except for @scheme[clist].
 
 @(itemlist 
-  @item{@italic{clist} : @scheme[(∀ (A) (A * → (CList A)))] 
+  @item{@italic{clist} : @scheme[(∀ (A) A * → (CList A))] 
          @para{Catenable List constructor function. Constructs 
                a catenable list from the given elements.}}
-  @item{@italic{head} : @scheme[(∀ (A) ((CList A) → A))]
+  @item{@italic{head} : @scheme[(∀ (A) (CList A) → A)]
          @para{Returns the first element of the given catenable list.}}
-  @item{@italic{tail} : @scheme[(∀ (A) ((CList A) →
-                                                   (CList A)))]
+  @item{@italic{tail} : @scheme[(∀ (A) (CList A) → (CList A))]
          @para{Deletes the first element of the given catenable list and 
                returns the rest of the list.}}
-  @item{@italic{kons} : @scheme[(∀ (A) (A (CList A) → 
-                                                 (CList A)))]
+  @item{@italic{kons} : @scheme[(∀ (A) A (CList A) → (CList A))]
          @para{Inserts a given element to the front of the catenable 
                list.}}
-  @item{@italic{kons-rear} : @scheme[(∀ (A) (A (CList A) → 
-                                                      (CList A)))]
+  @item{@italic{kons-rear} : @scheme[(∀ (A) A (CList A) → (CList A))]
          @para{Inserts a given element to the rear end of the
                catenable list.}}
-  @item{@italic{append} : @scheme[(∀ (A) ((CList A) 
-                                                 (CList A) → 
-                                                      (CList A)))]
-         @para{Appends a catenable list to the end of another 
-               catenable list.}})
+  @item{@italic{append} : @scheme[(∀ (A) (CList A) * → (CList A))]
+         @para{Appends several catenable lists together.}})
 
 
 @(evaluate '(require "catenablelist.ss"))
@@ -539,7 +531,7 @@ Some of them are listed below.
                returns the rest of the list.}}
   @item{@italic{vcons} : @scheme[(∀ (A) (A (VList A) → (VList A)))]
          @para{Inserts the given element to the front of the vlist.}}
-  @item{@italic{get} : @scheme[(∀ (A) (Integer (VList A) → A))]
+  @item{@italic{get} : @scheme[(∀ (A) (Int (VList A) → A))]
          @para{Gets the element at the given index in the vlist.}})
 
 @(evaluate '(require "vlist.ss"))
@@ -764,7 +756,7 @@ variable-arity functions.
                  (define-struct: (A) Seq
                    ([elem  : (EP A)] [recur : (Seq A)]))]
 
-@para{Typed Scheme treats type @scheme[Integer] and 
+@para{Typed Scheme treats type @scheme[Int] and 
 @scheme[Exact-Positive-Integer] to be different in some 
 cases. For example,}
 @schemeblock[(vector-append (vector -1 2) (vector 1 2))]
@@ -772,7 +764,7 @@ cases. For example,}
 @para{@schemeerror{Type Checker: Polymorphic function vector-append 
                    could not be applied to arguments:}}
 @para{@schemeerror{Domain: (Vectorof a) *}}
-@para{@schemeerror{Arguments: (Vectorof Integer) (Vectorof 
+@para{@schemeerror{Arguments: (Vectorof Int) (Vectorof 
                    Exact-Positive-Integer)}}
 @para{This behavior was quiet unexpected.}
 @;{item{Even though Typed Scheme test engine is pretty good, there are couple 
@@ -802,7 +794,7 @@ cases. For example,}
 (define-struct: Mt ())  
 (define-type-alias (Union A) 
    (U (Type1 A) Mt))
-(: id : (∀ (A) (A Integer → (Union A))))
+(: id : (∀ (A) (A Int → (Union A))))
 (define (id elem int)
   (if (> int 5) (make-Type1 elem) (make-Mt)))]
 

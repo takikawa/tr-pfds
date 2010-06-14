@@ -32,13 +32,18 @@
         hd
         (link hd (delay (link-all tl))))))
 
-(: append : (All (A) ((CatenableList A) (CatenableList A) -> (CatenableList A))))
-(define (append cat1 cat2)
+(: append-inner : (All (A) ((CatenableList A) (CatenableList A) -> (CatenableList A))))
+(define (append-inner cat1 cat2)
   (cond
     [(EmptyList? cat1) cat2]
     [(EmptyList? cat2) cat1]
     [else (link cat1 (delay cat2))]))
 
+(: append : (All (A) (CatenableList A) * -> (CatenableList A)))
+(define (append . cats)
+  (if (null? cats)
+      empty
+      (append-inner (car cats) (apply append (cdr cats)))))
 
 (: kons : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (kons elem cat)
