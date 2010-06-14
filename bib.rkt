@@ -33,6 +33,36 @@
              #:author (authors "Robert Hood" "Robert Melville")
              #:location "Information Processing Letters, 13(2):50-53"
              #:date "1981"))
+(define pairing
+  (make-bib  #:title "The pairing heap: A new form of self-adjusting heap"
+             #:is-book? #f
+             #:author (authors "Michael L. Fredman" "Robert Sedgewick" "Daniel D. K. Sleator" "Robert E. Tarjan")
+             #:location "Algorithmica 1 (1): 111-129"
+             #:date "1986"))
+(define vuillemin
+  (make-bib  #:title "A data structure for manipulating priority queues"
+             #:is-book? #f
+             #:author (author-name "Jean" "Vuillemin")
+             #:location "Communications of the ACM, 21(4):309-315"
+             #:date "1978"))
+(define brown
+  (make-bib  #:title "Implementation and analysis of binomial queue algorithms"
+             #:is-book? #f
+             #:author (author-name "Mark R" "Brown")
+             #:location "SIAM Journal on Computing, 7(3):298-319"
+             #:date "1978"))
+(define crane
+  (make-bib  #:title "Linear lists and priority queues as balanced binary trees"
+             #:is-book? #f
+             #:author (author-name "Clark Allan" "Crane")
+             #:location "PhD thesis, Computer Science Department, Stanford University. STAN-CS-72-259."
+             #:date "1972"))
+(define sla
+  (make-bib  #:title "Self-adjusting binary search trees"
+             #:is-book? #f
+             #:author (authors "Daniel D. K. Sleator" "Robert E. Tarjan")
+             #:location "Journal of the ACM, 32(3):652-686"
+             #:date "1985"))
 (define kaplan-tarjan
   (make-bib #:title "Persistent lists with catenation via recursive slow-down"
             #:is-book? #f
@@ -48,7 +78,7 @@
 (define finger
   (make-bib #:title "Finger trees: a simple general-purpose data structure"
             #:is-book? #f
-            #:author "Ralf Hinze and Ross Paterson"
+            #:author (authors "Ralf Hinze" "Ross Paterson")
             #:location "Journal Functional Programming"
             #:date "2006"))
 

@@ -295,8 +295,8 @@ functions of the heap interface.
 
 
 @lpara{Binomial Heap}
-A Binomial Heap is a heap-ordered, binomial tree. The Binomial Heaps support 
-quick 
+A Binomial Heap@cite[vuillemin brown] is a heap-ordered, binomial tree.
+The Binomial Heaps support quick 
 and efficient merge operation. This fast merging in the Binomial Heap can be 
 achieved because of its special tree structure. The Binomial Heap provides a 
 worst-case running time of O(log(n)) for the operations @scheme[insert], 
@@ -305,8 +305,8 @@ worst-case running time of O(log(n)) for the operations @scheme[insert],
 
 
 @lpara{Leftist Heap}
-The Leftist heaps are heap-ordered binary trees that satisfy the leftist 
-property. 
+The Leftist heaps@cite[crane] are heap-ordered binary trees that satisfy
+the leftist property. 
 Each node in the tree is assigned a value usually called a rank or a s-value. 
 The value represents the length of its rightmost path from the node in question
 to the nearest leaf. According to leftist property, right descendant of each 
@@ -319,7 +319,8 @@ running time of O(1) for
 @scheme[find-min/max].
 
 @lpara{Pairing Heap}
-A Pairing Heap is a type of heap which has a very simple implementation and has 
+A Pairing Heap@cite[pairing] is a type of heap which has a very simple
+implementation and has 
 extremely good amortized performance in practice. But it has been proved that 
 its very difficult to come up with exact asymptotic running time of this data
 structure. The Pairing Heaps are represented either as a empty heap or a pair 
@@ -330,7 +331,7 @@ worst-case running time of O(1) for the operations @scheme[insert],
 And @scheme[delete-min/max] has a amortized running time of O(log(n)).
 
 @lpara{Splay Heap}
-The Splay Heaps are very similar to the balanced binary search trees. 
+The Splay Heaps@cite[sla] are very similar to the balanced binary search trees. 
 The difference 
 between the two data structures lies in the fact that the Splay Heaps do not 
 maintain any explicit balance information. Instead every operation on a splay 
@@ -357,11 +358,11 @@ and @scheme[merge]. And a
 worst-case running time of O(1) for the @scheme[insert] operation.
 
 @lpara{Lazy Pairing Heap}
-The Lazy Pairing Heaps are same as normal pairing heaps except for the fact that 
-Lazy Pairing Heaps use lazy evaluation and hence are lazy in nature.
+The Lazy Pairing Heaps@cite[oka] are same as pairing heaps@cite[pairing] except 
+that the Lazy Pairing Heaps use lazy evaluation and are lazy in nature.
 The lazy evaluation has been used in this data structure so that the Pairing 
 Heap can
-adapt to cope with the persistence efficiently@cite[oka]. Analysis of the Lazy Pairing
+adapt to cope with the persistence efficiently. Analysis of the Lazy Pairing
 Heap to 
 obtain an exact asymptotic running time is as difficult as that for the 
 Pairing Heaps. The Lazy 
@@ -371,8 +372,9 @@ the @scheme[delete-min/max] operation has a amortized
 running time of O(log(n)).
 
 @lpara{Bootstrapped Heap}
-The Bootstrapped Heaps use a technique of bootstrapping called the Structural
-Abstraction@cite[oka]. In @italic{structural abstraction}, the data structure 
+The Bootstrapped Heaps@cite[oka] use a technique of bootstrapping called the 
+Structural Abstraction@cite[oka]. In @italic{structural abstraction}, the 
+data structure 
 abstracts over a less efficient heap implementation to get a better running 
 time. This makes the Bootstrapped Heaps to have very efficient merge operation. 
 The Bootstrapped Heaps provide a worst-case running time of O(1) for the 
@@ -454,8 +456,9 @@ and @scheme[update] operations.
 
 @subsubsection{Catenable List}
 The Catenable List is a list data structure with efficient append operation. 
-They use the bootstrapping technique of @italic{structural abstraction} to 
-achieve efficient append operation@cite[oka]. The Catenable Lists have the 
+They use the bootstrapping technique of 
+@italic{structural abstraction}@cite[oka] to 
+achieve efficient append operation. The Catenable Lists have the 
 type @scheme[(CList A)] and they abstract over the Real-Time Queues
 to realize
 an amortized running time of O(1) for the following operations
@@ -507,7 +510,8 @@ except for @scheme[clist].
 
 
 @subsubsection{VList}
-A VList is a data structure very similar to normal Scheme list but most of the 
+A VList@cite[bagwell-lists] is a data structure very similar to normal Scheme
+list but most of the 
 corresponding operations of the VList are significantly faster compared to the
 list 
 operations. The VList combines the extensibility of the linked list with the 
@@ -562,8 +566,8 @@ vlst
 ]
 
 @subsubsection{Streams}
-The Streams are simply lazy lists. They are similar to the ordinary lists 
-and they
+The Streams@cite[oka] are simply lazy lists. They are similar to the 
+ordinary lists and they
 provide the same functionality. The Streams being lazy is the only difference. 
 Streams are used in many data structures to achieve lazy evaluation. Since
 each suspension comes with a little
@@ -601,13 +605,15 @@ red or black. The Red-Black Trees follow the following two balance invariants
 The above two invariants together guarantee that the longest possible path with
 alternating black and red nodes, is no more then twice as long as the shortest 
 possible path, the one with black nodes only. This balancing helps in achieving 
-good running times for the tree operations. The operations (explained below) 
-@scheme[member?], @scheme[insert] 
-and @scheme[delete] have worst-case running time of O(log(n)). 
+good running times for the tree operations. Our implementation is based
+on@cite[oka-red-black]. The operations 
+@scheme[member?], @scheme[insert] and @scheme[delete], which respectively 
+checks membership, inserts and deletes elements from the tree, have worst-case
+running time of O(log(n)). 
 @;{
 It has the type 
-@scheme[(RedBlackTree A)]. Following are the functions implemented by the 
-Red-Black Tree data structure
+@scheme[(RedBlackTree A)]. 
+Following are the functions implemented by the Red-Black Tree data structure
 
 @(itemlist 
   @item{@italic{redblacktree} : 
