@@ -92,7 +92,7 @@ que
 
 @lpara{Banker's Queue}
 A Banker’s Queue is a amortized queue obtained using a method of amortization 
-called the Banker's method. The Banker's Queue combines the techniques of lazy 
+called the Banker's method@cite[oka]. The Banker's Queue combines the techniques of lazy 
 evaluation and memoization to obtain good amortized running times. The Banker’s
 Queue implementation internally uses the Stream data structure 
 (Streams are similar to lazy lists. Stream data  
@@ -103,7 +103,8 @@ and @scheme[enqueue].
 
 @lpara{Physicist's Queue}
 A Physicist's queue is a amortized queue obtained using a method of amortization 
-called the Physicist's method. The Physicist's Queue uses the techniques of lazy 
+called the Physicist's method @cite[oka]. The Physicist's Queue uses the 
+techniques of lazy 
 evaluation and memoization to achieve excellent amortized running times for 
 its operations. The only drawback of the Physicist's method is that it is much 
 more complicated than the Banker's method. The Physicist's Queues provide 
@@ -115,8 +116,8 @@ an amortized running time of O(1) for the operations @scheme[head],
 The Real-Time Queue eliminates the amortization in the Banker's Queue to 
 produce the 
 worst-case queues. The Real-Time Queues employ lazy evaluation and a technique 
-called Scheduling. In @italic{scheduling}, the lazy components are forced 
-systematically 
+called Scheduling@cite[oka]. In @italic{scheduling}, the lazy components are 
+forced systematically 
 such that no suspension takes more than O(1) time to execute. 
 This systematic method of
 forcing the suspensions ensures good asymptotic worst-case running time for
@@ -142,7 +143,8 @@ running time. It provides a amortized running time of O(1) for the operations
 The technique of bootstrapping refers to situations where 
 problems whose solutions require solutions to simpler instances of the same
 problem. Bootstrapped Queue is a queue data structure which is developed using 
-a bootstrapping technique called Structural Decomposition. In Structural 
+a bootstrapping technique called Structural Decomposition@cite[oka]. 
+In Structural 
 Decomposition, an implementation that can handle data up to a certain bounded 
 size is taken to implement a data structure which can handle data of unbounded
 size. The data structure gives a worst-case running time of O(1) for the
@@ -154,7 +156,7 @@ Bootstrapped Queue uses Real-Time Queue for bootstrapping.
 The Hood-Melville Queue is similar to the Real-Time Queues in many ways. But the
 implementation of the Hood-Melville Queue is much more complicated than the 
 Real-Time Queue implementation. The Hood-Melville Queue uses a technique 
-called Global Rebuilding to achieve 
+called Global Rebuilding@cite[hood-mel] to achieve 
 good worst-case running times. @italic{Global Rebuilding} is a technique for
 eliminating
 the amortization from batched rebuilding. In @italic{batched rebuilding}, 
@@ -344,7 +346,8 @@ The Skew Binomial Heaps are similar to the Binomial Heaps. The only difference
 between the 
 two is that they both have different representations. The Skew Binomial
 Heaps have a hybrid numerical representation for heaps which is based on 
-the skew binary numbers. The Skew binary number representation is used since 
+the skew binary numbers @cite[oka]. The Skew binary number representation is 
+used since 
 incrementing a skew binary number is quick and simple. But since the skew binary
 numbers have a complicated addition, the merge operation is based on the 
 ordinary binary
@@ -358,7 +361,7 @@ The Lazy Pairing Heaps are same as normal pairing heaps except for the fact that
 Lazy Pairing Heaps use lazy evaluation and hence are lazy in nature.
 The lazy evaluation has been used in this data structure so that the Pairing 
 Heap can
-adapt to cope with the persistence efficiently. Analysis of the Lazy Pairing
+adapt to cope with the persistence efficiently@cite[oka]. Analysis of the Lazy Pairing
 Heap to 
 obtain an exact asymptotic running time is as difficult as that for the 
 Pairing Heaps. The Lazy 
@@ -369,7 +372,7 @@ running time of O(log(n)).
 
 @lpara{Bootstrapped Heap}
 The Bootstrapped Heaps use a technique of bootstrapping called the Structural
-Abstraction. In @italic{structural abstraction}, the data structure 
+Abstraction@cite[oka]. In @italic{structural abstraction}, the data structure 
 abstracts over a less efficient heap implementation to get a better running 
 time. This makes the Bootstrapped Heaps to have very efficient merge operation. 
 The Bootstrapped Heaps provide a worst-case running time of O(1) for the 
@@ -388,7 +391,7 @@ implement functions to insert elements into the list, delete elements, peek
 elements from the list data structure. 
 
 @subsubsection{Random Access List}
-The Random Access Lists are list data structure with efficient 
+The Random Access Lists are list data structures with efficient 
 array-like random access operations. The random access operation include lookup
 and update operations. All random access list variants have the type 
 @scheme[(RAList A)] and implement the Random Access List interface which 
@@ -435,14 +438,14 @@ lst
 @lpara{Binary Random Access List}
 Random Access Lists implemented as a framework of binary numerical 
 representation using complete binary leaf trees are known as Binary 
-Random Access List. It has a worst-case running time of O(log(n)) for the 
+Random Access Lists@cite[oka]. It has a worst-case running time of O(log(n)) for the 
 operations @scheme[cons], 
 @scheme[head], @scheme[tail], @scheme[lookup] and @scheme[update]. 
 
 @lpara{Skew Binary Random Access List}
 Binary Random Access Lists which are implemented using a numerical 
 representation based on skew binary numbers are known as Skew Binary Random
-Access Lists. This representation of the data structure helps to improve the
+Access Lists@cite[oka]. This representation of the data structure helps to improve the
 running times of some operations on the data structure. Skew Binary Random 
 Access List provides a worst-case running time of O(1) for the operations 
 @scheme[cons], @scheme[head] and @scheme[tail] and 
@@ -452,8 +455,8 @@ and @scheme[update] operations.
 @subsubsection{Catenable List}
 The Catenable List is a list data structure with efficient append operation. 
 They use the bootstrapping technique of @italic{structural abstraction} to 
-achieve efficient append operation. The Catenable Lists have the type 
-@scheme[(CList A)] and they abstract over the Real-Time Queues
+achieve efficient append operation@cite[oka]. The Catenable Lists have the 
+type @scheme[(CList A)] and they abstract over the Real-Time Queues
 to realize
 an amortized running time of O(1) for the following operations
 except for @scheme[clist].
@@ -579,7 +582,7 @@ insert, delete, lookup elements of the hash-list.
 
 @subsection{Tries}
 A Trie is a data structure which takes advantage of the structure of aggregate 
-types to achieve good running times for its operations. The Tries are also
+types to achieve good running times for its operations@cite[oka]. The Tries are also
 known as the Digital Search Trees. In this implementation, a trie is a multiway
 tree
 with each node of the multiway tree carrying data of base type of the aggregate
@@ -650,25 +653,28 @@ It includes the time spent on garbage collection and all the times are in
 milliseconds. The results are average of 10 runs and in 
 each run the operation is performed 100000 times. 
 @subsection{Queue Performance}
-Here is the comparison of the time taken by lists to perform some queue 
-operations with the time taken by the Banker's Queue.
-@;para{For the @scheme[head] operation}
+Here is the comparison of the time taken by the Banker's Queue (referred 
+as BQ) with the time taken by lists to perform the queue 
+operations and imperative Queue (referred as IQ) implementation. Since its not
+possible to repeat 100000 tail (or dequeue) operations on 1000 or 10000 element
+imperative queue, we do not have running time for @scheme[tail] operation for 
+imperative Queues in first two cases.
 @para{For 1000 elements}
-@para{@scheme[head] : Lists : 7.4. Banker's Queue : 46.}
-@para{@scheme[tail] : Lists : 15. Banker's Queue : 88.}
-@para{@scheme[enqueue] : Lists : 6478. Banker's Queue : 81.}
+@para{@scheme[head] : BQ : 46. Lists : 7.}
+@para{@scheme[tail] : BQ : 88. Lists : 6.}
+@para{@scheme[enqueue] : BQ : 81. Lists : 6478. IQ : 161.}
 @para{For 10000 elements}
-@para{@scheme[head] : Lists : 7.6. Banker's Queue : 46.}
-@para{@scheme[tail] : Lists : 15. Banker's Queue : 91.}
-@para{@scheme[enqueue] : Lists : 48687. Banker's Queue : 84.}
+@para{@scheme[head] : BQ : 46. Lists : 7.}
+@para{@scheme[tail] : BQ : 91. Lists : 8.}
+@para{@scheme[enqueue] : BQ : 84. Lists : 48687. IQ : 147.}
 @para{For 100000 elements}
-@para{@scheme[head] : Lists : 7.7. Banker's Queue : 47.}
-@para{@scheme[tail] : Lists : 15. Banker's Queue : 93.}
-@para{@scheme[enqueue] : Lists : 524257. Banker's Queue : 85.}
+@para{@scheme[head] : BQ : 47. Lists : 8.}
+@para{@scheme[tail] : BQ : 93. Lists : 8. IQ : 114.}
+@para{@scheme[enqueue] : BQ : 85. Lists : 524257. IQ : 172.}
 @para{For 1000000 elements}
-@para{@scheme[head] : Lists : 7.8. Banker's Queue : 53.}
-@para{@scheme[tail] : Lists : 16. Banker's Queue : 94.}
-@para{@scheme[enqueue] : Lists : Took too long to finish. Banker's Queue : 87.}
+@para{@scheme[head] : BQ : 53. Lists : 8.}
+@para{@scheme[tail] : BQ : 94. Lists : 8. IQ : 101.}
+@para{@scheme[enqueue] : BQ : 87. Lists : Took too long to finish. IQ : 152.}
 
 @subsection{Heap Performance}
 Following is the time taken by the Leftist Heap to perform some of its 
