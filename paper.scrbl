@@ -91,19 +91,19 @@ que
 @;(close-eval evaluate)
 
 @lpara{Banker's Queue}
-A Banker’s Queue is a amortized queue obtained using a method of amortization 
-called the Banker's method@cite[oka]. The Banker's Queue combines the techniques of lazy 
-evaluation and memoization to obtain good amortized running times. The Banker’s
-Queue implementation internally uses the Stream data structure 
-(Streams are similar to lazy lists. Stream data  
+A Banker’s Queue@cite[oka] is a amortized queue obtained using a method of 
+amortization called the Banker's method. The Banker's Queue combines the 
+techniquesof lazy evaluation and memoization to obtain good amortized running 
+times. The Banker’s Queue implementation internally uses the Stream data 
+structure (Streams are similar to lazy lists. Stream data  
 structure is discussed below.) to achieve lazy evaluation. The Banker's Queue 
 provides a 
 amortized running time of O(1) for the operations @scheme[head], @scheme[tail]
 and @scheme[enqueue].
 
 @lpara{Physicist's Queue}
-A Physicist's queue is a amortized queue obtained using a method of amortization 
-called the Physicist's method @cite[oka]. The Physicist's Queue uses the 
+A Physicist's queue@cite[oka] is a amortized queue obtained using a method of 
+amortization called the Physicist's method. The Physicist's Queue uses the 
 techniques of lazy 
 evaluation and memoization to achieve excellent amortized running times for 
 its operations. The only drawback of the Physicist's method is that it is much 
@@ -573,8 +573,8 @@ two portions - the data and the hash table. Both the portions have to grow for
 the hash-list to grow. The running time provided by the Hash-Lists for the 
 operations insert
 and lookup times are very close to the standard chained hash tables. 
-Hash-List has been described in @cite[bagwell-lists]. The Hash-Lists provide functions to 
-insert, delete, lookup elements of the hash-list.
+Hash-List has been described in @cite[bagwell-lists]. The Hash-Lists provide 
+functions to insert, delete, lookup elements of the hash-list.
 
 @subsection{Tries}
 A Trie is a data structure which takes advantage of the structure of aggregate 

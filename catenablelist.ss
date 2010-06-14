@@ -39,7 +39,7 @@
     [(EmptyList? cat2) cat1]
     [else (link cat1 (delay cat2))]))
 
-(: append : (All (A) (CatenableList A) * -> (CatenableList A)))
+(: append : (All (A) ((CatenableList A) * -> (CatenableList A))))
 (define (append . cats)
   (if (null? cats)
       empty
