@@ -1,7 +1,8 @@
 #lang scribble/sigplan
 @(require (except-in scribble/manual cite) scriblib/autobib
           scribble/core
-          "bib.rkt")
+          "bib.rkt"
+          scribble/latex-properties)
 @title{Functional Data Structures in Typed Scheme}
 
 @(authorinfo "Hari Prashanth K R"
@@ -19,6 +20,10 @@
 @(define (lpara . items)
    (make-element (make-style "paragraph" '(exact-chars))
                  items))
+
+@(define (exact . items)
+(make-element (make-style "identity" '(exact-chars))
+              items))
 
 @abstract{
 Scheme provides excellent base language support for programming in a
@@ -645,7 +650,7 @@ rbt
 }
 
 @;(require scribble/core)
-@section{Benchmarks}
+@section[#:style (style #f (list (tex-addition "./extra.tex")))]{Benchmarks}
 All the below mentioned times are CPU times required to obtain the result. 
 It includes the time spent on garbage collection and all the times are in 
 milliseconds. The results are average of 10 runs and in 
@@ -657,6 +662,41 @@ operations and imperative Queue (referred as IQ) implementation. Since its not
 possible to repeat 100000 tail (or dequeue) operations on 1000 or 10000 element
 imperative queue, we do not have running time for @scheme[tail] operation for 
 imperative Queues in first two cases.
+
+@exact{
+\medskip
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Size & \mbox{} & Bankers' & List & Imperative \\
+\hline
+\multirow{3}{*}{1000} & \RktSym{head} & 46 & 7 & ? \\
+\cline{2-5}
+& \RktSym{tail} & 88 & 6 & N/A \\
+\cline{2-5}
+& \RktSym{enqueue} & 81 & 6478 & 161 \\
+\hline
+\multirow{3}{*}{10000} & \RktSym{head} & 46 & 7 & ? \\
+\cline{2-5}
+& \RktSym{tail} & 91 & 8 & N/A \\
+\cline{2-5}
+& \RktSym{enqueue} & 84 & 48687 & 147 \\
+\hline
+\multirow{3}{*}{100000} & \RktSym{head} & 47 & 8 & ? \\
+\cline{2-5}
+& \RktSym{tail} & 93 & 8 & 114 \\
+\cline{2-5}
+& \RktSym{enqueue} & 85 & 524257 & 171 \\
+\hline
+\multirow{3}{*}{1000000} & \RktSym{head} & 53 & 8 & ? \\
+\cline{2-5}
+& \RktSym{tail} & 94 & 8 & 101 \\
+\cline{2-5}
+& \RktSym{enqueue} & 87 & $\infty$ & 152 \\
+\hline
+\end{tabular}}
+
+
+@;{
 @para{For 1000 elements}
 @para{@scheme[head] : BQ : 46. Lists : 7.}
 @para{@scheme[tail] : BQ : 88. Lists : 6.}
@@ -673,6 +713,7 @@ imperative Queues in first two cases.
 @para{@scheme[head] : BQ : 53. Lists : 8.}
 @para{@scheme[tail] : BQ : 94. Lists : 8. IQ : 101.}
 @para{@scheme[enqueue] : BQ : 87. Lists : Took too long to finish. IQ : 152.}
+}
 
 @subsection{Heap Performance}
 Following is the time taken by the Leftist Heap to perform some of its 
