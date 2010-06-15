@@ -144,3 +144,12 @@
 	    #:date "2010"
 	    #:location (techrpt-location #:number "PLT-TR2010-reference-v4.2.5"
 					 #:institution "PLT Scheme Inc.")))
+
+(define skew
+  (make-bib #:title "An applicative random-access stack"
+            #:author "Eugene W. Myers"
+            #:date "1983"
+            #:location (journal-location "Information Processing Letters"
+                                         #:pages '(241 248)
+                                         #:number 5
+                                         #:volume 17)))
