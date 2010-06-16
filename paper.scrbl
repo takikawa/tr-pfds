@@ -53,25 +53,25 @@ imperative queues for these sizes.}
 \hline
 Size & Operation & Bankers' & List & Imperative \\
 \hline
-\multirow{3}{*}{1000} & \RktSym{head} & 46 & 7 & ? \\
+\multirow{3}{*}{1000} & \RktSym{head} & 46 & 7 & N/A \\
 \cline{2-5}
 & \RktSym{tail} & 88 & 6 & N/A \\
 \cline{2-5}
 & \RktSym{enqueue} & 81 & 6478 & 161 \\
 \hline
-\multirow{3}{*}{10000} & \RktSym{head} & 46 & 7 & ? \\
+\multirow{3}{*}{10000} & \RktSym{head} & 46 & 7 & N/A \\
 \cline{2-5}
 & \RktSym{tail} & 91 & 8 & N/A \\
 \cline{2-5}
 & \RktSym{enqueue} & 84 & 48687 & 147 \\
 \hline
-\multirow{3}{*}{100000} & \RktSym{head} & 47 & 8 & ? \\
+\multirow{3}{*}{100000} & \RktSym{head} & 47 & 8 & 114 \\
 \cline{2-5}
 & \RktSym{tail} & 93 & 8 & 114 \\
 \cline{2-5}
 & \RktSym{enqueue} & 85 & 524257 & 171 \\
 \hline
-\multirow{3}{*}{1000000} & \RktSym{head} & 53 & 8 & ? \\
+\multirow{3}{*}{1000000} & \RktSym{head} & 53 & 8 & 101 \\
 \cline{2-5}
 & \RktSym{tail} & 94 & 8 & 101 \\
 \cline{2-5}
@@ -128,29 +128,29 @@ implementation based on sorted lists, and a simple imperative heap.
 \hline
 Size & Operation & Leftist & List & Imperative \\
 \hline
-\multirow{3}{*}{1000} & \RktSym{insert} & 424 & 1031245 & 855 \\
+\multirow{3}{*}{1000} & \RktSym{insert} & 424 & 323874 & 855 \\
 \cline{2-5}
 & \RktSym{find} & 23 & 6 & 28 \\
 \cline{2-5}
 & \RktSym{delete} & 3379 & 8 & N/A \\
 \cline{2-5}
-& \RktSym{merge} & 1451 & 13583 & ? \\
+@;& \RktSym{merge} & 1451 & 13583 & ? \\
 \hline
-\multirow{3}{*}{10000} & \RktSym{insert} & 457 & $\infty$ & 826 \\
+\multirow{3}{*}{10000} & \RktSym{insert} & 457 & 409051 & 826 \\
 \cline{2-5}
 & \RktSym{find} & 26 & 7 & 31 \\
 \cline{2-5}
 & \RktSym{delete} & 4018 & 8 & N/A \\
 \cline{2-5}
-& \RktSym{merge} & 2109 & 161648 & ? \\
+@;& \RktSym{merge} & 2109 & 161648 & ? \\
 \hline
-\multirow{3}{*}{100000} & \RktSym{insert} & 469 & $\infty$ & 748 \\
+\multirow{3}{*}{100000} & \RktSym{insert} & 469 & 1087545 & 748 \\
 \cline{2-5}
 & \RktSym{find} & 27 & 7 & 32 \\
 \cline{2-5}
 & \RktSym{delete} & 4867 & 9 & 2752 \\
 \cline{2-5}
-& \RktSym{merge} & 2655 & $\infty$ & ? \\
+@;& \RktSym{merge} & 2655 & $\infty$ & ? \\
 \hline
 \multirow{3}{*}{1000000} & \RktSym{insert} & 471 & $\infty$ & 717 \\
 \cline{2-5}
@@ -158,7 +158,7 @@ Size & Operation & Leftist & List & Imperative \\
 \cline{2-5}
 & \RktSym{delete} & 6142 & 8 & 4386 \\
 \cline{2-5}
-& \RktSym{merge} & 3229 & $\infty$ & ? \\
+@;& \RktSym{merge} & 3229 & $\infty$ & ? \\
 \hline
 \end{tabular}}
 
