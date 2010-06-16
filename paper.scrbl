@@ -16,7 +16,7 @@
 
 
 @abstract{
-Scheme provides excellent base language support for programming in a
+Scheme provides excellent language support for programming in a
 functional style, but little in the way of library support.  In this
 paper, we present a comprehensive library of functional data
 structures, drawing from several sources.  We have implemented the
@@ -28,7 +28,7 @@ maintain the type invariants of the original definitions.}
 @include-section["fds.scrbl"]
 
 @;(require scribble/core)
-@section[#:style (style #f (list (tex-addition "./extra.tex")))]{Benchmarks}
+@section[#:tag "benchmarks" #:style (style #f (list (tex-addition "./extra.tex")))]{Benchmarks}
 To demonstrate the practical usefulness of purely functional data
 structures, we provide microbenchmarks of a selected set of data
 structures, compared with both simple implementations based on lists,
@@ -37,8 +37,8 @@ and imperative implementations.
 In the tables below, all times are CPU time as reported by PLT Scheme,
 including garbage collection time.  The times are for performing each
 operation 100000 times, averaged over 10 runs.
-@note{Constructor operations @racket[heap] is 
-      preformed only 100 times and averaged over 10 runs}
+@note{The constructor operation @racket[heap] is 
+      performed only 100 times.}
 @subsection{Queue Performance}
 
 The below table shows the performance of the 

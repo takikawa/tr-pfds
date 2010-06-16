@@ -7,7 +7,7 @@
 Typed Scheme@cite[thf-popl th-diss] is an
 explicitly typed dialect of Scheme, implemented in PLT
 Scheme@cite[plt-manual].   Typed Scheme supports both integration with
-untyped Scheme code as well as a typechecker which accepts idiomatic
+untyped Scheme code as well as a typechecker designed to work with idiomatic
 Scheme code.  
 
 While this paper presents the API of the functional data structures,
