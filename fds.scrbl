@@ -405,90 +405,60 @@ worst-case running times of @Ologn for @scheme[list-ref]
 and @scheme[list-set] operations.
 
 @subsection{Catenable List}
-The Catenable List is a list data structure with efficient append operation. 
-They use the bootstrapping technique of 
-@italic{structural abstraction}@cite[oka] to 
-achieve efficient append operation. The Catenable Lists have the 
-type @scheme[(CList A)] and they abstract over the Real-Time Queues
-to realize
-an amortized running time of @O1 for the following operations
-except for @scheme[clist].
+Catenable Lists are a list data structure with an efficient append
+operation, achived using the bootstrapping technique of 
+@italic{structural abstraction}@cite[oka]. Catenable Lists are
+abstracted over Real-Time Queues, and have an amortized running time
+of @O1 for the basic list operations as well as the following:
 
 @(itemlist 
-  @item{@italic{clist} : @scheme[(∀ (A) A * → (CList A))] 
-         @para{Catenable List constructor function. Constructs 
-               a catenable list from the given elements.}}
-  @item{@italic{head} : @scheme[(∀ (A) (CList A) → A)]
-         @para{Returns the first element of the given catenable list.}}
-  @item{@italic{tail} : @scheme[(∀ (A) (CList A) → (CList A))]
-         @para{Deletes the first element of the given catenable list and 
-               returns the rest of the list.}}
-  @item{@italic{kons} : @scheme[(∀ (A) A (CList A) → (CList A))]
-         @para{Inserts a given element to the front of the catenable 
-               list.}}
-  @item{@italic{kons-rear} : @scheme[(∀ (A) A (CList A) → (CList A))]
+  @item{@italic{cons-to-end} : @scheme[(∀ (A) A (List A) → (List A))]
          @para{Inserts a given element to the rear end of the
-               catenable list.}}
-  @item{@italic{append} : @scheme[(∀ (A) (CList A) * → (CList A))]
-         @para{Appends several catenable lists together.}})
+               list.}}
+  @item{@italic{append} : @scheme[(∀ (A) (List A) * → (List A))]
+         @para{Appends several lists together.}})
 
 
 @(evaluate '(require "catenablelist.ss"))
 @interaction[#:eval evaluate
-(clist -1 0 1 2 3 4)
+(define cal (list -1 0 1 2 3 4))
+cal
+(first cal)
 
-(define cal (clist -1 0 1 2 3 4))
+(first (rest cal))
 
-(head cal)
+(first (cons 50 cal))
 
-(head (tail cal))
+(cons-to-end 50 cal)
 
-(head (kons 50 cal))
-
-(kons-rear 50 cal)
-
-(define new-cal (clist 10 20 30))
+(define new-cal (list 10 20 30))
 
 (head (append new-cal cal))
 ]
 
 
 @subsection{VList}
-A VList@cite[bagwell-lists] is a data structure very similar to normal Scheme
-list but most of the 
-corresponding operations of the VList are significantly faster compared to the
-list 
-operations. The VList combines the extensibility of the linked list with the 
-random 
-access of arrays. The indexing and length operations of the VList have a 
+VLists@cite[bagwell-lists] are a data structure very similar to normal Scheme
+lists, but with efficent versions of many operations that are much
+slower on standard lists. VLists combine the extensibility of  linked lists with the 
+fast random 
+access capability of arrays. The indexing and length operations of  VLists have a 
 worst-case 
 running time of @O1 and @Ologn respectively as against 
-@On for lists. The paper Fast Functional Lists, Hash-Lists, vlists and Variable
-Length Arrays by Phil Bagwell @cite[bagwell-lists] describes the VLists. 
-Our VList implementation internally uses Binary Random Access List. 
-The VLists have the type 
-@scheme[(VList A)] and provides all the functions that list provides. 
-Some of them are listed below.
+@On for lists. 
+Our VList implementation is built internally on Binary Random Access Lists. 
+VLists provide the standard list API given above, along with many
+other operations, some of which are given here.
 
 @(itemlist 
-  @item{@italic{vlist} : @scheme[(∀ (A) (A * → (VList A)))] 
-         @para{VList constructor function. Constructs 
-               a VList from the given elements.}}
-  @item{@italic{first} : @scheme[(∀ (A) ((VList A) → A))]
-         @para{Returns the first element of the given vlist.}}
-  @item{@italic{last} : @scheme[(∀ (A) ((VList A) → A))]
-         @para{Returns the last element of the given vlist.}}
-  @item{@italic{rest} : @scheme[(∀ (A) ((VList A) → (VList A)))]
-         @para{Deletes the first element of the given vlist and 
-               returns the rest of the list.}}
-  @item{@italic{vcons} : @scheme[(∀ (A) (A (VList A) → (VList A)))]
-         @para{Inserts the given element to the front of the vlist.}}
-  @item{@italic{get} : @scheme[(∀ (A) (Int (VList A) → A))]
-         @para{Gets the element at the given index in the vlist.}})
+  @item{@italic{last} : @scheme[(∀ (A) (List A) → A)]
+         @para{Returns the last element of the given list.}}
+  @item{@italic{list-ref} : @scheme[(∀ (A) (List A) Integer → A)]
+         @para{Gets the element at the given index in the list.}})
 
 @(evaluate '(require "vlist.ss"))
 @interaction[#:eval evaluate
-(define vlst (vlist -1 1 3 4 5))
+(define vlst (list -1 1 3 4 5))
 
 vlst
 
@@ -498,15 +468,15 @@ vlst
 
 (last vlst)
 
-(size vlst)
+(length vlst)
 
-(first (vcons 50 vlst))
+(first (cons 50 vlst))
 
-(get 3 vlst)
+(list-ref vlst 3)
 
-(first (vreverse vlst))
+(first (reverse vlst))
 
-(first (vmap add1 vlst))
+(first (map add1 vlst))
 ]
 
 @subsection[#:tag "stream"]{Streams}

@@ -1,7 +1,12 @@
 #lang typed-scheme
 
 (provide clist empty? clist->list head tail CatenableList
-         append kons kons-rear empty)
+	 (rename-out [clist list])
+	 (rename-out #;[CatenableList List]
+		     [kons cons]
+		     [head first]
+		     [tail rest])
+         append kons (rename-out [kons-rear cons-to-end]) empty)
 (require scheme/promise)
 
 (require (prefix-in rtq: "realtimequeue.ss"))

@@ -1,7 +1,13 @@
 #lang typed/scheme
 
 (provide vlist vlist->list vcons empty empty? size get first rest last
-         vreverse vmap vfoldr vfoldl vfilter)
+         vreverse vmap vfoldr vfoldl vfilter list-ref)
+(provide (rename-out
+	  [vlist list]
+	  [vcons cons]
+	  [size length]
+	  [vreverse reverse]
+	  [vmap map]))
 
 (require (prefix-in ra: "skewbinaryrandomaccesslist.ss"))
 (define-struct: (A) Base ([prevbase : (Block A)]
@@ -15,6 +21,7 @@
 (define-struct: (A) VList ([offset : Integer]
                            [base : (Base A)]
                            [size : Integer]))
+(define-type (List A) (VList A))
 
 (define empty (make-VList 0 (make-Base (make-Mt) 0 ra:empty 1) 0))
 
@@ -100,6 +107,9 @@
     [(zero? index) (first vlist)]
     [else (get-helper index vlist)]))
 
+(: list-ref : (All (A) ((VList A) Integer -> A)))
+(define (list-ref vlist index) (get index vlist))
+
 (: get-helper : (All (A) (Integer (VList A) -> A)))
 (define (get-helper index vlist)
   (let* ([base (VList-base vlist)]
@@ -167,3 +177,4 @@
         (if (func firsts)
             (vcons firsts rests)
             rests))))
+
