@@ -154,57 +154,60 @@ Size & \mbox{} & Leftist & List & Imperative \\
 \end{tabular}}
 
 @section{Experience with Typed Scheme}
+
+This project involved writing 5300 lines of Typed Scheme code,
+including 1300 lines of tests, almost all written by the first author,
+who had little previous experience with Typed Scheme.  This allows us
+to report on the experience of using Typed Scheme for a programmer
+coming from other languages. 
+
 @subsection{Benefits of Typed Scheme}
-Several nice features of Typed Scheme together made programming in Typed Scheme 
-quiet enjoyable. Firstly, the type error messages in Typed Scheme are very 
+Several features of Typed Scheme makes programming in Typed Scheme 
+quite enjoyable. First, the type error messages in Typed Scheme are very 
 clear and easy 
-to understand. Exact locations in the code are blamed by the type checker in 
-case of type errors. This makes it very easy to debug the type errors. 
-@para{Typed Scheme has a very intuitive syntax. 
-      For example, the infix operator 
-@scheme[→] which is used to write the type of a function. To the left of 
-@scheme[→] goes the types of inputs to the function and to its right is the
-type of the function's output. Kleene star or Kleene operator, @scheme[*] is 
-used to indicate zero or more elements. @scheme[All] or @scheme[∀] is the 
-type constructor used by the polymorphic functions etc.} 
-@para{Typed Scheme comes with a pretty good test engine which makes it 
-      pretty easy to test the code.}
+to understand. The type checker highlights precise locations which are
+responsible for type errors. This makes it very easy to debug the type errors. 
 
-@;(evaluate '(require typed/test-engine/scheme-tests))
-@;(evaluate '(require "bankers-queue1.ss"))
-@schememod[typed/scheme
-           (require typed/test-engine/scheme-tests)
-           (require "bankers-queue.ss")
-           
-           (check-expect (head (queue 4 5 2 3)) 4)
-           
-           (check-expect (tail (queue 4 5 2 3)) 
-                               (queue 5 2 3))]
-Above examples illustrate how the tests are written.
+Second, Typed Scheme's syntax is very intuitive, using
+      the infix operator 
+@scheme[→] for the type of a function. The Kleene star @scheme[*] is 
+used to indicate zero or more elements for rest arguments. @scheme[∀] is the 
+type constructor used by the polymorphic functions, and so on.
 
-@para{Documentation and help manual of PLT Scheme
-      in general and Typed Scheme in particular is very well 
-      documented and quiet easy to follow and understand.}
+Typed Scheme comes with a unit testing framework which makes it
+simple to write tests, as in the below example: 
 
-@subsection{Disadvantages of Typed Scheme}
-Even though overall experience with Typed Scheme was nice, there were
-things in Typed Scheme that could bother a programmer.
-For instance, it is currently not possible to correctly 
-implement Scheme functions such as foldr and foldl because of the 
-limitations imposed by Typed Scheme's type system on
-variable-arity functions.
-@para{The Typed Scheme's type system does not allow polymorphic non-uniform 
-      recursive 
-      datatype definitions. Because of this limitation, many definitions had
-      to be first converted to uniform recursive datatypes before being 
-      implemented. For instance, the following definition of Seq 
-      structure @cite[oka] is not possible in Typed Scheme.}
-      @schemeblock[(define-struct: (A) Seq 
-                     ([elem : A] [recur : (Seq (Pair A A))]))
-                                                ]
-      @para{It has to be converted to not have such a polymorphic recursion 
-      before one could continue. Following definition is the converted 
-      version of the above definition}
+@schemeblock[(require typed/test-engine/scheme-tests)
+             (require "bankers-queue.ss")           
+             (check-expect (head (queue 4 5 2 3)) 4)           
+             (check-expect (tail (queue 4 5 2 3)) 
+                                 (queue 5 2 3))]
+
+The @racket[check-expect] form takes the actual and expected value, and
+compares them, printing a message at the end summarizing the results
+of all tests.
+
+The introductory and reference manuals of PLT Scheme in general and
+Typed Scheme in particular are comprehensive and quite easy to follow
+and understand.
+
+@subsection{Disadvantages of Typed Scheme} 
+Even though overall
+experience with Typed Scheme was positive, there are negative aspects
+to programming in Typed Scheme. 
+
+
+Most significantly for this work, Typed Scheme does not support
+ polymorphic non-uniform recursive datatype definitions, which are
+ used extensively by @citet[oka].  Because of this limitation, many
+ definitions had to be first converted to uniform recursive datatypes
+ before being implemented. For instance, the following definition of
+ @racket[Seq] structure is not allowed by Typed Scheme.
+
+ @schemeblock[(define-struct: (A) Seq 
+                ([elem : A] [recur : (Seq (Pair A A))]))]
+The definition must be converted not to use polymorphic
+recursion, as follows:
       
       @schemeblock[
                  (define-struct: (A) Elem ([elem : A]))                 
@@ -214,18 +217,35 @@ variable-arity functions.
                    (U (Elem A) (Pare A)))                       
                  (define-struct: (A) Seq
                    ([elem  : (EP A)] [recur : (Seq A)]))]
+Unfortunately, this translation introduces the possibilty of illegal
+states that the typechecker is unable to rule out.  We hope to support
+polymorphic recursion in a future version of Typed Scheme.
 
-@para{Typed Scheme treats type @scheme[Int] and 
-@scheme[Exact-Positive-Integer] to be different in some 
-cases. For example,}
+
+It is currently not
+possible to correctly type Scheme functions such as @racket[foldr] and
+@racket[foldl] because of the limitations of Typed Scheme's handling
+of variable-arity functions@cite[stf-esop].
+
+Typed Scheme's use of local type inference also leads to potential
+errors, especially in the presence of precise types for Scheme's
+numeric hierarchy. For example,
+Typed Scheme distinguishes integers from positive integers, leading to
+a type error in the following expression:
 @schemeblock[(vector-append (vector -1 2) (vector 1 2))]
-@para{results in the following error}
-@para{@schemeerror{Type Checker: Polymorphic function vector-append 
-                   could not be applied to arguments:}}
-@para{@schemeerror{Domain: (Vectorof a) *}}
-@para{@schemeerror{Arguments: (Vectorof Int) (Vectorof 
-                   Exact-Positive-Integer)}}
-@para{This behavior was quiet unexpected.}
+ since the first vector contains integers, and the second positive
+ integers, neither of which is a subtype of the other. Working around
+ this requires manual annotation to ensure that both vectors have
+ element type @racket[Integer].
+
+Although PLT Scheme supports extension of the behavior of
+primitive operations such as printing and equality on user-defined
+data types, Typed Scheme currently does not support this.  Thus, it is
+not possible to compare any of our data structures accurately using
+@racket[equal?], and they are printed opaquely, as seen in the
+examples in @secref["fds"].
+
+
 @;{item{Even though Typed Scheme test engine is pretty good, there are couple 
         of draw backs in it. For example,
         @schememod[typed/scheme
@@ -240,48 +260,39 @@ cases. For example,}
               function which converts the data structure into a list. For
               example, all queue data structures have the function 
               @scheme[queue->list].}}}
-@para{Whenever a union of polymorphic types is to be given a alias, 
-      Typed Scheme 
-      allows the programmer to do so by providing the function 
-      @italic{define-type-alias}. But when errors are thrown, or the alias is
-      to be displayed, Typed Scheme displays the union of original two types
-      instead of displaying the alias name. This made the types confusingly 
-      long many times. For example,}
-@;(evaluate '(require typed/scheme))
-@schemeblock[
-(define-struct: (A) Type1 ([elem : A]))           
-(define-struct: Mt ())  
-(define-type-alias (Union A) 
-   (U (Type1 A) Mt))
-(: id : (∀ (A) (A Int → (Union A))))
-(define (id elem int)
-  (if (> int 5) (make-Type1 elem) (make-Mt)))]
 
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "test1.ss"))
-@interaction[#:eval evaluate
-                 (id 5 1)]
+Typed Scheme allows programmers to name arbitrary type expressions
+with the @racket[define-type] form.  However, the type printer does
+not take into account definitions of polymorphic type aliases when
+printing types, leading to the internal implementations of some types
+being exposed, as in @secref["catenable"]. This makes
+the printing of types confusingly long and difficult to understand,
+especially in error messages.
 
 @section{Comparison with Other Implementations}
-The implementation of the data structures are very faithful to the original
+Our implementations of the presented data structures are very faithful to the original
 implementations of Purely Functional Data Structures by @citet[oka]
-and VLists and others by  @citet[bagwell-trie bagwell-lists]. 
-@para{We added more functions to the data structures to make
-them much more useful. For example, to each data structure we added a function
-to convert the data structure into a list.}
+and VLists and others by @citet[bagwell-trie bagwell-lists]. 
+In some cases, we provide additional operations, such as for
+converting queues to lists.
 @(evaluate '(require "bankers-queue.ss"))
 @interaction[#:eval evaluate
                  (queue->list (queue 1 2 3 4 5 6 -4))]
-@para{We added function to delete elements from the 
-      @italic{Red-Black Trees}
-      which was missing in the original implementation}
-@para{All the heap constructor functions take a comparison function of the 
+We also added an to delete elements from the 
+      Red-Black Trees, 
+      which was absent in the original implementation.
+Finally, the heap constructor functions take an explicit comparison function of the 
       type @scheme[(A A → Boolean)] as their first argument followed by the 
-      elements for the data structure. This implementation of this feature 
-      is slightly different in the original work.}
-Except for these changes/additions, the implementation is 
+      elements for the data structure, whereas the original
+      presentation uses ML functors for this purpose.
+With the above exceptions, the implementation is 
 structurally similar the original work.
 
+We know of no existing comprehensive library of functional data
+structures for Scheme.  PLT Scheme's existing collection of user-provided
+libraries, PLaneT@cite[planet], contains an implemenation of Random
+Access Lists@cite[dvh-ra], as well as a collection of several
+functional data structures@cite[galore].  
 
 @section{Conclusion}
 

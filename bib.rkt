@@ -153,3 +153,20 @@
                                          #:pages '(241 248)
                                          #:number 5
                                          #:volume 17)))
+(define (planet-cite pkg ver author [date #f])
+  (make-bib #:title (format "~a, version ~a" pkg ver)
+            #:author author
+            #:date date
+            #:location "PLaneT Package Repository"))
+
+(define planet
+  (make-bib #:title "Component Deployment with PLaneT: You Want it Where?"
+            #:author "Jacob Matthews"
+            #:date "2006"
+            #:location (proceedings-location "Scheme and Functional Programming")))
+
+(define galore (planet-cite "Galore" "4.2" "Jens Axel Soegaard"  "2009"))
+(define dvh-ra (planet-cite "RaList: Purely Functional Random-Access Lists" 
+                       "2.3"
+                       (authors (author-name "David" "Van Horn"))
+                       "2010"))

@@ -15,6 +15,7 @@
                 items))
 
 (define Ologn @exact{$O(\mathop{\mathrm{log}} n)$})
+(define Olgn @exact{$O(\mathop{\mathrm{lg}} n)$})
 (define Olog*n @exact{$O(\mathop{\mathrm{log}}^* n)$})
 (define O1 @exact{$O(1)$})
 (define On @exact{$O(n)$})

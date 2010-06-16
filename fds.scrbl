@@ -5,7 +5,7 @@
           "bib.rkt" "utils.rkt"
           scribble/latex-properties)
 
-@title{An Introduction to Functional Data Structures}
+@title[#:tag "fds"]{An Introduction to Functional Data Structures}
 
 Purely functional data structures, like all data structures, come in
 many varieties.  For this work, we have selected a  variety that
@@ -404,7 +404,7 @@ Access Lists provide worst-case running times of @O1 for the operations
 worst-case running times of @Ologn for @scheme[list-ref] 
 and @scheme[list-set] operations.
 
-@subsection{Catenable List}
+@subsection[#:tag "catenable"]{Catenable List}
 Catenable Lists are a list data structure with an efficient append
 operation, achived using the bootstrapping technique of 
 @italic{structural abstraction}@cite[oka]. Catenable Lists are
@@ -444,7 +444,7 @@ slower on standard lists. VLists combine the extensibility of  linked lists with
 fast random 
 access capability of arrays. The indexing and length operations of  VLists have a 
 worst-case 
-running time of @O1 and @Ologn respectively, compared to 
+running time of @O1 and @Olgn respectively, compared to 
 @On for lists. 
 Our VList implementation is built internally on Binary Random Access Lists. 
 VLists provide the standard list API given above, along with many
