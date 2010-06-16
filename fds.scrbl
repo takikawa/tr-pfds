@@ -444,7 +444,7 @@ slower on standard lists. VLists combine the extensibility of  linked lists with
 fast random 
 access capability of arrays. The indexing and length operations of  VLists have a 
 worst-case 
-running time of @O1 and @Ologn respectively as against 
+running time of @O1 and @Ologn respectively, compared to 
 @On for lists. 
 Our VList implementation is built internally on Binary Random Access Lists. 
 VLists provide the standard list API given above, along with many
@@ -480,47 +480,45 @@ vlst
 ]
 
 @subsection[#:tag "stream"]{Streams}
-The Streams@cite[oka] are simply lazy lists. They are similar to the 
+Streams@cite[oka] are simply lazy lists. They are similar to the 
 ordinary lists and they
-provide the same functionality. The Streams being lazy is the only difference. 
-Streams are used in many data structures to achieve lazy evaluation. Since
-each suspension comes with a little
-overhead, Streams are used only when there is a good enough reason to do so. It 
-has the type @scheme[(Stream A)].
+provide the same functionality and API.
+Streams are used in many of the foregoing data structures to achieve lazy evaluation. 
+Streams do not change the asymptotic performance of any list operations, but introduce overhead at each suspension. Since streams have distinct evaluation behavior, they are given a distinct type, @scheme[(Stream A)].
 
-@section{Hash-Lists}
-A Hash List is similar to a association list. The Hash-List implemented here is 
-simply a modified VList structure. The modified VList structure contains
-two portions - the data and the hash table. Both the portions have to grow for
-the hash-list to grow. The running time provided by the Hash-Lists for the 
-operations insert
-and lookup times are very close to the standard chained hash tables. 
-Hash-List has been described in @cite[bagwell-lists]. The Hash-Lists provide 
-functions to insert, delete, lookup elements of the hash-list.
+@section{Hash Lists} Hash Lists@cite[bagwell-lists] are similar to
+association lists, here implemented using a modified VList structure. The
+modified VList contains two portions---the data and the hash
+table. Both the portions grow as the hash-list grows. The running time
+for Hash Lists operations such as @racket[insert], @racket[delete],
+and @racket[lookup] are very close to those for standard chained hash
+tables.
 
-@section{Tries}
-A Trie is a data structure which takes advantage of the structure of aggregate 
-types to achieve good running times for its operations@cite[oka]. The Tries are also
-known as the Digital Search Trees. In this implementation, a trie is a multiway
-tree
-with each node of the multiway tree carrying data of base type of the aggregate
-type. The Tries implement functions to lookup and insert
-data. The Tries provide faster lookups than hash tables.
+@section{Tries} A Trie (also known as a Digital Search Tree) is a data
+structure which takes advantage of the structure of aggregate types to
+achieve good running times for its operations@cite[oka]. Our
+implementation provides Tries in which the keys are lists of the
+element type; this is sufficient for representing many aggregate data
+structures.  In our implementation, each trie is a multiway tree with
+each node of the multiway tree carrying data of base element type.
+Tries provide @racket[lookup] and @racket[insert] operations with
+better asymptotic running times than hash tables.
 
-@section{Red-Black Trees}
-A Red-Black Tree is a binary search tree in which every node is colored either 
-red or black. The Red-Black Trees follow the following two balance invariants
+@section{Red-Black Trees} Red-Black Trees are a classic data
+ structure, consisting of a binary search tree in which every node is
+ colored either red or black, according to the following
+ two balance invariants:
 
 @(itemlist
-@item{No red node has a red child.}
-@item{Every path from root to an empty node has the same 
+@item{no red node has a red child, and}
+@item{every path from root to an empty node has the same 
       number of black nodes.})
 
 The above two invariants together guarantee that the longest possible path with
 alternating black and red nodes, is no more then twice as long as the shortest 
 possible path, the one with black nodes only. This balancing helps in achieving 
 good running times for the tree operations. Our implementation is based
-on@cite[oka-red-black]. The operations 
+on one by @citet[oka-red-black]. The operations 
 @scheme[member?], @scheme[insert] and @scheme[delete], which respectively 
 checks membership, inserts and deletes elements from the tree, have worst-case
 running time of @|Ologn|. 
