@@ -44,7 +44,7 @@ imperative Queues in first two cases.
 \medskip
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Size & \mbox{} & Bankers' & List & Imperative \\
+Size & Operation & Bankers' & List & Imperative \\
 \hline
 \multirow{3}{*}{1000} & \RktSym{head} & 46 & 7 & ? \\
 \cline{2-5}
@@ -117,37 +117,37 @@ operations.
 \medskip
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Size & \mbox{} & Leftist & List & Imperative \\
+Size & Operation & Leftist & List & Imperative \\
 \hline
 \multirow{3}{*}{1000} & \RktSym{insert} & 424 & 1031245 & 855 \\
 \cline{2-5}
-& \RktSym{find-min/max} & 23 & 6 & 28 \\
+& \RktSym{find} & 23 & 6 & 28 \\
 \cline{2-5}
-& \RktSym{delete-min/max} & 3379 & 8 & N/A \\
+& \RktSym{delete} & 3379 & 8 & N/A \\
 \cline{2-5}
 & \RktSym{merge} & 1451 & 13583 & ? \\
 \hline
 \multirow{3}{*}{10000} & \RktSym{insert} & 457 & $\infty$ & 826 \\
 \cline{2-5}
-& \RktSym{find-min/max} & 26 & 7 & 31 \\
+& \RktSym{find} & 26 & 7 & 31 \\
 \cline{2-5}
-& \RktSym{delete-min/max} & 4018 & 8 & N/A \\
+& \RktSym{delete} & 4018 & 8 & N/A \\
 \cline{2-5}
 & \RktSym{merge} & 2109 & 161648 & ? \\
 \hline
 \multirow{3}{*}{100000} & \RktSym{insert} & 469 & $\infty$ & 748 \\
 \cline{2-5}
-& \RktSym{find-min/max} & 27 & 7 & 32 \\
+& \RktSym{find} & 27 & 7 & 32 \\
 \cline{2-5}
-& \RktSym{delete-min/max} & 4867 & 9 & 2752 \\
+& \RktSym{delete} & 4867 & 9 & 2752 \\
 \cline{2-5}
 & \RktSym{merge} & 2655 & $\infty$ & ? \\
 \hline
 \multirow{3}{*}{1000000} & \RktSym{insert} & 471 & $\infty$ & 717 \\
 \cline{2-5}
-& \RktSym{find-min/max} & 29 & 7 & 37 \\
+& \RktSym{find} & 29 & 7 & 37 \\
 \cline{2-5}
-& \RktSym{delete-min/max} & 6142 & 8 & 4386 \\
+& \RktSym{delete} & 6142 & 8 & 4386 \\
 \cline{2-5}
 & \RktSym{merge} & 3229 & $\infty$ & ? \\
 \hline
