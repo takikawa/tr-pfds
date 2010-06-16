@@ -1,9 +1,9 @@
 #lang scribble/sigplan
 @(require (except-in scribble/manual cite) scriblib/autobib
           scribble/core scribble/eval scriblib/footnote
-          "bib.rkt" "utils.rkt"
+          "bib.rkt" "utils.rkt" scribble/decode
           scribble/latex-properties)
-@title{Functional Data Structures in Typed Scheme}
+@title{Functional Data Structures for Typed Scheme}
 
 @(authorinfo "Hari Prashanth K R"
              "Northeastern University"
@@ -11,6 +11,7 @@
 
 @(authorinfo "Sam Tobin-Hochstadt"
              "Northeastern University"
+             @;(splice (list "Northeastern University" @note{Supported by a grant from the Mozilla Foundation}))
              "samth@ccs.neu.edu")
 
 
@@ -315,5 +316,10 @@ available in Typed Scheme. We hope that this enables programmers to
 write functional programs, and inspires library writers to use
 functional designs and to produce new libraries to enable functional
 programming.  
+
+@subsection[#:style 'unnumbered]{Acknowledgments}
+
+Thanks to Matthias Felleisen for his support of this work, and to
+Vincent St-Amour and Carl Eastlund for valuable feedback.
 
 @gen-bib[]
