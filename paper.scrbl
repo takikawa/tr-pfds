@@ -95,22 +95,55 @@ Size & \mbox{} & Bankers' & List & Imperative \\
 @subsection{Heap Performance}
 Following is the time taken by the Leftist Heap to perform some of its 
 operations. 
-@para{For 1000 elements}
-@para{@scheme[find-min/max] : 23.}
-@para{@scheme[delete-min/max] : 31.}
-@para{@scheme[merge] : 1451.}
+@;{
+   @para{For 1000 elements}
+@para{@scheme[find-min/max] : LH : 23. Lists : 6. IH : 28.}
+@para{@scheme[delete-min/max] : LH : 3379. Lists : 8. IH : N/A.}
+@para{@scheme[merge] : LH : 1451. Lists : 3921. IH : .}
 @para{For 10000 elements}
-@para{@scheme[find-min/max] : 26.}
-@para{@scheme[delete-min/max] : 4018.}
-@para{@scheme[merge] : 2109.}
+@para{@scheme[find-min/max] : LH : 26. Lists : 7. IH : 31.}
+@para{@scheme[delete-min/max] : LH : 4018. Lists : 8. IH : N/A.}
+@para{@scheme[merge] : LH : 2109. Lists : 44482. IH : .}
 @para{For 100000 elements}
-@para{@scheme[find-min/max] : 27.}
-@para{@scheme[delete-min/max] : 4867.}
-@para{@scheme[merge] : 2655.}
+@para{@scheme[find-min/max] : LH : 27. Lists : 7. IH : 32.}
+@para{@scheme[delete-min/max] : LH : 4867. Lists : 9. IH : 2752.}
+@para{@scheme[merge] : LH : 2655. Lists : 441794. IH : .}
 @para{For 1000000 elements}
-@para{@scheme[find-min/max] : 27.}
-@para{@scheme[delete-min/max] : 6142.}
-@para{@scheme[merge] : 3229.}
+@para{@scheme[find-min/max] : LH : 29. Lists : 7. IH : 37.}
+@para{@scheme[delete-min/max] : LH: 6142. Lists : 8. IH : 4386.}
+@para{@scheme[merge] : LH : 3229. Lists : infny. IH : .}
+}
+@exact{
+\medskip
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Size & \mbox{} & Leftist & List & Imperative \\
+\hline
+\multirow{3}{*}{1000} & \RktSym{find-min/max} & 23 & 6 & 28 \\
+\cline{2-5}
+& \RktSym{delete-min/max} & 3379 & 8 & N/A \\
+\cline{2-5}
+& \RktSym{merge} & 1451 & 13583 & ? \\
+\hline
+\multirow{3}{*}{10000} & \RktSym{find-min/max} & 26 & 7 & 31 \\
+\cline{2-5}
+& \RktSym{delete-min/max} & 4018 & 8 & N/A \\
+\cline{2-5}
+& \RktSym{merge} & 2109 & 161648 & ? \\
+\hline
+\multirow{3}{*}{100000} & \RktSym{find-min/max} & 27 & 7 & 32 \\
+\cline{2-5}
+& \RktSym{delete-min/max} & 4867 & 9 & 2752 \\
+\cline{2-5}
+& \RktSym{merge} & 2655 & $\infty$ & ? \\
+\hline
+\multirow{3}{*}{1000000} & \RktSym{find-min/max} & 29 & 7 & 37 \\
+\cline{2-5}
+& \RktSym{delete-min/max} & 6142 & 8 & 4386 \\
+\cline{2-5}
+& \RktSym{merge} & 3229 & $\infty$ & ? \\
+\hline
+\end{tabular}}
 
 @section{Experience with Typed Scheme}
 @subsection{Benefits of Typed Scheme}
