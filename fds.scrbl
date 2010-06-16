@@ -336,37 +336,41 @@ implementation of Bootstrapped Heap abstracts over Skew Binomial
 Heaps.
 
 @section{Lists}
-Lists are similar to Scheme's list data structure. Catenable List, VList and 
-Streams are the variants of list data structure that are implemented in
-this work. The variants implemented is explained below. They all 
-implement functions to insert elements into the list, delete elements, peek
-elements from the list data structure. 
+Lists are a fundamental data structure in Scheme.  However, while
+singly-linked lists have the advantages of simplicity and efficency
+for some operations, many others are quite expensive.  Other data
+structures can efficently implement the operations of Scheme's lists,
+while providing other efficent operations as well.
+We implement Random Access Lists, Catenable Lists, VLists and Streams.
+Each implemented variant is explained below.  All variants provide the
+type @racket[(List A)], and the following interface, which is extended
+for each implementation:
+@(itemlist 
+  @item{@italic{list} : @scheme[(∀ (A) A * → (List A))]
+         @para{Constructs a list from the given elements,
+	 in order.}}
+  @item{@italic{cons} : @scheme[(∀ (A) A (List A) → (List A))]
+         @para{Adds a given element into the front of a list.}}
+  @item{@italic{first} : @scheme[(∀ (A) (List A) → A)]
+         @para{Returns the first element of the given 
+         list.}}
+  @item{@italic{rest} : @scheme[(∀ (A) (List A) → (List A))]
+         @para{Produces a new list without the first element.}}
+)
 
 @subsection{Random Access List}
-The Random Access Lists are list data structures with efficient 
-array-like random access operations. The random access operation include lookup
-and update operations. All random access list variants have the type 
-@scheme[(RAList A)] and implement the Random Access List interface which 
-include the following functions.
+Random Access Lists are lists with efficient 
+array-like random access operations. These include @racket[list-ref]
+and @racket[list-set] (a functional analogue of @racket[vector-set!]).
+Random Access Lists extend the basic list interface with the following operations:
 @(itemlist 
-  @item{@italic{list} : @scheme[(∀ (A) A * → (RAList A))]
-         @para{Random Access List constructor function. Constructs 
-         a random access list from the given elements.}}
-  @item{@italic{head} : @scheme[(∀ (A) (RAList A) → A)]
-         @para{Returns the first element of the given random access
-         list.}}
-  @item{@italic{tail} : @scheme[(∀ (A) (RAList A) → (RAList A))]
-         @para{Deletes the first element of the given random access 
-         list and returns the rest of the list.}}
-  @item{@italic{lookup} : @scheme[(∀ (A) Int (RAList A) → A)]
+  @item{@italic{list-ref} : @scheme[(∀ (A) (List A) Integer → A)]
          @para{Returns the element at a given location in the 
-         random access list.}}
-  @item{@italic{update} : @scheme[(∀ (A) Int (RAList A) A → (RAList A))]
+          list.}}
+  @item{@italic{list-set} : @scheme[(∀ (A) (List A) Integer A → (List A))]
          @para{Updates the element at a given location in the 
-         random access list with a new element.}}
-  @item{@italic{cons} : @scheme[(∀ (A) A (RAList A) → (RAList A))]
-         @para{Inserts a given element into the random access list.}})
-
+         list with a new element.}}
+)
 
 @(evaluate '(require "binaryrandomaccesslist1.ss"))
 @interaction[#:eval evaluate
@@ -374,33 +378,31 @@ include the following functions.
 
 lst
 
-(head lst)
+(first lst)
 
-(head (tail lst))
+(first (rest lst))
 
-(lookup 3 lst)
+(list-ref lst 3)
 
-(lookup 3 (update 3 lst 20))
+(list-ref (list-set lst 3 20) 3)
 
-(head (cons 50 lst))
+(first (cons 50 lst))
 ]
 
-@lpara{Binary Random Access List}
-Random Access Lists implemented as a framework of binary numerical 
-representation using complete binary leaf trees are known as Binary 
-Random Access Lists@cite[oka]. It has a worst-case running time of @Ologn for the 
-operations @scheme[cons], 
-@scheme[head], @scheme[tail], @scheme[lookup] and @scheme[update]. 
+@lpara{Binary Random Access List} Binary Random Access Lists are
+implemented as using the framework of binary numerical representation
+using complete binary leaf trees@cite[oka]. They have worst-case
+running times of @Ologn for the operations @scheme[cons],
+@scheme[first], @scheme[rest], @scheme[list-ref] and @scheme[list-set].
 
 @lpara{Skew Binary Random Access List}
-Binary Random Access Lists which are implemented using a numerical 
-representation based on skew binary numbers are known as Skew Binary Random
-Access Lists@cite[oka]. This representation of the data structure helps to improve the
-running times of some operations on the data structure. Skew Binary Random 
-Access List provides a worst-case running time of @O1 for the operations 
+Skew Binary Random Access Lists are similar to Binary Random Access
+Lists, but use the skew binary number representation, improving the
+running times of some operations. Skew Binary Random 
+Access Lists provide worst-case running times of @O1 for the operations 
 @scheme[cons], @scheme[head] and @scheme[tail] and 
-worst-case running time of @Ologn for @scheme[lookup] 
-and @scheme[update] operations.
+worst-case running times of @Ologn for @scheme[list-ref] 
+and @scheme[list-set] operations.
 
 @subsection{Catenable List}
 The Catenable List is a list data structure with efficient append operation. 

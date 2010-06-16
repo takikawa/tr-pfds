@@ -1,7 +1,7 @@
 #lang typed/scheme
 (require (prefix-in sh: scheme/base))
 (provide empty empty? list-length cons 
-         head tail lookup update drop ->list list)
+         head tail (rename-out [first* first] [rest* rest]) list-ref list-set drop ->list list)
 
 (define-struct: (A) Leaf ([fst : A]))
 (define-struct: (A) Node ([fst : A]
@@ -13,6 +13,7 @@
                           [rst  : (RAList A)]))
 
 (define-type-alias RAList (All (A) (U Null-RaList (Root A))))
+(define-type-alias List (All (A) (RAList A)))
 
 (define empty-tree (make-Leaf null))
 
@@ -121,26 +122,26 @@
       [else (make-Node first left 
                        (tree-update newsize right (- pos 1 newsize) elem))])))
     
-(: lookup : (All (A) (Integer (RAList A) -> A)))
-(define (lookup pos list)
+(: list-ref : (All (A) ((RAList A) Integer -> A)))
+(define (list-ref list pos)
   (if (Null-RaList? list) 
-      (error 'lookup "given index out of bound")
+      (error 'list-ref "given index out of bound")
       (let ([size (Root-size list)])
         (if (< pos size) 
             (tree-lookup size (Root-fst list) pos)
-            (lookup (- pos size) (Root-rst list))))))
+            (list-ref (Root-rst list) (- pos size))))))
 
 
-(: update : (All (A) (Integer (RAList A) A -> (RAList A))))
-(define (update pos list elem)
+(: list-set : (All (A) ((RAList A) Integer A -> (RAList A))))
+(define (list-set list pos elem)
   (if (Null-RaList? list) 
-      (error 'update "given index out of bound")
+      (error 'list-set "given index out of bound")
       (let ([size (Root-size list)]
             [fst (Root-fst list)]
             [rst (Root-rst list)])
         (if (< pos size)
             (make-Root size (tree-update size fst pos elem) rst)
-            (make-Root size fst (update (- pos size) rst elem))))))
+            (make-Root size fst (list-set rst (- pos size) elem))))))
 
 (: tree-drop : (All (A) (Integer (Tree A) Integer (RAList A) -> (RAList A))))
 (define (tree-drop size tre pos list)
@@ -186,3 +187,6 @@
 (: list : (All (A) (A * -> (RAList A))))
 (define (list . rst)
   (foldr (inst cons A) empty rst))
+
+(define first* head)
+(define rest* tail)
