@@ -37,7 +37,8 @@ and imperative implementations.
 In the tables below, all times are CPU time as reported by PLT Scheme,
 including garbage collection time.  The times are for performing each
 operation 100000 times, averaged over 10 runs.
-
+@note{Constructor operations @racket[heap] is 
+      preformed only 100 times and averaged over 10 runs}
 @subsection{Queue Performance}
 
 The below table shows the performance of the 
@@ -129,7 +130,9 @@ implementation based on sorted lists, and a simple imperative heap.
 \hline
 Size & Operation & Leftist & List & Imperative \\
 \hline
-\multirow{3}{*}{1000} & \RktSym{insert} & 424 & 323874 & 855 \\
+\multirow{3}{*}{1000} & \RktSym{heap} & 257 & 101 & 486 \\
+\cline{2-5}
+& \RktSym{insert} & 424 & 323874 & 855 \\
 \cline{2-5}
 & \RktSym{find} & 23 & 6 & 28 \\
 \cline{2-5}
@@ -137,7 +140,9 @@ Size & Operation & Leftist & List & Imperative \\
 \cline{2-5}
 @;& \RktSym{merge} & 1451 & 13583 & ? \\
 \hline
-\multirow{3}{*}{10000} & \RktSym{insert} & 457 & 409051 & 826 \\
+\multirow{3}{*}{10000} & \RktSym{heap} & 3089 & 734 & 5287 \\
+\cline{2-5}
+& \RktSym{insert} & 457 & 409051 & 826 \\
 \cline{2-5}
 & \RktSym{find} & 26 & 7 & 31 \\
 \cline{2-5}
@@ -145,7 +150,9 @@ Size & Operation & Leftist & List & Imperative \\
 \cline{2-5}
 @;& \RktSym{merge} & 2109 & 161648 & ? \\
 \hline
-\multirow{3}{*}{100000} & \RktSym{insert} & 469 & 1087545 & 748 \\
+\multirow{3}{*}{100000} & \RktSym{heap} & 43975 & 7871 & 72981 \\
+\cline{2-5}
+& \RktSym{insert} & 469 & 1087545 & 748 \\
 \cline{2-5}
 & \RktSym{find} & 27 & 7 & 32 \\
 \cline{2-5}
@@ -153,7 +160,9 @@ Size & Operation & Leftist & List & Imperative \\
 \cline{2-5}
 @;& \RktSym{merge} & 2655 & $\infty$ & ? \\
 \hline
-\multirow{3}{*}{1000000} & \RktSym{insert} & 471 & $\infty$ & 717 \\
+\multirow{3}{*}{1000000} & \RktSym{heap} & 512962 & 93830 & 858661 \\
+\cline{2-5}
+& \RktSym{insert} & 471 & $\infty$ & 717 \\
 \cline{2-5}
 & \RktSym{find} & 29 & 7 & 37 \\
 \cline{2-5}
