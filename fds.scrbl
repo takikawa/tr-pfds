@@ -207,43 +207,42 @@ worst-case running time of @O1 for the operations @scheme[head],
 
 
 @section{Heaps}
-In order to avoid confusion with the FIFO queues, priority queues are also known
-as the Heaps. A Heap is similar to a sortable collection. But the difference is
-that the comparison function is fixed when a heap is created. There are two
-requirements that a tree must meet in order for it to be called a heap.
+In order to avoid confusion with FIFO queues, priority queues are also known
+as @italic{heaps}. A heap is similar to a sortable collection,
+implemented as a tree, with a
+comparison function fixed at creation time. There are two
+requirements that a tree must meet in order for it to be a heap:
 @(itemlist 
-  @item{Shape Requirement - All its levels must be full except possibly
+  @item{Shape Requirement - All its levels must be full except (possibly)
         the last level where only rightmost leaves may be missing.}
-  @item{Parental Dominance Requirement - Key at each node is greater than or
+  @item{Parental Dominance Requirement - The key at each node must greater than or
         equal (max-heap) OR less than or equal (min-heap) to the keys at its 
-        children. A tree satisfying this property is said to be heap-ordered.})
-Several variants of the heap have been implemented and each one is 
-discussed below.
-All the variants have the type @scheme[(Heap A)] and implement the following
-functions of the heap interface.
+        children. A tree satisfying this property is said to be
+	@italic{heap-ordered}.})
+Below, we present several heap variants.
+Each variant has the type @scheme[(Heap A)] and implements the following
+interface:
 
 @(itemlist 
-  @item{@italic{heap} : @scheme[(∀ (A) ((A A → Bool) A * → (Heap A)))]
-         @para{Heap constructor function. Constructs a heap from the 
-         given elements and the comparison function.}}
-  @item{@italic{find-min/max} : @scheme[(∀ (A) ((Heap A) → A))]
+  @item{@italic{heap} : @scheme[(∀ (A) (A A → Bool) A * → (Heap A))]
+         @para{Constructs a heap from the 
+         given elements and comparison function.}}
+  @item{@italic{find-min/max} : @scheme[(∀ (A) (Heap A) → A)]
          @para{Returns the min or max element of the given
          heap.}}
-  @item{@italic{delete-min/max} : @scheme[(∀ (A) ((Heap A) → (Heap A)))]
+  @item{@italic{delete-min/max} : @scheme[(∀ (A) (Heap A) → (Heap A))]
          @para{Deletes the min or max element of the given 
          heap.}}
-  @item{@italic{insert} : @scheme[(∀ (A) (A (Heap A) → (Heap A)))]
+  @item{@italic{insert} : @scheme[(∀ (A) A (Heap A) → (Heap A))]
          @para{Inserts an element into the heap.}}
-  @item{@italic{merge} : @scheme[(∀ (A) ((Heap A) (Heap A) → (Heap A)))]
+  @item{@italic{merge} : @scheme[(∀ (A) (Heap A) (Heap A) → (Heap A))]
          @para{Merges the two given heaps.}})
 
 
 @(evaluate '(require "binomialheap.ss"))
 @interaction[#:eval evaluate
-(heap < 1 2 3 4 5 -1)
-
 (define hep (heap < 1 2 3 4 5 -1))
-
+hep
 (find-min/max hep)
 
 (find-min/max (delete-min/max hep))
@@ -254,23 +253,21 @@ functions of the heap interface.
 ]
 
 
-@lpara{Binomial Heap}
-A Binomial Heap@cite[vuillemin brown] is a heap-ordered, binomial tree.
-The Binomial Heaps support quick 
-and efficient merge operation. This fast merging in the Binomial Heap can be 
-achieved because of its special tree structure. The Binomial Heap provides a 
-worst-case running time of @Ologn for the operations @scheme[insert], 
-@scheme[find-min/max], 
-@scheme[delete-min/max] and @scheme[merge].
+@lpara{Binomial Heap} A Binomial Heap@cite[vuillemin brown] is a
+heap-ordered binomial tree.  Binomial Heaps support a fast
+@racket[merge] operation using a special tree structure. Binomial
+Heaps provide a worst-case running time of @Ologn for the operations
+@scheme[insert], @scheme[find-min/max], @scheme[delete-min/max] and
+@scheme[merge].
 
 
 @lpara{Leftist Heap}
-The Leftist heaps@cite[crane] are heap-ordered binary trees that satisfy
-the leftist property. 
-Each node in the tree is assigned a value usually called a rank or a s-value. 
-The value represents the length of its rightmost path from the node in question
-to the nearest leaf. According to leftist property, right descendant of each 
-node has a lower rank or s-value. As a consequence of the leftist property, 
+Leftist Heaps@cite[crane] are heap-ordered binary trees that satisfy
+the @italic{leftist property}. 
+Each node in the tree is assigned a value called a @italic{rank}. 
+The rank represents the length of its rightmost path from the node in question
+to the nearest leaf. The leftist property requires that right descendant of each 
+node has a lower rank than the node itself. As a consequence of the leftist property, 
 the right spine of any node is always the shortest path to a leaf node. 
 The Leftist Heaps provide a worst-case running time of @Ologn for the 
 operations
@@ -279,71 +276,64 @@ running time of @O1 for
 @scheme[find-min/max].
 
 @lpara{Pairing Heap}
-A Pairing Heap@cite[pairing] is a type of heap which has a very simple
-implementation and has 
-extremely good amortized performance in practice. But it has been proved that 
-its very difficult to come up with exact asymptotic running time of this data
-structure. The Pairing Heaps are represented either as a empty heap or a pair 
+Pairing Heaps@cite[pairing] are a type of heap which have a very simple
+implementation and  
+extremely good amortized performance in practice. However, it has proved 
+ very difficult to come up with exact asymptotic running time for
+ operations on Pairing Heaps. Pairing Heaps are represented either as a empty heap or a pair 
 of an
-element of the heap and a list of pairing heaps. The Pairing Heaps provide a 
+element and a list of pairing heaps. Pairing Heaps provide a 
 worst-case running time of @O1 for the operations @scheme[insert], 
-@scheme[find-min/max] and @scheme[merge]. 
-And @scheme[delete-min/max] has a amortized running time of @|Ologn|.
+@scheme[find-min/max] and @scheme[merge], and an amortized running time of @|Ologn|
+for @scheme[delete-min/max].
 
 @lpara{Splay Heap}
-The Splay Heaps@cite[sla] are very similar to the balanced binary search trees. 
+Splay Heaps@cite[sla] are very similar to balanced binary search trees. 
 The difference 
-between the two data structures lies in the fact that the Splay Heaps do not 
-maintain any explicit balance information. Instead every operation on a splay 
-heap restructures the tree with some simple transformations that increase the
-balance of the tree. Because of the restructuring on every operation, the 
-worst-case running time of all the operations is @|On|. But it can be easily 
-shown that the amortized running time of is @Ologn for the 
-operations @scheme[insert], @scheme[find-min/max], 
-@scheme[delete-min/max] and @scheme[merge].
+between the two is that  Splay Heaps do not 
+maintain explicit balance information. Instead, every operation on a splay 
+heap restructures the tree with simple transformations that increase the
+balance. Because of the restructuring on every operation, the 
+worst-case running time of all operations is @|On|. However,
+ the amortized running time of the operations @scheme[insert], @scheme[find-min/max], 
+@scheme[delete-min/max] and @scheme[merge]
+ is @|Ologn|.
 
-@lpara{Skew Binomial Heap}
-The Skew Binomial Heaps are similar to the Binomial Heaps. The only difference 
-between the 
-two is that they both have different representations. The Skew Binomial
-Heaps have a hybrid numerical representation for heaps which is based on 
-the skew binary numbers @cite[skew]. The Skew binary number representation is 
-used since 
-incrementing a skew binary number is quick and simple. But since the skew binary
-numbers have a complicated addition, the merge operation is based on the 
-ordinary binary
-numbers itself. The Skew Binomial Heaps provide a worst-case running time of 
-@Ologn for the operations @scheme[find-min/max], @scheme[delete-min/max] 
-and @scheme[merge]. And a 
-worst-case running time of @O1 for the @scheme[insert] operation.
+@lpara{Skew Binomial Heap} Skew Binomial Heaps are similar to Binomial
+Heaps, but with a hybrid numerical representation for heaps which is
+based on the @italic{skew binary numbers}@cite[skew]. The kkew binary number
+representation is used since incrementing skew binary numbers is
+quick and simple. Since the skew binary numbers have a complicated
+addition, the @racket[merge] operation is based on the ordinary binary numbers
+itself. Skew Binomial Heaps provide a worst-case running time of
+@Ologn for the operations @scheme[find-min/max],
+@scheme[delete-min/max] and @scheme[merge], and a worst-case running
+time of @O1 for the @scheme[insert] operation.
 
 @lpara{Lazy Pairing Heap}
-The Lazy Pairing Heaps@cite[oka] are same as pairing heaps@cite[pairing] except 
-that the Lazy Pairing Heaps use lazy evaluation and are lazy in nature.
-The lazy evaluation has been used in this data structure so that the Pairing 
+Lazy Pairing Heaps@cite[oka] are similar to pairing heaps as described
+above, except 
+that Lazy Pairing Heaps use lazy evaluation.
+Lazy evaluation is used in this data structure so that the Pairing 
 Heap can
-adapt to cope with the persistence efficiently. Analysis of the Lazy Pairing
-Heap to 
-obtain an exact asymptotic running time is as difficult as that for the 
-Pairing Heaps. The Lazy 
+cope with persistence efficiently. Analysis of Lazy Pairing
+Heaps to 
+obtain exact asymptotic running times is difficult, as it is for
+Pairing Heaps. Lazy 
 Pairing Heaps provide a worst-case running time of @O1 for the operations 
-@scheme[insert], @scheme[find-min/max], and @scheme[merge]. And 
-the @scheme[delete-min/max] operation has a amortized
-running time of @|Ologn|.
+@scheme[insert], @scheme[find-min/max], and @scheme[merge], and an amortized
+running time of @|Ologn|
+for the @scheme[delete-min/max] operation.
 
-@lpara{Bootstrapped Heap}
-The Bootstrapped Heaps@cite[oka] use a technique of bootstrapping called the 
-Structural Abstraction@cite[oka]. In @italic{structural abstraction}, the 
-data structure 
-abstracts over a less efficient heap implementation to get a better running 
-time. This makes the Bootstrapped Heaps to have very efficient merge operation. 
-The Bootstrapped Heaps provide a worst-case running time of @O1 for the 
-@scheme[insert], 
-@scheme[find-min/max] and @scheme[merge] operations and a worst-case running
-time of @Ologn for 
-@scheme[delete-min/max] operation. Our implementation of Bootstrapped Heap 
-abstracts 
-over the Skew Binomial Heaps.
+@lpara{Bootstrapped Heap} Bootstrapped Heaps@cite[oka] use a technique
+of bootstrapping called @italic{structural abstraction}@cite[oka],
+where one data structure abstracts over a less efficient data
+structure to get better running times.  Bootstrapped Heaps provide a
+worst-case running time of @O1 for the @scheme[insert],
+@scheme[find-min/max] and @scheme[merge] operations and a worst-case
+running time of @Ologn for @scheme[delete-min/max] operation. Our
+implementation of Bootstrapped Heap abstracts over Skew Binomial
+Heaps.
 
 @section{Lists}
 Lists are similar to Scheme's list data structure. Catenable List, VList and 
