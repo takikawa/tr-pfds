@@ -16,12 +16,12 @@ in many Schemes), but not nearly sufficient.  To truly support efficient
 programming in a functional style, additional data structures are need.
 
 Fortunately, the last 15 years have seen the development of many
-efficent and useful functional data structures, in particular by @citet[oka] and 
+efficient and useful functional data structures, in particular by @citet[oka] and 
 @citet[bagwell-lists].
 These data structures have seen wide use in languages such as Haskell
 and Clojure, but have rarely been implemented in Scheme.  
 
-In this paper, we present a comprehensive library of efficent
+In this paper, we present a comprehensive library of efficient
 functional data structures, implemented in Typed Scheme@cite[thf-popl], a
 recently-developed typed dialect of PLT Scheme.  
 The remainder of the paper is organized as follows.  We first present

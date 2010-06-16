@@ -65,7 +65,7 @@ que
 
 @;(close-eval evaluate)
 
-@lpara{Banker's Queues} 
+@elemtag["bankers queue"]{@lpara{Banker's Queues}}
 The Banker’s Queues@cite[oka] are amortized queues obtained using a method
 of amortization called the Banker's method. The Banker's Queue
 combines the techniques of lazy evaluation and memoization to obtain
@@ -261,7 +261,7 @@ Heaps provide a worst-case running time of @Ologn for the operations
 @scheme[merge].
 
 
-@lpara{Leftist Heap}
+@elemtag["leftist heap"]{@lpara{Leftist Heap}}
 Leftist Heaps@cite[crane] are heap-ordered binary trees that satisfy
 the @italic{leftist property}. 
 Each node in the tree is assigned a value called a @italic{rank}. 
@@ -301,7 +301,7 @@ worst-case running time of all operations is @|On|. However,
 
 @lpara{Skew Binomial Heap} Skew Binomial Heaps are similar to Binomial
 Heaps, but with a hybrid numerical representation for heaps which is
-based on the @italic{skew binary numbers}@cite[skew]. The kkew binary number
+based on the @italic{skew binary numbers}@cite[skew]. The skew binary number
 representation is used since incrementing skew binary numbers is
 quick and simple. Since the skew binary numbers have a complicated
 addition, the @racket[merge] operation is based on the ordinary binary numbers
@@ -337,10 +337,10 @@ Heaps.
 
 @section{Lists}
 Lists are a fundamental data structure in Scheme.  However, while
-singly-linked lists have the advantages of simplicity and efficency
+singly-linked lists have the advantages of simplicity and efficiency
 for some operations, many others are quite expensive.  Other data
-structures can efficently implement the operations of Scheme's lists,
-while providing other efficent operations as well.
+structures can efficiently implement the operations of Scheme's lists,
+while providing other efficient operations as well.
 We implement Random Access Lists, Catenable Lists, VLists and Streams.
 Each implemented variant is explained below.  All variants provide the
 type @racket[(List A)], and the following interface, which is extended
@@ -406,7 +406,7 @@ and @scheme[list-set] operations.
 
 @subsection[#:tag "catenable"]{Catenable List}
 Catenable Lists are a list data structure with an efficient append
-operation, achived using the bootstrapping technique of 
+operation, achieved using the bootstrapping technique of 
 @italic{structural abstraction}@cite[oka]. Catenable Lists are
 abstracted over Real-Time Queues, and have an amortized running time
 of @O1 for the basic list operations as well as the following:
@@ -439,7 +439,7 @@ cal
 
 @subsection{VList}
 VLists@cite[bagwell-lists] are a data structure very similar to normal Scheme
-lists, but with efficent versions of many operations that are much
+lists, but with efficient versions of many operations that are much
 slower on standard lists. VLists combine the extensibility of  linked lists with the 
 fast random 
 access capability of arrays. The indexing and length operations of  VLists have a 

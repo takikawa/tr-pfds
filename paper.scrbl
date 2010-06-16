@@ -1,6 +1,6 @@
 #lang scribble/sigplan
 @(require (except-in scribble/manual cite) scriblib/autobib
-          scribble/core scribble/eval
+          scribble/core scribble/eval scriblib/footnote
           "bib.rkt" "utils.rkt"
           scribble/latex-properties)
 @title{Functional Data Structures in Typed Scheme}
@@ -28,17 +28,24 @@ maintain the type invariants of the original definitions.}
 
 @;(require scribble/core)
 @section[#:style (style #f (list (tex-addition "./extra.tex")))]{Benchmarks}
-All the below mentioned times are CPU times required to obtain the result. 
-It includes the time spent on garbage collection and all the times are in 
-milliseconds. The results are average of 10 runs and in 
-each run the operation is performed 100000 times. 
+To demonstrate the practical usefulness of purely functional data
+structures, we provide microbenchmarks of a selected set of data
+structures, compared with both simple implementations based on lists,
+and imperative implementations.
+
+In the tables below, all times are CPU time as reported by PLT Scheme,
+including garbage collection time.  The times are for performing each
+operation 100000 times, averaged over 10 runs.
+
 @subsection{Queue Performance}
-Here is the comparison of the time taken by the Banker's Queue (referred 
-as BQ) with the time taken by lists to perform the queue 
-operations and imperative Queue (referred as IQ) implementation. Since its not
-possible to repeat 100000 tail (or dequeue) operations on 1000 or 10000 element
+
+The below table shows the performance of the 
+@elemref["bankers queue"]{Banker's Queue}, compared with an
+implementation based on lists, and an imperative queue@cite[cce-queue].
+@note{Since its not
+possible to repeat 100000 @racket[tail] (or @racket[dequeue]) operations on 1000 or 10000 element
 imperative queue, we do not have running time for @scheme[tail] operation for 
-imperative Queues in first two cases.
+imperative queues for these sizes.}
 
 @exact{
 \medskip
@@ -93,8 +100,10 @@ Size & Operation & Bankers' & List & Imperative \\
 }
 
 @subsection{Heap Performance}
-Following is the time taken by the Leftist Heap to perform some of its 
-operations. 
+The below table shows the performance of the 
+@elemref["leftist heap"]{Leftist Heap}, compared with an
+implementation based on sorted lists, and a simple imperative heap.
+
 @;{
    @para{For 1000 elements}
 @para{@scheme[find-min/max] : LH : 23. Lists : 6. IH : 28.}
@@ -213,11 +222,10 @@ recursion, as follows:
                  (define-struct: (A) Elem ([elem : A]))                 
                  (define-struct: (A) Pare 
                    ([pair : (Pair (EP A) (EP A))]))                 
-                 (define-type-alias (EP A) 
-                   (U (Elem A) (Pare A)))                       
+                 (define-type (EP A) (U (Elem A) (Pare A)))                       
                  (define-struct: (A) Seq
                    ([elem  : (EP A)] [recur : (Seq A)]))]
-Unfortunately, this translation introduces the possibilty of illegal
+Unfortunately, this translation introduces the possibility of illegal
 states that the typechecker is unable to rule out.  We hope to support
 polymorphic recursion in a future version of Typed Scheme.
 
@@ -290,9 +298,13 @@ structurally similar the original work.
 
 We know of no existing comprehensive library of functional data
 structures for Scheme.  PLT Scheme's existing collection of user-provided
-libraries, PLaneT@cite[planet], contains an implemenation of Random
+libraries, PLaneT@cite[planet], contains an implementation of Random
 Access Lists@cite[dvh-ra], as well as a collection of several
 functional data structures@cite[galore].  
+
+VLists and several other functional data structures have recently been
+popularized by Clojure@cite[clojure], a new dialect of Lisp for the
+Java Virtual Machine.
 
 @section{Conclusion}
 

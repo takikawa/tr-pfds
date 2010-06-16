@@ -170,3 +170,12 @@
                        "2.3"
                        (authors (author-name "David" "Van Horn"))
                        "2010"))
+
+(define cce-queue
+  (planet-cite "Scheme Utilities" "7" "Carl Eastlund" "2010"))
+
+(define clojure 
+  (make-bib #:title "Clojure"
+            #:author "Rich Hickey"
+            #:date "2010"
+            #:url "http://clojure.org"))
