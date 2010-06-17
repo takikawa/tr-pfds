@@ -224,7 +224,7 @@ Each variant has the type @scheme[(Heap A)] and implements the following
 interface:
 
 @(itemlist 
-  @item{@italic{heap} : @scheme[(∀ (A) (A A → Bool) A * → (Heap A))]
+  @item{@italic{heap} :@scheme[(∀ (A) (A A → Boolean) A * → (Heap A))]
          @para{Constructs a heap from the 
          given elements and comparison function.}}
   @item{@italic{find-min/max} : @scheme[(∀ (A) (Heap A) → A)]
