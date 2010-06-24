@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../bankers-queue-streams.ss")
+(require "../bankers-queue.ss")
 (require typed/test-engine/scheme-tests)
 
 (check-expect (empty? empty) #t)
@@ -21,5 +21,15 @@
 (check-expect (head (enqueue 10 (queue 5 2 3))) 5)
 
 (check-error (head empty) "head: given queue is empty")
+
+(check-expect (queue->list (map + (queue 1 2 3 4 5) (queue 1 2 3 4 5)))
+              (list 2 4 6 8 10))
+
+(check-expect (queue->list (map - (queue 1 2 3 4 5) (queue 1 2 3 4 5)))
+              (list 0 0 0 0 0))
+
+(check-expect (fold + 0 (queue 1 2 3 4 5)) 15)
+
+(check-expect (fold + 0 (queue 1 2 3 4 5) (queue 1 2 3 4 5)) 30)
 
 (test)

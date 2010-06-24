@@ -1,7 +1,8 @@
 #lang typed-scheme
 
 (provide empty empty? enqueue enqueue-front init 
-         last head tail deque deque->list Deque)
+         last head tail deque deque->list Deque
+         foldr (rename-out [dqmap map] [dqfoldl foldl]))
 
 (require "stream.ss")
 
@@ -18,7 +19,7 @@
 (define inv-c 2)
 
 (define empty (make-Deque empty-stream 0 empty-stream
-                            empty-stream 0 empty-stream))
+                          empty-stream 0 empty-stream))
 
 
 (: empty? : (All (A) ((Deque A) -> Boolean)))
@@ -104,79 +105,122 @@
 (: enqueue : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue elem rtdq)
   (internal-Deque (stream-cons elem (Deque-front rtdq))
-                    (add1 (Deque-lenf rtdq))
-                    (exec-one (Deque-scdulF rtdq))
-                    (Deque-rear rtdq)
-                    (Deque-lenr rtdq)
-                    (exec-one (Deque-scdulR rtdq))))
+                  (add1 (Deque-lenf rtdq))
+                  (exec-one (Deque-scdulF rtdq))
+                  (Deque-rear rtdq)
+                  (Deque-lenr rtdq)
+                  (exec-one (Deque-scdulR rtdq))))
 
 
 ;; Pushes an element into the Deque at the rear end
 (: enqueue-front : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue-front elem rtdq)
   (internal-Deque (Deque-front rtdq)
-                    (Deque-lenf rtdq)
-                    (exec-one (Deque-scdulF rtdq))
-                    (stream-cons elem (Deque-rear rtdq))
-                    (add1 (Deque-lenr rtdq))
-                    (exec-one (Deque-scdulR rtdq))))
+                  (Deque-lenf rtdq)
+                  (exec-one (Deque-scdulF rtdq))
+                  (stream-cons elem (Deque-rear rtdq))
+                  (add1 (Deque-lenr rtdq))
+                  (exec-one (Deque-scdulR rtdq))))
 
-;; Retrieves the head element of the queue
-(: head : (All (A) ((Deque A) -> A)))
-(define (head rtdq)
+;; Retrieves the last element of the queue
+(: last : (All (A) ((Deque A) -> A)))
+(define (last rtdq)
   (if (empty? rtdq) 
-      (error 'head "given deque is empty")
+      (error 'last "given deque is empty")
       (let ([front (Deque-front rtdq)])
         (if (empty-stream? front) 
             (stream-car (Deque-rear rtdq))
             (stream-car front)))))
 
 
-;; Retrieves the last element of the queue
-(: last : (All (A) ((Deque A) -> A)))
-(define (last rtdq)
+;; Retrieves the head element of the queue
+(: head : (All (A) ((Deque A) -> A)))
+(define (head rtdq)
   (if (empty? rtdq)
-      (error 'last "given deque is empty")
+      (error 'head "given deque is empty")
       (let ([rear (Deque-rear rtdq)])
         (if (empty-stream? rear) 
             (stream-car (Deque-front rtdq))
             (stream-car rear)))))
 
 ;; Removes the head and returns the rest of the queue
-(: tail : (All (A) ((Deque A) -> (Deque A))))
-(define (tail rtdq)
-  (if (empty? rtdq) 
-      (error 'tail "given deque is empty")
-      (let ([front (Deque-front rtdq)])
-        (if (empty-stream? front) 
-            empty
-            (internal-Deque (stream-cdr front) 
-                              (sub1 (Deque-lenf rtdq))
-                              (exec-two (Deque-scdulF rtdq))
-                              (Deque-rear rtdq)
-                              (Deque-lenr rtdq)
-                              (exec-two (Deque-scdulR rtdq)))))))
-
-;; Removes the last and returns the Deque without the last
 (: init : (All (A) ((Deque A) -> (Deque A))))
 (define (init rtdq)
   (if (empty? rtdq) 
       (error 'init "given deque is empty")
+      (let ([front (Deque-front rtdq)])
+        (if (empty-stream? front) 
+            empty
+            (internal-Deque (stream-cdr front) 
+                            (sub1 (Deque-lenf rtdq))
+                            (exec-two (Deque-scdulF rtdq))
+                            (Deque-rear rtdq)
+                            (Deque-lenr rtdq)
+                            (exec-two (Deque-scdulR rtdq)))))))
+
+;; Removes the last and returns the Deque without the last
+(: tail : (All (A) ((Deque A) -> (Deque A))))
+(define (tail rtdq)
+  (if (empty? rtdq) 
+      (error 'tail "given deque is empty")
       (let ([rear (Deque-rear rtdq)])
         (if (empty-stream? rear)
             empty
             (internal-Deque (Deque-front rtdq)
-                              (Deque-lenf rtdq)
-                              (exec-two (Deque-scdulF rtdq))
-                              (stream-cdr rear)
-                              (sub1 (Deque-lenr rtdq))
-                              (exec-two (Deque-scdulR rtdq)))))))
+                            (Deque-lenf rtdq)
+                            (exec-two (Deque-scdulF rtdq))
+                            (stream-cdr rear)
+                            (sub1 (Deque-lenr rtdq))
+                            (exec-two (Deque-scdulR rtdq)))))))
+
+
+(: dqmap : (All (A C B ...) 
+                ((A B ... B -> C) (Deque A) (Deque B) ... B -> (Deque C))))
+(define (dqmap func que . ques)
+  (: in-map : (All (A C B ...) 
+                   ((Deque C) (A B ... B -> C) (Deque A) (Deque B) ... B -> 
+                              (Deque C))))
+  (define (in-map accum func que . ques)
+    (if (or (empty? que) (ormap empty? ques))
+        accum
+        (apply in-map 
+               (enqueue (apply func (head que) (map head ques)) accum)
+               func 
+               (tail que)
+               (map tail ques))))
+  (apply in-map empty func que ques))
+
+
+(: foldr : (All (A C B ...)
+                ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
+(define (foldr func base que . ques)
+  (if (or (empty? que) (ormap empty? ques))
+      base
+      (apply foldr 
+             func 
+             (apply func base (head que) (map head ques))
+             (tail que)
+             (map tail ques))))
+
+
+(: dqfoldl : (All (A C B ...)
+                  ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
+(define (dqfoldl func base que . ques)
+  (if (or (empty? que) (ormap empty? ques))
+      base
+      (apply dqfoldl 
+             func 
+             (apply func base (last que) (map last ques))
+             (init que)
+             (map init ques))))
+
+
 
 (: deque->list : (All (A) ((Deque A) -> (Listof A))))
 (define (deque->list dque)
   (if (empty? dque)
       null
-      (cons (last dque) (deque->list (init dque)))))
+      (cons (head dque) (deque->list (tail dque)))))
 
 
 (: list->deque : (All (A) ((Listof A) -> (Deque A))))

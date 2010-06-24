@@ -1,6 +1,7 @@
 #lang typed-scheme
 
-(provide empty empty? enqueue head tail queue->list queue)
+(provide empty empty? enqueue head tail queue->list queue
+         (rename-out [qmap map]) fold)
 (require scheme/promise scheme/match)
 
 (define-struct: Zero ())
@@ -62,6 +63,34 @@
                   [new-mid (delay (cons (tail carm) (tail cdrm)))])
              (make-Deep (make-Two fst snd) new-mid r))))]))
 
+
+(: qmap : (All (A C B ...) 
+               ((A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C))))
+(define (qmap func que . ques)
+  (: in-map : (All (A C B ...) 
+                   ((Queue C) (A B ... B -> C) (Queue A) (Queue B) ... B -> 
+                              (Queue C))))
+  (define (in-map accum func que . ques)
+    (if (or (empty? que) (ormap empty? ques))
+        accum
+        (apply in-map 
+               (enqueue (apply func (head que) (map head ques)) accum)
+               func 
+               (tail que)
+               (map tail ques))))
+  (apply in-map empty func que ques))
+
+
+(: fold : (All (A C B ...)
+               ((C A B ... B -> C) C (Queue A) (Queue B) ... B -> C)))
+(define (fold func base que . ques)
+  (if (or (empty? que) (ormap empty? ques))
+        base
+        (apply fold 
+               func 
+               (apply func base (head que) (map head ques))
+               (tail que)
+               (map tail ques))))
 
 (: queue->list : (All (A) ((Queue A) -> (Listof A))))
 (define (queue->list que)

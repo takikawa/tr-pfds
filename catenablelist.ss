@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide clist empty? clist->list head tail CatenableList
+(provide clist empty? clist->list head tail CatenableList kons-rear
 	 (rename-out [clist list])
 	 (rename-out #;[CatenableList List]
 		     [kons cons]

@@ -26,4 +26,13 @@
 (check-expect (queue->list (apply queue (build-list 100 (λ(x) x))))
               (build-list 100 (λ(x) x)))
 
+(check-expect (queue->list (map + (queue 1 2 3 4 5) (queue 1 2 3 4 5)))
+              (list 2 4 6 8 10))
+
+(check-expect (queue->list (map - (queue 1 2 3 4 5) (queue 1 2 3 4 5)))
+              (list 0 0 0 0 0))
+
+(check-expect (fold + 0 (queue 1 2 3 4 5)) 15)
+
+(check-expect (fold + 0 (queue 1 2 3 4 5) (queue 1 2 3 4 5)) 30)
 (test)

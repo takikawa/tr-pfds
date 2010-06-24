@@ -37,4 +37,18 @@
 
 (check-expect (deque->list (apply deque lst)) lst)
 
+(check-expect (deque->list (map + (deque 1 2 3 4 5) (deque 1 2 3 4 5)))
+              (list 2 4 6 8 10))
+
+(check-expect (deque->list (map - (deque 1 2 3 4 5) (deque 1 2 3 4 5)))
+              (list 0 0 0 0 0))
+
+(check-expect (foldl + 0 (deque 1 2 3 4 5)) 15)
+
+(check-expect (foldl - 2 (deque 1 2 3 4 5)) -13)
+
+(check-expect (foldr + 0 (deque 1 2 3 4 5)) 15)
+
+(check-expect (foldr + 0 (deque 1 2 3 4 5) (deque 1 2 3 4 5)) 30)
+
 (test)

@@ -25,4 +25,13 @@
 (check-expect (queue->list (queue '(1) '(2 2) '(3 4) '(5 6 7) '(5)))
               (list '(1) '(2 2) '(3 4) '(5 6 7) '(5)))
 
+(check-expect (queue->list (map + (queue 1 2 3 4 5) (queue 1 2 3 4 5)))
+              (list 2 4 6 8 10))
+
+(check-expect (queue->list (map - (queue 1 2 3 4 5) (queue 1 2 3 4 5)))
+              (list 0 0 0 0 0))
+
+(check-expect (fold + 0 (queue 1 2 3 4 5)) 15)
+
+(check-expect (fold + 0 (queue 1 2 3 4 5) (queue 1 2 3 4 5)) 30)
 (test)

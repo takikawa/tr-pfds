@@ -138,12 +138,12 @@
 (define (vlist . lst)
   (foldr (inst vcons A) empty lst))
 
-(: vmap : (All (A C B ...) ((A ... -> C) (List A) ... -> (List C))))
-(define (vmap func . lst)
-  (if (ormap empty? lst)
+(: vmap : (All (A C B ...) ((A B ... B -> C) (List A) (List B) ... B -> (List C))))
+(define (vmap func lst . lsts)
+  (if (or (empty? lst) (ormap empty? lsts))
       empty
-      (vcons (apply func (map first lst)) 
-             (apply vmap func (map rest lst)))))
+      (vcons (apply func (first lst) (map first lsts)) 
+             (apply vmap func (rest lst) (map rest lsts)))))
 
 (: vfoldl : 
    (All (C A B ...) ((C A B ... -> C) C (List A) (List B) ... B -> C)))

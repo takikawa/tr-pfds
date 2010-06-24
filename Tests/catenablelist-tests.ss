@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../catenablelist.ss")
+(require (rename-in "../catenablelist.ss" [list catlist]))
 (require typed/test-engine/scheme-tests)
 
 (check-expect (head (clist 1 2 3 4 5 6 7)) 1)

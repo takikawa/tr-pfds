@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/scheme
 
 (require "../redblacktrees.ss")
 (require typed/test-engine/scheme-tests)
@@ -21,7 +21,7 @@
 (check-expect (root (redblacktree < 1 2 3 4 5 6 7)) 4)
 (check-expect (root (redblacktree < 1 2 3 4 5)) 2)
 (define lst (build-list 100 (λ: ([x : Integer]) x)))
-(check-expect (sort (redblacktree->list (apply redblacktree < lst))  <) lst)
+(check-expect ((inst sort Integer Integer) (redblacktree->list (apply redblacktree < lst))  <) lst)
 (check-expect (root (delete 2 (redblacktree < 1 2 3 4 5))) 4)
 (check-expect (root (delete-root (redblacktree < 1 2 3 4 5))) 4)
 (check-expect (member? 5 (redblacktree < 1 2 3 4 5)) #t)

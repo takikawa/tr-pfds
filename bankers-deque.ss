@@ -2,8 +2,8 @@
 
 (require "stream.ss")
 
-(provide empty? empty enqueue-front head tail
-         deque enqueue last init deque->list)
+(provide empty? empty enqueue-front head tail deque enqueue last init
+         deque->list foldr (rename-out [dqmap map] [dqfoldl foldl]))
 
 ;; A Banker's Queue (Maintains length of front >= length of rear)
 
@@ -119,6 +119,48 @@
                             (Deque-lenf deq)
                             (stream-cdr rear)
                             (sub1 (Deque-lenr deq)))))))
+
+
+(: dqmap : (All (A C B ...) 
+               ((A B ... B -> C) (Deque A) (Deque B) ... B -> (Deque C))))
+(define (dqmap func que . ques)
+  (: in-map : (All (A C B ...) 
+                   ((Deque C) (A B ... B -> C) (Deque A) (Deque B) ... B -> 
+                              (Deque C))))
+  (define (in-map accum func que . ques)
+    (if (or (empty? que) (ormap empty? ques))
+        accum
+        (apply in-map 
+               (enqueue (apply func (head que) (map head ques)) accum)
+               func 
+               (tail que)
+               (map tail ques))))
+  (apply in-map empty func que ques))
+
+
+(: foldr : (All (A C B ...)
+               ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
+(define (foldr func base que . ques)
+  (if (or (empty? que) (ormap empty? ques))
+        base
+        (apply foldr 
+               func 
+               (apply func base (head que) (map head ques))
+               (tail que)
+               (map tail ques))))
+
+
+(: dqfoldl : (All (A C B ...)
+               ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
+(define (dqfoldl func base que . ques)
+  (if (or (empty? que) (ormap empty? ques))
+        base
+        (apply dqfoldl 
+               func 
+               (apply func base (last que) (map last ques))
+               (init que)
+               (map init ques))))
+
 
 (: deque->list : (All (A) ((Deque A) -> (Listof A))))
 (define (deque->list deq)

@@ -1,7 +1,8 @@
 #lang typed-scheme
 
 (provide empty empty? head tail last init deque->rev-list
-         enqueue-front enqueue deque->list deque)
+         enqueue-front enqueue deque->list deque
+         foldr (rename-out [dqmap map] [dqfoldl foldl]))
 
 (require scheme/promise scheme/match)
 
@@ -139,6 +140,47 @@
     [(struct Deep (fi m (struct Two (f _)))) (make-Deep fi m (make-One f))]
     [(struct Deep (fi m (struct Three (f s t)))) 
      (make-Deep fi m (make-Two f s))]))
+
+
+(: dqmap : (All (A C B ...) 
+               ((A B ... B -> C) (Deque A) (Deque B) ... B -> (Deque C))))
+(define (dqmap func que . ques)
+  (: in-map : (All (A C B ...) 
+                   ((Deque C) (A B ... B -> C) (Deque A) (Deque B) ... B -> 
+                              (Deque C))))
+  (define (in-map accum func que . ques)
+    (if (or (empty? que) (ormap empty? ques))
+        accum
+        (apply in-map 
+               (enqueue (apply func (head que) (map head ques)) accum)
+               func 
+               (tail que)
+               (map tail ques))))
+  (apply in-map empty func que ques))
+
+
+(: foldr : (All (A C B ...)
+               ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
+(define (foldr func base que . ques)
+  (if (or (empty? que) (ormap empty? ques))
+        base
+        (apply foldr 
+               func 
+               (apply func base (head que) (map head ques))
+               (tail que)
+               (map tail ques))))
+
+
+(: dqfoldl : (All (A C B ...)
+               ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
+(define (dqfoldl func base que . ques)
+  (if (or (empty? que) (ormap empty? ques))
+        base
+        (apply dqfoldl 
+               func 
+               (apply func base (last que) (map last ques))
+               (init que)
+               (map init ques))))
 
 
 (: deque->list : (All (A) ((Deque A) -> (Listof A))))

@@ -1,5 +1,8 @@
-#lang typed-scheme
-(require "../vlist.ss")
+#lang typed/scheme
+(require (rename-in "../vlist.ss" 
+                    [map vvmap] 
+                    [reverse vvreverse] 
+                    [length len]))
 (require typed/test-engine/scheme-tests)
 
 (define lst (build-list 100 (λ:([x : Integer]) x)))
