@@ -4,7 +4,10 @@
 
 (provide empty-stream? empty-stream stream-cons stream-car
          stream-cdr stream-append stream-reverse stream
-         stream->list drop take Stream)
+         stream->list drop take empty empty? Stream
+         (rename-out [stream-map map]
+                     [stream-foldl foldl]
+                     [stream-foldr foldr]))
 
 (define-struct: Mt ())
 
@@ -17,6 +20,8 @@
 
 (define empty-stream (delay (make-Mt)))
 
+(define empty empty-stream)
+
 (: force-stream : (All (A) ((Stream A) -> (StreamCell A))))
 (define (force-stream strem)
   (force strem))
@@ -24,6 +29,8 @@
 (: empty-stream? : (All (A) ((Stream A) -> Boolean)))
 (define (empty-stream? strem)
   (Mt? (force strem)))
+
+(define empty? empty-stream?)
 
 (: stream-cons : (All (A) (A (Stream A) -> (Stream A))))
 (define (stream-cons elem strem)
@@ -87,6 +94,49 @@
           (rev (InStream-rst forcd)
                (delay (make-InStream (InStream-fst forcd) accum))))))
   (rev strem empty-stream))
+
+
+(: stream-map : (All (A C B ...) ((A B ... B -> C) (Stream A) 
+                                             (Stream B) ... B -> 
+                                             (Stream C))))
+(define (stream-map func strm . strms)
+  (if (or (empty? strm) (ormap empty? strms))
+      empty
+      (delay (make-InStream (apply func 
+                                   (stream-car strm) 
+                                   (map stream-car strms)) 
+                            (apply stream-map 
+                                   func 
+                                   (stream-cdr strm) 
+                                   (map stream-cdr strms))))))
+
+(: stream-foldl : 
+   (All (C A B ...) ((C A B ... B -> C) C (Stream A) 
+                                        (Stream B) ... B -> C)))
+(define (stream-foldl func base fst . rst)
+  (if (or (empty? fst) (ormap empty? rst))
+      base
+      (apply stream-foldl 
+             func 
+             (apply func base (stream-car fst) (map stream-car rst))
+             (stream-cdr fst)
+             (map stream-cdr rst))))
+
+(: stream-foldr : 
+   (All (C A B ...) ((C A B ... B -> C) C (Stream A) 
+                                        (Stream B) ... B -> C)))
+(define (stream-foldr func base fst . rst)
+  (if (or (empty? fst) (ormap empty? rst))
+      base
+      (apply func (apply stream-foldr 
+                         func 
+                         base
+                         (stream-cdr fst)
+                         (map stream-cdr rst)) 
+             (stream-car fst) 
+             (map stream-car rst))))
+
+
 
 (: stream->list : (All (A) ((Stream A) -> (Listof A))))
 (define (stream->list strem)

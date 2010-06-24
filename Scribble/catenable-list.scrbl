@@ -14,8 +14,8 @@ Catenable Lists are nothing but lists with efficient catenation. They use
 a data-structucal bootstrapping technique called 
 @italic{Structucal Abstraction}. The data structure internally use 
 Real Time Queues to realize an amortized running time of @bold{@italic{O(1)}}
-for the operations @scheme[head], @scheme[tail], @scheme[kons] and
-@scheme[kons-rear].
+for the operations @scheme[first], @scheme[rest], @scheme[cons] and
+@scheme[cons-to-end].
 
 @;section{Catenable List Constructor and Operations}
 
@@ -44,49 +44,49 @@ empty.
 
 ]}
 
-@defproc[(kons [a A] [catlist (CatenableList A)]) (CatenableList A)]{
-Function @scheme[kons] takes an element and a clist and adds the given
+@defproc[(cons [a A] [catlist (CatenableList A)]) (CatenableList A)]{
+Function @scheme[cons] takes an element and a clist and adds the given
 element to the front the given clist.   
 @examples[#:eval evaluate
 
-(kons 10 (clist 1 2 3 4 5 6))
+(cons 10 (clist 1 2 3 4 5 6))
 ]
 
-In the above example, @scheme[(kons 10 (clist 1 2 3 4 5 6))] returns 
+In the above example, @scheme[(cons 10 (clist 1 2 3 4 5 6))] returns 
 @scheme[(clist 10 1 2 3 4 5 6)].}
 
 
-@defproc[(kons-rear [a A] [catlist (CatenableList A)]) (CatenableList A)]{
-Function @scheme[kons-rear] takes an element and a clist and adds the 
+@defproc[(cons-to-end [a A] [catlist (CatenableList A)]) (CatenableList A)]{
+Function @scheme[cons-to-end] takes an element and a clist and adds the 
 given element to the rear end the given clist.   
 @examples[#:eval evaluate
 
-(kons-rear 10 (clist 1 2 3 4 5 6))
+(cons-to-end 10 (clist 1 2 3 4 5 6))
 ]
 
-In the above example, @scheme[(kons-rear 10 (clist 1 2 3 4 5 6))] returns 
+In the above example, @scheme[(cons-to-end 10 (clist 1 2 3 4 5 6))] returns 
 @scheme[(clist 1 2 3 4 5 6 10)].}
 
-@defproc[(head [catlist (CatenableList A)]) A]{
-Function @scheme[head] takes a clist and returns the first element
+@defproc[(first [catlist (CatenableList A)]) A]{
+Function @scheme[first] takes a clist and returns the first element
 of the given clist.   
 @examples[#:eval evaluate
 
-(head (clist 1 2 3 4 5 6))
-(head empty)
+(first (clist 1 2 3 4 5 6))
+(first empty)
 ]}
 
 
-@defproc[(tail [catlist (CatenableList A)]) (CatenableList A)]{
-Function @scheme[tail] takes a clist and returns a clist without 
+@defproc[(rest [catlist (CatenableList A)]) (CatenableList A)]{
+Function @scheme[rest] takes a clist and returns a clist without 
 the first element of the given clist.   
 @examples[#:eval evaluate
 
-(tail (clist 1 2 3 4 5 6))
-(tail empty)
+(rest (clist 1 2 3 4 5 6))
+(rest empty)
 ]
 
-In the above example, @scheme[(tail (clist 1 2 3 4 5 6))] returns the rest of
+In the above example, @scheme[(rest (clist 1 2 3 4 5 6))] returns the rest of
 the given clist, @scheme[(clist 2 3 4 5 6)].}
 
 
