@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../redblacktrees.ss")
 @(require (for-label "../redblacktrees.ss"))
 
 @(require scribble/eval)

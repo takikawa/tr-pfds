@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../bankers-queue-streams.ss")
 @(require (for-label "../bankers-queue-streams.ss"))
 @(require scribble/eval)
 @(provide (for-label (all-from-out)))

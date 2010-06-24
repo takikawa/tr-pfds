@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../bootstrapedheap.ss")
 @(require (for-label "../bootstrapedheap.ss"))
 
 @(require scribble/eval)

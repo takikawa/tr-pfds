@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../splayheap.ss")
 @(require (for-label "../splayheap.ss"))
 
 @(require scribble/eval)

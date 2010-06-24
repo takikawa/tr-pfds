@@ -1,9 +1,10 @@
 #lang scribble/manual
 
-@begin[(require (for-label typed-scheme))]
+@(require (for-label typed-scheme))
+@;(provide (for-label all-defined-out))
 
 @title[#:tag "top"]{@bold{Functional Data Structures} in Typed Scheme}
-All the data structures below, are influenced by the works of 
+All the data structures below, are the works of 
 @italic{Chris Okasaki, Phil Bagwell} and those that are discussed
 in the book @italic{Purely Functional Data Structures} by Chris Okasaki.
 And the data structures have been entirely implemented in Typed Scheme.

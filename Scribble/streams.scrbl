@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../stream.ss")
 @(require (for-label "../stream.ss"))
 
 @(require scribble/eval)

@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../pairingheap.ss")
 @(require (for-label "../pairingheap.ss"))
 
 @(require scribble/eval)

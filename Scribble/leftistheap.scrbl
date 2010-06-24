@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../LeftistHeaps.ss")
 @(require (for-label "../LeftistHeaps.ss"))
 
 @(require scribble/eval)

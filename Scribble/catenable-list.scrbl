@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../catenablelist.ss")
 @(require (for-label "../catenablelist.ss"))
 
 @(require scribble/eval)

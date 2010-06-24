@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../physicists-queue.ss")
 @(require (for-label "../physicists-queue.ss"))
 
 @;@(require "stream.ss")AP270301PF0Z945U

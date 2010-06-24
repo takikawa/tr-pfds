@@ -1,26 +1,28 @@
 #lang typed/scheme
 
-(provide vlist vlist->list vcons empty empty? size get first rest last
-         vreverse vmap vfoldr vfoldl vfilter list-ref)
+(provide vlist->list empty empty? first rest last list-ref)
 (provide (rename-out
-	  [vlist list]
-	  [vcons cons]
-	  [size length]
-	  [vreverse reverse]
-	  [vmap map]))
+          [vlist list]
+          [vcons cons]
+          [size length]
+          [vreverse reverse]
+          [vmap map]
+          [vfoldr foldr]
+          [vfoldl foldl]
+          [vfilter filter]))
 
 (require (prefix-in ra: "skewbinaryrandomaccesslist.ss"))
 (define-struct: (A) Base ([prevbase : (Block A)]
                           [prevoffset : Integer]
-                          [elems : (ra:RAList A)]
+                          [elems : (ra:List A)]
                           [size : Integer]))
 (define-struct: Mt ())
 
 (define-type-alias Block (All (A) (U Mt (Base A))))
 
 (define-struct: (A) List ([offset : Integer]
-                           [base : (Base A)]
-                           [size : Integer]))
+                          [base : (Base A)]
+                          [size : Integer]))
 
 (define empty (make-List 0 (make-Base (make-Mt) 0 ra:empty 1) 0))
 
@@ -41,15 +43,15 @@
          [lsthan (< offset basesize)])
     (if lsthan 
         (make-List newoffset (make-Base prevbase 
-                                         prevoffset
-                                         (ra:kons elem lst)
-                                         basesize)
-                    (add1 size))
+                                        prevoffset
+                                        (ra:cons elem lst)
+                                        basesize)
+                   (add1 size))
         (make-List 1 (make-Base base 
-                                 offset
-                                 (ra:kons elem ra:empty)
-                                 (* basesize 2))
-                    (add1 size)))))
+                                offset
+                                (ra:cons elem ra:empty)
+                                (* basesize 2))
+                   (add1 size)))))
 
 (: first : (All (A) ((List A) -> A)))
 (define (first vlst)
@@ -79,11 +81,11 @@
     (cond 
       [(empty? vlst) (error 'rest "given vlist is empty")]
       [(> offset 1) (make-List (sub1 offset) 
-                                (make-Base (Base-prevbase base)
-                                           (Base-prevoffset base)
-                                           (ra:tail (Base-elems base))
-                                           (Base-size base)) 
-                                (sub1 size))]
+                               (make-Base (Base-prevbase base)
+                                          (Base-prevoffset base)
+                                          (ra:tail (Base-elems base))
+                                          (Base-size base)) 
+                               (sub1 size))]
       [(Base? prev) (make-List (Base-prevoffset base) prev (sub1 size))]
       [else empty])))
 
@@ -101,8 +103,8 @@
 (: get : (All (A) (Integer (List A) -> A)))
 (define (get index vlist)
   (cond
-    [(> index (sub1 (List-size vlist))) (error 'get
-                                                "given index out of bounds")]
+    [(> index (sub1 (List-size vlist))) (error 'list-ref
+                                               "given index out of bounds")]
     [(zero? index) (first vlist)]
     [else (get-helper index vlist)]))
 
@@ -117,7 +119,7 @@
     (if (and (> index (sub1 offset)) (Base? prev))
         (get-helper (- index offset) 
                     (make-List (Base-prevoffset base) prev (List-size vlist)))
-        (ra:lookup index (Base-elems base)))))
+        (ra:list-ref (Base-elems base) index))))
 
 (: vreverse : (All (A) ((List A) -> (List A))))
 (define (vreverse vlist)

@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../realtimequeue.ss")
 @(require (for-label "../realtimequeue.ss"))
 
 @(require scribble/eval)

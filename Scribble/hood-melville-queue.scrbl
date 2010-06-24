@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../hood-melville-queue.ss")
 @(require (for-label "../hood-melville-queue.ss"))
 @(require scribble/eval)
 @(define evaluate (make-base-eval))

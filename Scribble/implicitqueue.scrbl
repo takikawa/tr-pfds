@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../implicitqueue.ss")
 @(require (for-label "../implicitqueue.ss"))
 
 @(require scribble/eval)

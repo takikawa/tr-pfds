@@ -1,4 +1,5 @@
 #lang scribble/manual
+@;(defmodule and have the type (RAList A)
 @;(require (for-label and have the type (RAList A).
 
 @title{Random Access Lists}

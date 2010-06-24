@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../skewbinomialheap.ss")
 @(require (for-label "../skewbinomialheap.ss"))
 
 @(require scribble/eval)

@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../bootstrapedqueue.ss")
 @(require (for-label "../bootstrapedqueue.ss"))
 
 @(require scribble/eval)

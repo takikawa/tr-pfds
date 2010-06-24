@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(defmodule "../bankers-deque.ss")
 @(require (for-label "../bankers-deque.ss"))
 
 @(require scribble/eval)
