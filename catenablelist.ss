@@ -113,6 +113,34 @@
                          (tail fst)
                          (map tail rst)) (head fst) (map head rst))))
 
+(: filter : (All (A) ((A -> Boolean) (CatenableList A) -> (CatenableList A))))
+(define (filter func que)
+  (: inner : (All (A) ((A -> Boolean) (CatenableList A) (CatenableList A) -> (CatenableList A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail (kons head accum))
+              (inner func tail accum)))))
+  (inner func que empty))
+
+
+(: remove : (All (A) ((A -> Boolean) (CatenableList A) -> (CatenableList A))))
+(define (remove func que)
+  (: inner : (All (A) ((A -> Boolean) (CatenableList A) (CatenableList A) -> (CatenableList A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail accum)
+              (inner func tail (kons head accum))))))
+  (inner func que empty))
+
+
 (: clist : (All (A) (A * -> (CatenableList A))))
 (define (clist . lst)
   (foldr (inst kons A) empty lst))
