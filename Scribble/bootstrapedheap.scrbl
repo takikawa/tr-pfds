@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(require "helper.rkt")
 @(defmodule "../bootstrapedheap.ss")
 @(require (for-label "../bootstrapedheap.ss"))
 
@@ -126,3 +127,57 @@ list which is sorted according to the comparison function of the heap.
 
 In the above example, @scheme[(sorted-list bheap)], returns 
 @scheme[(6 5 4 3 2 1)].}
+
+@defproc[(map [comparer (C C -> Boolean)]
+              [func (A B ... B -> C)] 
+              [hep1 (Heap A)]
+              [hep2 (Heap B)] ...) (Heap A)]{
+Function @scheme[map] is similar to @|racket-map| for lists.
+@examples[#:eval evaluate
+
+(sorted-list (map < add1 (heap < 1 2 3 4 5 6)))
+
+(sorted-list (map < * (heap < 1 2 3 4 5 6) (heap < 1 2 3 4 5 6)))
+]}
+
+@defproc[(fold [func (C A B ... B -> C)]
+               [init C]
+               [hep1 (Heap A)]
+               [hep2 (Heap B)] ...) C]{
+Function @scheme[fold] is similar to @|racket-foldl| or @|racket-foldr|
+@margin-note{@scheme[fold] currently does not produce correct results when the 
+             given function is non-commutative.}
+
+@examples[#:eval evaluate
+
+(fold + 0 (heap < 1 2 3 4 5 6))
+
+(fold * 1 (heap < 1 2 3 4 5 6) (heap < 1 2 3 4 5 6))
+]}
+
+@defproc[(filter [func (A -> Boolean)] [hep (Heap A)]) (Heap A)]{
+Function @scheme[filter] is similar to @|racket-filter|. 
+@examples[#:eval evaluate
+
+(define hep (heap < 1 2 3 4 5 6))
+
+(sorted-list (filter (λ: ([x : Integer]) (> x 5)) hep))
+
+(sorted-list (filter (λ: ([x : Integer]) (< x 5)) hep))
+
+(sorted-list (filter (λ: ([x : Integer]) (<= x 5)) hep))
+]}
+
+@defproc[(remove [func (A -> Boolean)] [hep (Heap A)]) (Heap A)]{
+Function @scheme[remove] is similar to @|racket-remove|. 
+@examples[#:eval evaluate
+
+(sorted-list (remove (λ: ([x : Integer]) (> x 5))
+                    (heap < 1 2 3 4 5 6)))
+
+(sorted-list (remove (λ: ([x : Integer]) (< x 5))
+                    (heap < 1 2 3 4 5 6)))
+
+(sorted-list (remove (λ: ([x : Integer]) (<= x 5))
+                    (heap < 1 2 3 4 5 6)))
+]}

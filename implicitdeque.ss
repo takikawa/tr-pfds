@@ -1,6 +1,7 @@
 #lang typed-scheme
 
-(provide empty empty? head tail last init deque->rev-list
+(provide filter remove
+         empty empty? head tail last init deque->rev-list
          enqueue-front enqueue deque->list deque
          foldr (rename-out [dqmap map] [dqfoldl foldl]))
 
@@ -198,3 +199,30 @@
 (: deque : (All (A) (A * -> (Deque A))))
 (define (deque . lst)
   (foldl (inst enqueue A) empty lst))
+
+(: filter : (All (A) ((A -> Boolean) (Deque A) -> (Deque A))))
+(define (filter func que)
+  (: inner : (All (A) ((A -> Boolean) (Deque A) (Deque A) -> (Deque A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail (enqueue head accum))
+              (inner func tail accum)))))
+  (inner func que empty))
+
+
+(: remove : (All (A) ((A -> Boolean) (Deque A) -> (Deque A))))
+(define (remove func que)
+  (: inner : (All (A) ((A -> Boolean) (Deque A) (Deque A) -> (Deque A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail accum)
+              (inner func tail (enqueue head accum))))))
+  (inner func que empty))

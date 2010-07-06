@@ -1,6 +1,7 @@
 #lang typed-scheme
 
-(provide queue queue->list empty empty? (rename-out [qmap map]) fold
+(provide filter remove
+         queue queue->list empty empty? (rename-out [qmap map]) fold
          head tail enqueue Queue list->queue)
 
 (require "stream.ss")
@@ -102,3 +103,30 @@
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
   (foldl (inst enqueue A) empty lst))
+
+(: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
+(define (filter func que)
+  (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail (enqueue head accum))
+              (inner func tail accum)))))
+  (inner func que empty))
+
+
+(: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
+(define (remove func que)
+  (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail accum)
+              (inner func tail (enqueue head accum))))))
+  (inner func que empty))

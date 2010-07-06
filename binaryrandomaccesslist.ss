@@ -1,6 +1,7 @@
 #lang typed/scheme
 (require (prefix-in sh: scheme/base))
-(provide empty empty? list-length cons head tail 
+(provide filter remove
+         empty empty? list-length cons head tail 
          (rename-out [first* first] [rest* rest] [ramap map] 
                      [rafoldr foldr] [rafoldl foldl]) 
          list-ref list-set drop ->list list)
@@ -184,18 +185,13 @@
 (: ramap : (All (A C B ...) 
                 ((A B ... B -> C) (List A) (List B) ... B -> (List C))))
 (define (ramap func lst . lsts)
-  (: in-map : (All (A C B ...) 
-                   ((List C) (A B ... B -> C) (List A) (List B) ... B -> 
-                             (List C))))
-  (define (in-map accum func lst . lsts)
-    (if (or (empty? lst) (ormap empty? lsts))
-        accum
-        (apply in-map 
-               (cons (apply func (head lst) (map head lsts)) accum)
-               func 
-               (tail lst)
-               (map tail lsts))))
-  (apply in-map empty func lst lsts))
+  (if (or (empty? lst) (ormap empty? lsts))
+      empty
+      (cons (apply func (head lst) (map head lsts))
+            (apply ramap 
+                   func 
+                   (tail lst)
+                   (map tail lsts)))))
 
 
 (: rafoldr : (All (A C B ...)
@@ -235,3 +231,25 @@
 
 (define first* head)
 (define rest* tail)
+
+
+(: filter : (All (A) ((A -> Boolean) (List A) -> (List A))))
+(define (filter func ral)
+  (if (empty? ral)
+    empty
+    (let ([head (head ral)]
+          [tail (tail ral)])
+      (if (func head)
+        (cons head (filter func tail))
+        (filter func tail)))))
+
+
+(: remove : (All (A) ((A -> Boolean) (List A) -> (List A))))
+(define (remove func ral)
+  (if (empty? ral)
+    empty
+    (let ([head (head ral)]
+          [tail (tail ral)])
+      (if (func head)
+        (remove func tail)
+        (cons head (remove func tail))))))

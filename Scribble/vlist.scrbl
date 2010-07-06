@@ -1,6 +1,9 @@
 #lang scribble/manual
 @(defmodule "../vlist.ss")
-@(require (for-label "../vlist.ss"))
+@;(defmodule "helper.rkt")
+@(require (for-label "../vlist.ss")
+          ;(for-label "helper.rkt")
+          "helper.rkt")
 
 @(require scribble/eval)
 
@@ -8,12 +11,12 @@
 @(evaluate '(require typed/scheme))
 @(evaluate '(require "../vlist.ss"))
 
-@(require (for-label (only-in scheme
+@;{(require (for-label (only-in scheme
                               [map sh:map] 
                               [foldr sh:foldr] 
                               [foldl sh:foldl] 
-                              [filter sh:filter])))
-
+                              [filter sh:filter])))}
+@;(defmodule scheme map)
 
 @title{VList}
 
@@ -145,30 +148,30 @@ In the above example, @scheme[(reverse (list 1 2 3 4 5 6))], returns the
 reversed vlist @scheme[(list 6 5 4 3 2 1)].}
 
 
-@defproc[(map [func (A ... -> C)] [vlst1 (List A)] ...) (List A)]{
-Function @scheme[map] is same as @scheme[sh:map] except that 
-@scheme[map] works on vlists. 
+@defproc[(map [func (A B ... B -> C)] 
+              [vlst1 (List A)]
+              [vlst2 (List B)] ...) (List A)]{
+Function @scheme[map] is similar to @|racket-map| for lists.
 @examples[#:eval evaluate
 
-(map add1 (list 1 2 3 4 5 6))
+(vlist->list (map add1 (list 1 2 3 4 5 6)))
 
-(map * (list 1 2 3 4 5 6) (list 1 2 3 4 5 6))
+(vlist->list (map * (list 1 2 3 4 5 6) (list 1 2 3 4 5 6)))
 ]
 
 In the above example, @scheme[(map add1 (list 1 2 3 4 5 6))] adds 1 to
 each element of the given vlist and returns @scheme[(list 2 3 4 5 6 7)].
-@scheme[(map * (list 1 2 3 4 5 6) (list 1 2 3 4 5 6))] multiplies 
-corresponding elements in the two vlists 
+@scheme[(map * (list 1 2 3 4 5 6) (list 1 2 3 4 5 6))] multiplies
+corresponding elements in the two vlists
 and returns the vlist @scheme[(list 1 4 9 16 25 36)].}
 
 
-@defproc[(foldl [func (C A B ... -> C)] 
-                 [init C] 
-                 [vlst1 (List A)] 
-                 [vlst2 (List B)] ... ) C]{
-Function @scheme[foldl] is same as @scheme[sh:foldl] except that 
-@scheme[foldl] works on vlists.
-@margin-note{foldl currently does not produce correct results when the 
+@defproc[(foldl [func (C A B ... B -> C)]
+                 [init C]
+                 [vlst1 (List A)]
+                 [vlst2 (List B)] ...) C]{
+Function @scheme[foldl] is similar to @|racket-foldl|.
+@margin-note{@scheme[foldl] currently does not produce correct results when the 
              given function is non-commutative.}
 
 @examples[#:eval evaluate
@@ -179,13 +182,12 @@ Function @scheme[foldl] is same as @scheme[sh:foldl] except that
 ]}
 
 
-@defproc[(foldr [func (C A B ... -> C)] 
+@defproc[(foldr [func (C A B ... B -> C)] 
                  [init C] 
                  [vlst1 (List A)] 
-                 [vlst2 (List B)] ... ) C]{
-Function @scheme[foldr] is same as @scheme[sh:foldr] except that 
-@scheme[foldr] works on vlists. 
-@margin-note{foldr currently does not produce correct results when the 
+                 [vlst2 (List B)] ...) C]{
+Function @scheme[foldr] is similar to @|racket-foldr|. 
+@margin-note{@scheme[foldr] currently does not produce correct results when the 
              given function is non-commutative.}
 
 @examples[#:eval evaluate
@@ -196,23 +198,14 @@ Function @scheme[foldr] is same as @scheme[sh:foldr] except that
 ]}
 
 @defproc[(filter [func (A -> Boolean)] [vlst (List A)]) (List A)]{
-Function @scheme[filter] is same as @scheme[sh:filter] except that 
-@scheme[filter] works on vlists. 
+Function @scheme[filter] is similar to @|racket-filter|. 
 @examples[#:eval evaluate
 
 (define vlst (list 1 2 3 4 5 6))
 
-(filter (λ:([x : Integer]) (> x 5)) vlst)
+(vlist->list (filter (λ:([x : Integer]) (> x 5)) vlst))
 
-(filter (λ:([x : Integer]) (< x 5)) vlst)
+(vlist->list (filter (λ:([x : Integer]) (< x 5)) vlst))
 
-(filter (λ:([x : Integer]) (<= x 4)) vlst)
-]
-
-In the above example, 
-@itemlist{@item{@scheme[(filter (λ:([x : Integer]) (> x 5)) vlst)]
-gives @scheme[(list 6)].}}
-@itemlist{@item{@scheme[(filter (λ:([x : Integer]) (< x 5)) vlst)] gives
-@scheme[(list 1 2 3 4)].}}
-@itemlist{@item{@scheme[(filter (λ:([x : Integer]) (<= x 4)) vlst)] gives
-@scheme[(list 1 2 3 4)].}}}
+(vlist->list (filter (λ:([x : Integer]) (<= x 4)) vlst))
+]}

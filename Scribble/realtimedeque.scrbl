@@ -1,6 +1,7 @@
 #lang scribble/manual
 @(defmodule "../realtimedeque.ss")
-@(require (for-label "../realtimedeque.ss"))
+@(require (for-label "../realtimedeque.ss")
+          "helper.rkt")
 
 @(require scribble/eval)
 
@@ -45,7 +46,7 @@ Function @scheme[empty?] checks if the given deque is empty or not.
 
 
 @defproc[(enqueue [a A] [deq (Deque A)]) (Deque A)]{
-Function@scheme[enqueue] takes an element and a deque and enqueues 
+Function @scheme[enqueue] takes an element and a deque and enqueues 
 the given element into the deque. 
 @examples[#:eval evaluate
 
@@ -71,7 +72,7 @@ In the above example, enqueue adds the element 10 to the front of
 
 @defproc[(head [deq (Deque A)]) A]{
 Function @scheme[head] takes a deque and gives the first element in the
-queue if deque is not empty else throws an error. 
+deque if deque is not empty else throws an error. 
 @examples[#:eval evaluate
 
 (head (deque 1 2 3 4 5 6))
@@ -126,4 +127,72 @@ If the given deque is empty, then it returns an empty list.
 (define que (deque 10 2 34 4 15 6))
 
 (deque->list que)
+]}
+
+@defproc[(map [func (A B ... B -> C)] 
+              [deq1 (Deque A)]
+              [deq2 (Deque B)] ...) (Deque A)]{
+Function @scheme[map] is similar to @|racket-map| for lists.
+@examples[#:eval evaluate
+
+(deque->list (map add1 (deque 1 2 3 4 5 6)))
+
+(deque->list (map * (deque 1 2 3 4 5 6) (deque 1 2 3 4 5 6)))
+]}
+
+@defproc[(foldl [func (C A B ... B -> C)]
+                [init C]
+                [deq1 (Deque A)]
+                [deq2 (Deque B)] ...) C]{
+Function @scheme[foldl] is similar to @|racket-foldl|
+@margin-note{@scheme[foldl] currently does not produce correct results when the 
+             given function is non-commutative.}
+
+@examples[#:eval evaluate
+
+(foldl + 0 (deque 1 2 3 4 5 6))
+
+(foldl * 1 (deque 1 2 3 4 5 6) (deque 1 2 3 4 5 6))
+]}
+
+@defproc[(foldr [func (C A B ... B -> C)]
+                [init C]
+                [deq1 (Deque A)]
+                [deq2 (Deque B)] ...) C]{
+Function @scheme[foldr] is similar to @|racket-foldr|
+@margin-note{@scheme[foldr] currently does not produce correct results when the 
+             given function is non-commutative.}
+
+@examples[#:eval evaluate
+
+(foldr + 0 (deque 1 2 3 4 5 6))
+
+(foldr * 1 (deque 1 2 3 4 5 6) (deque 1 2 3 4 5 6))
+]}
+
+@defproc[(filter [func (A -> Boolean)] [que (Deque A)]) (Deque A)]{
+Function @scheme[filter] is similar to @|racket-filter|. 
+@examples[#:eval evaluate
+
+(define que (deque 1 2 3 4 5 6))
+
+(deque->list (filter (λ: ([x : Integer]) (> x 5)) que))
+
+(deque->list (filter (λ: ([x : Integer]) (< x 5)) que))
+
+(deque->list (filter (λ: ([x : Integer]) (<= x 5)) que))
+]}
+
+@defproc[(remove [func (A -> Boolean)] [que (Deque A)]) (Deque A)]{
+Function @scheme[remove] is similar to @|racket-remove|. 
+@examples[#:eval evaluate
+
+(deque->list (remove (λ: ([x : Integer]) (> x 5))
+                     (deque 1 2 3 4 5 6)))
+
+(deque->list (remove (λ: ([x : Integer]) (< x 5))
+                     (deque 1 2 3 4 5 6)))
+
+(deque->list (remove (λ: ([x : Integer]) (<= x 5))
+                     (deque 1 2 3 4 5 6)))
 ]}

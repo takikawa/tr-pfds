@@ -148,7 +148,7 @@
              (apply vmap func (rest lst) (map rest lsts)))))
 
 (: vfoldl : 
-   (All (C A B ...) ((C A B ... -> C) C (List A) (List B) ... B -> C)))
+   (All (C A B ...) ((C A B ... B -> C) C (List A) (List B) ... B -> C)))
 (define (vfoldl func base fst . rst)
   (if (or (empty? fst) (ormap empty? rst))
       base
@@ -159,7 +159,7 @@
              (map rest rst))))
 
 (: vfoldr : 
-   (All (C A B ...) ((C A B ... -> C) C (List A) (List B) ... B -> C)))
+   (All (C A B ...) ((C A B ... B -> C) C (List A) (List B) ... B -> C)))
 (define (vfoldr func base fst . rst)
   (if (or (empty? fst) (ormap empty? rst))
       base
@@ -169,7 +169,7 @@
                          (rest fst)
                          (map rest rst)) (first fst) (map first rst))))
 
-(: vfilter : (All (C A B) ((A -> Boolean) (List A) -> (List A))))
+(: vfilter : (All (A) ((A -> Boolean) (List A) -> (List A))))
 (define (vfilter func lst)
   (if (empty? lst)
       empty

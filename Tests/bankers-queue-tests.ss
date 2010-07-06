@@ -32,4 +32,16 @@
 
 (check-expect (fold + 0 (queue 1 2 3 4 5) (queue 1 2 3 4 5)) 30)
 
+(check-expect (queue->list (filter positive? (queue 1 2 -4 5 0 -6 12 3 -2)))
+              (list 1 2 5 12 3))
+
+(check-expect (queue->list (filter negative? (queue 1 2 -4 5 0 -6 12 3 -2)))
+              (list -4 -6 -2))
+
+(check-expect (queue->list (remove positive? (queue 1 2 -4 5 0 -6 12 3 -2)))
+              (list -4 0 -6 -2))
+
+(check-expect (queue->list (remove negative? (queue 1 2 -4 5 0 -6 12 3 -2)))
+              (list 1 2 5 0 12 3))
+
 (test)

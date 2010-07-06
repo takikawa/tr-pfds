@@ -14,12 +14,12 @@
 (check-error (last empty) "last: given deque is empty")
 
 (check-expect (deque->list (tail (deque 1 2 3))) (list 2 3))
-(check-expect (deque->list (tail (deque 1 2 3 5 7 8))) 
+(check-expect (deque->list (tail (deque 1 2 3 5 7 8)))
               (list 2 3 5 7 8))
 (check-error (tail empty) "tail: given deque is empty")
 
 (check-expect (deque->list (init (deque 1 2 3))) (list 1 2))
-(check-expect (deque->list (init (deque 1 2 3 5 7 8))) 
+(check-expect (deque->list (init (deque 1 2 3 5 7 8)))
               (list 1 2 3 5 7))
 (check-error (init empty) "init: given deque is empty")
 
@@ -50,5 +50,18 @@
 (check-expect (foldr + 0 (deque 1 2 3 4 5)) 15)
 
 (check-expect (foldr + 0 (deque 1 2 3 4 5) (deque 1 2 3 4 5)) 30)
+
+(check-expect (deque->list (filter positive? (deque 1 2 -4 5 0 -6 12 3 -2)))
+              (list 1 2 5 12 3))
+
+(check-expect (deque->list (filter negative? (deque 1 2 -4 5 0 -6 12 3 -2)))
+              (list -4 -6 -2))
+
+(check-expect (deque->list (remove positive? (deque 1 2 -4 5 0 -6 12 3 -2)))
+              (list -4 0 -6 -2))
+
+(check-expect (deque->list (remove negative? (deque 1 2 -4 5 0 -6 12 3 -2)))
+              (list 1 2 5 0 12 3))
+
 
 (test)

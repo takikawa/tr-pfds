@@ -1,4 +1,5 @@
 #lang scribble/manual
+@(require "helper.rkt")
 @(defmodule "../physicists-queue.ss")
 @(require (for-label "../physicists-queue.ss"))
 
@@ -105,3 +106,56 @@ If the given queue is empty, then it returns an empty list.
 @;In the above example, @scheme[(list->queue (list 10 2 34 4 15 6))], returns 
 @;the queue @scheme[(queue 10 2 34 4 15 6)].
 @;
+
+@defproc[(map [func (A B ... B -> C)] 
+              [que1 (Queue A)]
+              [que2 (Queue B)] ...) (Queue A)]{
+Function @scheme[map] is similar to @|racket-map| for lists.
+@examples[#:eval evaluate
+
+(queue->list (map add1 (queue 1 2 3 4 5 6)))
+
+(queue->list (map * (queue 1 2 3 4 5 6) (queue 1 2 3 4 5 6)))
+]}
+
+@defproc[(fold [func (C A B ... B -> C)]
+               [init C]
+               [que1 (Queue A)]
+               [que2 (Queue B)] ...) C]{
+Function @scheme[fold] is similar to @|racket-foldl| or @|racket-foldr|
+@margin-note{@scheme[fold] currently does not produce correct results when the 
+             given function is non-commutative.}
+
+@examples[#:eval evaluate
+
+(fold + 0 (queue 1 2 3 4 5 6))
+
+(fold * 1 (queue 1 2 3 4 5 6) (queue 1 2 3 4 5 6))
+]}
+
+@defproc[(filter [func (A -> Boolean)] [que (Queue A)]) (Queue A)]{
+Function @scheme[filter] is similar to @|racket-filter|. 
+@examples[#:eval evaluate
+
+(define que (queue 1 2 3 4 5 6))
+
+(queue->list (filter (λ: ([x : Integer]) (> x 5)) que))
+
+(queue->list (filter (λ: ([x : Integer]) (< x 5)) que))
+
+(queue->list (filter (λ: ([x : Integer]) (<= x 5)) que))
+]}
+
+@defproc[(remove [func (A -> Boolean)] [que (Queue A)]) (Queue A)]{
+Function @scheme[remove] is similar to @|racket-remove|. 
+@examples[#:eval evaluate
+
+(queue->list (remove (λ: ([x : Integer]) (> x 5))
+                     (queue 1 2 3 4 5 6)))
+
+(queue->list (remove (λ: ([x : Integer]) (< x 5))
+                     (queue 1 2 3 4 5 6)))
+
+(queue->list (remove (λ: ([x : Integer]) (<= x 5))
+                     (queue 1 2 3 4 5 6)))
+]}

@@ -1,13 +1,17 @@
 #lang typed/scheme
 (require (rename-in "../vlist.ss" 
-                    [map vvmap] 
-                    [reverse vvreverse] 
-                    [length len]))
+                    [map vmap] 
+                    [reverse vreverse] 
+                    [length size]
+                    [foldr vfoldr]
+                    [foldl vfoldl]
+                    [filter vfilter]
+                    [list-ref get]))
 (require typed/test-engine/scheme-tests)
 
 (define lst (build-list 100 (λ:([x : Integer]) x)))
 
-(define vlst (apply vlist lst))
+(define vlst (apply list lst))
 
 (check-expect (vlist->list vlst) lst)
 
@@ -31,11 +35,11 @@
 
 (check-expect (vlist->list (vreverse vlst)) (reverse lst))
 
-(check-expect (get (sub1 (size vlst)) vlst) (last vlst))
+(check-expect (get vlst (sub1 (size vlst))) (last vlst))
 
-(check-expect (get 0 vlst) (first vlst))
+(check-expect (get vlst 0) (first vlst))
 
-(check-error (get (+ 5 (size vlst)) vlst) "get: given index out of bounds")
+(check-error (get vlst (+ 5 (size vlst))) "list-ref: given index out of bounds")
 
 (check-expect (vlist->list (rest vlst)) (cdr lst))
 

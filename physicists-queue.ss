@@ -2,7 +2,8 @@
 
 (require scheme/promise)
 
-(provide empty empty? enqueue head tail queue->list queue list->queue
+(provide filter remove
+         empty empty? enqueue head tail queue->list queue list->queue
          (rename-out [qmap map]) fold)
 
 ;; Physicists Queue
@@ -122,3 +123,30 @@
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . items)
   (foldl (inst enqueue A) empty items))
+
+(: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
+(define (filter func que)
+  (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail (enqueue head accum))
+              (inner func tail accum)))))
+  (inner func que empty))
+
+
+(: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
+(define (remove func que)
+  (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail accum)
+              (inner func tail (enqueue head accum))))))
+  (inner func que empty))

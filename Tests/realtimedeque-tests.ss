@@ -47,4 +47,17 @@
 (check-expect (foldr + 0 (deque 1 2 3 4 5)) 15)
 
 (check-expect (foldr + 0 (deque 1 2 3 4 5) (deque 1 2 3 4 5)) 30)
+
+(check-expect (deque->list (filter positive? (deque 1 2 -4 5 0 -6 12 3 -2)))
+              (list 1 2 5 12 3))
+
+(check-expect (deque->list (filter negative? (deque 1 2 -4 5 0 -6 12 3 -2)))
+              (list -4 -6 -2))
+
+(check-expect (deque->list (remove positive? (deque 1 2 -4 5 0 -6 12 3 -2)))
+              (list -4 0 -6 -2))
+
+(check-expect (deque->list (remove negative? (deque 1 2 -4 5 0 -6 12 3 -2)))
+              (list 1 2 5 0 12 3))
+
 (test)

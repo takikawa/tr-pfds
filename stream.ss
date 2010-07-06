@@ -4,10 +4,8 @@
 
 (provide empty-stream? empty-stream stream-cons stream-car
          stream-cdr stream-append stream-reverse stream
-         stream->list drop take empty empty? Stream
-         (rename-out [stream-map map]
-                     [stream-foldl foldl]
-                     [stream-foldr foldr]))
+         stream->list drop take Stream
+         stream-map stream-foldl stream-foldr)
 
 (define-struct: Mt ())
 
@@ -149,3 +147,31 @@
 (: stream : (All (A) (A * -> (Stream A))))
 (define (stream . elems)
   (foldr (inst stream-cons A) empty-stream elems))
+
+
+;;(: stream-filter : (All (A) ((A -> Boolean) (Stream A) -> (Stream A))))
+;;(define (filter func strm)
+;;  (: inner : (All (A) ((A -> Boolean) (Stream A) (Stream A) -> (Stream A))))
+;;  (define (inner func strm accum)
+;;    (if (empty? strm)
+;;        accum
+;;        (let ([head (head strm)]
+;;              [tail (tail strm)])
+;;          (if (func head)
+;;              (inner func tail (stream-cons head accum))
+;;              (inner func tail accum)))))
+;;  (inner func strm empty))
+;;
+;;
+;;(: stream-remove : (All (A) ((A -> Boolean) (Stream A) -> (Stream A))))
+;;(define (remove func strm)
+;;  (: inner : (All (A) ((A -> Boolean) (Stream A) (Stream A) -> (Stream A))))
+;;  (define (inner func strm accum)
+;;    (if (empty? strm)
+;;        accum
+;;        (let ([head (head strm)]
+;;              [tail (tail strm)])
+;;          (if (func head)
+;;              (inner func tail accum)
+;;              (inner func tail (stream-cons head accum))))))
+;;  (inner func strm empty))

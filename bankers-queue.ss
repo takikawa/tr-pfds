@@ -2,9 +2,10 @@
 
 (require "stream.ss")
 
-(provide Queue empty empty? enqueue head tail queue queue->list
+(provide filter remove
+         Queue empty empty? enqueue head tail queue queue->list
          (rename-out [qmap map]) fold)
-         
+
 ;; A Banker's Queue (Maintains length of front >= length of rear)
 
 (define-struct: (A) Queue
@@ -87,6 +88,34 @@
                (apply func base (head que) (map head ques))
                (tail que)
                (map tail ques))))
+
+
+(: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
+(define (filter func que)
+  (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail (enqueue head accum))
+              (inner func tail accum)))))
+  (inner func que empty))
+
+
+(: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
+(define (remove func que)
+  (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail accum)
+              (inner func tail (enqueue head accum))))))
+  (inner func que empty))
 
 (: queue->list : (All (A) ((Queue A) -> (Listof A))))
 (define (queue->list que)

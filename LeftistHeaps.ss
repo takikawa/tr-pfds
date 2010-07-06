@@ -1,6 +1,7 @@
 #lang typed-scheme
 
-(provide heap merge insert find-min/max delete-min/max sorted-list)
+(provide (rename-out [heap-map map]) fold  filter remove
+         heap merge insert find-min/max delete-min/max sorted-list)
 
 (define-struct: Mt ())
 (define-struct: (A) Tree ([rank : Integer]
@@ -99,3 +100,56 @@
 (define (heap comparer . lst)
   (let ([first ((inst make-LeftistHeap A) comparer empty)])
     (foldl (inst insert A) first lst)))
+
+
+(: heap-map : (All (A C B ...) ((C C -> Boolean) (A B ... B -> C) (LeftistHeap A) (LeftistHeap B) ... B -> (LeftistHeap C))))
+(define (heap-map comp func fst . rst)
+  (: in-map : (All (A C B ...) ((LeftistHeap C) (A B ... B -> C) (LeftistHeap A) (LeftistHeap B) ... B -> (LeftistHeap C))))
+  (define (in-map accum func fst . rst)
+    (if (or (empty? fst) (ormap empty? rst))
+        accum
+        (apply in-map
+               (insert (apply func (find-min/max fst) (map find-min/max rst)) accum)
+               func
+               (delete-min/max fst) 
+               (map delete-min/max rst))))
+  (apply in-map ((inst make-LeftistHeap C) comp empty) func fst rst))
+
+
+(: filter : (All (A) ((A -> Boolean) (LeftistHeap A) -> (LeftistHeap A))))
+(define (filter func hep)
+  (: inner : (All (A) ((A -> Boolean) (LeftistHeap A) (LeftistHeap A) -> (LeftistHeap A))))
+  (define (inner func hep accum)
+    (if (empty? hep)
+        accum
+        (let ([head (find-min/max hep)]
+              [tail (delete-min/max hep)])
+          (if (func head)
+              (inner func tail (insert head accum))
+              (inner func tail accum)))))
+  (inner func hep ((inst make-LeftistHeap A) (LeftistHeap-comparer hep) empty)))
+
+
+(: remove : (All (A) ((A -> Boolean) (LeftistHeap A) -> (LeftistHeap A))))
+(define (remove func hep)
+  (: inner : (All (A) ((A -> Boolean) (LeftistHeap A) (LeftistHeap A) -> (LeftistHeap A))))
+  (define (inner func hep accum)
+    (if (empty? hep)
+        accum
+        (let ([head (find-min/max hep)]
+              [tail (delete-min/max hep)])
+          (if (func head)
+              (inner func tail accum)
+              (inner func tail (insert head accum))))))
+  (inner func hep ((inst make-LeftistHeap A) (LeftistHeap-comparer hep) empty)))
+
+(: fold : (All (A C B ...)
+               ((C A B ... B -> C) C (LeftistHeap A) (LeftistHeap B) ... B -> C)))
+(define (fold func base hep . heps)
+  (if (or (empty? hep) (ormap empty? heps))
+      base
+      (apply fold 
+             func 
+             (apply func base (find-min/max hep) (map find-min/max heps))
+             (delete-min/max hep)
+             (map delete-min/max heps))))

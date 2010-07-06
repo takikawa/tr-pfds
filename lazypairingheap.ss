@@ -1,6 +1,7 @@
 #lang typed-scheme
 
-(provide heap merge insert find-min/max
+(provide (rename-out [heap-map map]) fold  filter remove
+         heap merge insert find-min/max
          delete-min/max sorted-list empty?)
 
 (require scheme/promise
@@ -87,3 +88,56 @@
     (if (Mt? heap)
         null
         (cons (find-min/max pheap) (sorted-list (delete-min/max pheap))))))
+
+
+(: heap-map : (All (A C B ...) ((C C -> Boolean) (A B ... B -> C) (PairingHeap A) (PairingHeap B) ... B -> (PairingHeap C))))
+(define (heap-map comp func fst . rst)
+  (: in-map : (All (A C B ...) ((PairingHeap C) (A B ... B -> C) (PairingHeap A) (PairingHeap B) ... B -> (PairingHeap C))))
+  (define (in-map accum func fst . rst)
+    (if (or (empty? fst) (ormap empty? rst))
+        accum
+        (apply in-map
+               (insert (apply func (find-min/max fst) (map find-min/max rst)) accum)
+               func
+               (delete-min/max fst) 
+               (map delete-min/max rst))))
+  (apply in-map ((inst make-PairingHeap C) comp empty) func fst rst))
+
+
+(: filter : (All (A) ((A -> Boolean) (PairingHeap A) -> (PairingHeap A))))
+(define (filter func hep)
+  (: inner : (All (A) ((A -> Boolean) (PairingHeap A) (PairingHeap A) -> (PairingHeap A))))
+  (define (inner func hep accum)
+    (if (empty? hep)
+        accum
+        (let ([head (find-min/max hep)]
+              [tail (delete-min/max hep)])
+          (if (func head)
+              (inner func tail (insert head accum))
+              (inner func tail accum)))))
+  (inner func hep ((inst make-PairingHeap A) (PairingHeap-comparer hep) empty)))
+
+
+(: remove : (All (A) ((A -> Boolean) (PairingHeap A) -> (PairingHeap A))))
+(define (remove func hep)
+  (: inner : (All (A) ((A -> Boolean) (PairingHeap A) (PairingHeap A) -> (PairingHeap A))))
+  (define (inner func hep accum)
+    (if (empty? hep)
+        accum
+        (let ([head (find-min/max hep)]
+              [tail (delete-min/max hep)])
+          (if (func head)
+              (inner func tail accum)
+              (inner func tail (insert head accum))))))
+  (inner func hep ((inst make-PairingHeap A) (PairingHeap-comparer hep) empty)))
+
+(: fold : (All (A C B ...)
+               ((C A B ... B -> C) C (Heap A) (Heap B) ... B -> C)))
+(define (fold func base hep . heps)
+  (if (or (empty? hep) (ormap empty? heps))
+      base
+      (apply fold 
+             func 
+             (apply func base (find-min/max hep) (map find-min/max heps))
+             (delete-min/max hep)
+             (map delete-min/max heps))))

@@ -1,6 +1,7 @@
 #lang typed-scheme
 
-(provide empty? insert find-min/max delete-min/max empty
+(provide (rename-out [heap-map map]) fold  filter remove
+         empty? insert find-min/max delete-min/max empty
          merge sorted-list heap BSHeap)
 
 (require (prefix-in bh: "skewbinomialheap.ss")
@@ -107,3 +108,56 @@
       [(bh:empty? (IntHeap-heap heap)) (list (IntHeap-elem heap))]
       [else (cons (find-min/max bsheap) 
                   (sorted-list (delete-min/max bsheap)))])))
+
+
+(: heap-map : (All (A C B ...) ((C C -> Boolean) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
+(define (heap-map comp func fst . rst)
+  (: in-map : (All (A C B ...) ((Heap C) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
+  (define (in-map accum func fst . rst)
+    (if (or (empty? fst) (ormap empty? rst))
+        accum
+        (apply in-map
+               (insert (apply func (find-min/max fst) (map find-min/max rst)) accum)
+               func
+               (delete-min/max fst) 
+               (map delete-min/max rst))))
+  (apply in-map ((inst make-BSHeap C) comp empty) func fst rst))
+
+
+(: filter : (All (A) ((A -> Boolean) (Heap A) -> (Heap A))))
+(define (filter func hep)
+  (: inner : (All (A) ((A -> Boolean) (Heap A) (Heap A) -> (Heap A))))
+  (define (inner func hep accum)
+    (if (empty? hep)
+        accum
+        (let ([head (find-min/max hep)]
+              [tail (delete-min/max hep)])
+          (if (func head)
+              (inner func tail (insert head accum))
+              (inner func tail accum)))))
+  (inner func hep ((inst make-BSHeap A) (BSHeap-comparer hep) empty)))
+
+
+(: remove : (All (A) ((A -> Boolean) (Heap A) -> (Heap A))))
+(define (remove func hep)
+  (: inner : (All (A) ((A -> Boolean) (Heap A) (Heap A) -> (Heap A))))
+  (define (inner func hep accum)
+    (if (empty? hep)
+        accum
+        (let ([head (find-min/max hep)]
+              [tail (delete-min/max hep)])
+          (if (func head)
+              (inner func tail accum)
+              (inner func tail (insert head accum))))))
+  (inner func hep ((inst make-BSHeap A) (BSHeap-comparer hep) empty)))
+
+(: fold : (All (A C B ...)
+               ((C A B ... B -> C) C (Heap A) (Heap B) ... B -> C)))
+(define (fold func base hep . heps)
+  (if (or (empty? hep) (ormap empty? heps))
+      base
+      (apply fold 
+             func 
+             (apply func base (find-min/max hep) (map find-min/max heps))
+             (delete-min/max hep)
+             (map delete-min/max heps))))

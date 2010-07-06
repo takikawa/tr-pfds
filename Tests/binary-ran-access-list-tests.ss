@@ -50,4 +50,30 @@
 (check-expect (list-length (list 1 2 3 4 5)) 5)
 
 (check-expect (list-length (apply list lst)) 100)
+
+(check-expect (->list (map + (list 1 2 3 4 5) (list 1 2 3 4 5)))
+              (sh:list 2 4 6 8 10))
+
+(check-expect (->list (map - (list 1 2 3 4 5) (list 1 2 3 4 5)))
+              (sh:list 0 0 0 0 0))
+
+(check-expect (foldl + 0 (list 1 2 3 4 5)) 15)
+
+(check-expect (foldl - 2 (list 1 2 3 4 5)) -13)
+
+(check-expect (foldr + 0 (list 1 2 3 4 5)) 15)
+
+(check-expect (foldr + 0 (list 1 2 3 4 5) (list 1 2 3 4 5)) 30)
+
+(check-expect (->list (filter positive? (list 1 2 -4 5 0 -6 12 3 -2)))
+              (sh:list 1 2 5 12 3))
+
+(check-expect (->list (filter negative? (list 1 2 -4 5 0 -6 12 3 -2)))
+              (sh:list -4 -6 -2))
+
+(check-expect (->list (remove positive? (list 1 2 -4 5 0 -6 12 3 -2)))
+              (sh:list -4 0 -6 -2))
+
+(check-expect (->list (remove negative? (list 1 2 -4 5 0 -6 12 3 -2)))
+              (sh:list 1 2 5 0 12 3))
 (test)

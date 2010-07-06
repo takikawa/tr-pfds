@@ -1,6 +1,7 @@
 #lang scribble/manual
 @(defmodule "../bankers-deque.ss")
-@(require (for-label "../bankers-deque.ss"))
+@(require (for-label "../bankers-deque.ss")
+          "helper.rkt")
 
 @(require scribble/eval)
 
@@ -78,7 +79,7 @@ deque is empty.
 
 @defproc[(last [deq (Deque A)]) A]{
 Function @scheme[last] takes a deque and gives the last element in the
-queue if deque is not empty else throws an error. 
+deque if deque is not empty else throws an error. 
 @examples[#:eval evaluate
 
 (last (deque 1 2 3 4 5 6))
@@ -128,4 +129,72 @@ If the given deque is empty, then it returns an empty list.
 
 (deque->list (deque 10 2 34 4 15 6))
 (deque->list empty)
+]}
+
+@defproc[(map [func (A B ... B -> C)] 
+              [deq1 (Deque A)]
+              [deq2 (Deque B)] ...) (Deque A)]{
+Function @scheme[map] is similar to @|racket-map| for lists.
+@examples[#:eval evaluate
+
+(deque->list (map add1 (deque 1 2 3 4 5 6)))
+
+(deque->list (map * (deque 1 2 3 4 5 6) (deque 1 2 3 4 5 6)))
+]}
+
+@defproc[(foldl [func (C A B ... B -> C)]
+                [init C]
+                [deq1 (Deque A)]
+                [deq2 (Deque B)] ...) C]{
+Function @scheme[foldl] is similar to @|racket-foldl|
+@margin-note{@scheme[foldl] currently does not produce correct results when the 
+             given function is non-commutative.}
+
+@examples[#:eval evaluate
+
+(foldl + 0 (deque 1 2 3 4 5 6))
+
+(foldl * 1 (deque 1 2 3 4 5 6) (deque 1 2 3 4 5 6))
+]}
+
+@defproc[(foldr [func (C A B ... B -> C)]
+                [init C]
+                [deq1 (Deque A)]
+                [deq2 (Deque B)] ...) C]{
+Function @scheme[foldr] is similar to @|racket-foldr|
+@margin-note{@scheme[foldr] currently does not produce correct results when the 
+             given function is non-commutative.}
+
+@examples[#:eval evaluate
+
+(foldr + 0 (deque 1 2 3 4 5 6))
+
+(foldr * 1 (deque 1 2 3 4 5 6) (deque 1 2 3 4 5 6))
+]}
+
+@defproc[(filter [func (A -> Boolean)] [que (Deque A)]) (Deque A)]{
+Function @scheme[filter] is similar to @|racket-filter|. 
+@examples[#:eval evaluate
+
+(define que (deque 1 2 3 4 5 6))
+
+(deque->list (filter (λ: ([x : Integer]) (> x 5)) que))
+
+(deque->list (filter (λ: ([x : Integer]) (< x 5)) que))
+
+(deque->list (filter (λ: ([x : Integer]) (<= x 5)) que))
+]}
+
+@defproc[(remove [func (A -> Boolean)] [que (Deque A)]) (Deque A)]{
+Function @scheme[remove] is similar to @|racket-remove|. 
+@examples[#:eval evaluate
+
+(deque->list (remove (λ: ([x : Integer]) (> x 5))
+                     (deque 1 2 3 4 5 6)))
+
+(deque->list (remove (λ: ([x : Integer]) (< x 5))
+                     (deque 1 2 3 4 5 6)))
+
+(deque->list (remove (λ: ([x : Integer]) (<= x 5))
+                     (deque 1 2 3 4 5 6)))
 ]}

@@ -1,6 +1,7 @@
 #lang typed-scheme
 
-(provide Queue queue enqueue head tail empty empty? queue->list
+(provide filter remove
+         Queue queue enqueue head tail empty empty? queue->list
          (rename-out [qmap map]) fold)
 
 (require scheme/match)
@@ -138,3 +139,30 @@
   (if (empty? que)
       null
       (cons (head que) (queue->list (tail que)))))
+
+(: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
+(define (filter func que)
+  (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail (enqueue head accum))
+              (inner func tail accum)))))
+  (inner func que empty))
+
+
+(: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
+(define (remove func que)
+  (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
+  (define (inner func que accum)
+    (if (empty? que)
+        accum
+        (let ([head (head que)]
+              [tail (tail que)])
+          (if (func head)
+              (inner func tail accum)
+              (inner func tail (enqueue head accum))))))
+  (inner func que empty))
