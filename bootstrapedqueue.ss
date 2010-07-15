@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/scheme
 
 (require (prefix-in rtq: "realtimequeue.ss"))
 (provide filter remove

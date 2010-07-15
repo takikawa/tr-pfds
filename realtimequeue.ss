@@ -7,8 +7,8 @@
 (require "stream.ss")
 
 (define-struct: (A) Queue ([front : (Stream A)]
-                             [rear  : (Listof A)]
-                             [scdul : (Stream A)]))
+                           [rear  : (Listof A)]
+                           [scdul : (Stream A)]))
 
 
 ;(define-type-alias (Queue A) (Queue A))

@@ -37,47 +37,54 @@ and imperative implementations.
 In the tables below, all times are CPU time as reported by PLT Scheme,
 including garbage collection time.  The times are for performing each
 operation 100000 times, averaged over 10 runs.
-@note{The constructor operation @racket[heap] is 
+@note{The constructor operations @racket[queue] and @racket[heap] is 
       performed only 100 times.}
 @subsection{Queue Performance}
 
 The below table shows the performance of the 
-@elemref["bankers queue"]{Banker's Queue}, compared with an
+@elemref["physicist queue"]{Physicist's Queue}, compared with an
 implementation based on lists, and an imperative queue@cite[cce-queue].
-@note{Since its not
-possible to repeat 100000 @racket[tail] (or @racket[dequeue]) operations on 1000 or 10000 element
-imperative queue, we do not have running time for @scheme[tail] operation for 
-imperative queues for these sizes.}
+@note{Since 100000 (successive) @racket[tail] (or @racket[dequeue]) operations can not be 
+performed on 1000 element queue, we do not have running time for @scheme[tail] operation for 
+for these sizes.}
 
 @exact{
 \medskip
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Size & Operation & Bankers' & List & Imperative \\
+Size & Operation & Physicist's & List & Imperative \\
 \hline
-\multirow{3}{*}{1000} & \RktSym{head} & 46 & 7 & N/A \\
+\multirow{3}{*}{1000} & \RktSym{queue} & 16 & 6 & 83 \\
 \cline{2-5}
-& \RktSym{tail} & 88 & 6 & N/A \\
+& \RktSym{head} & 9 & 6 & 54 \\
 \cline{2-5}
-& \RktSym{enqueue} & 81 & 6478 & 161 \\
+& \RktSym{tail}@(superscript "3") & N/A & N/A & N/A \\
+\cline{2-5}
+& \RktSym{enqueue} & 10 & 256450 & 73 \\
 \hline
-\multirow{3}{*}{10000} & \RktSym{head} & 46 & 7 & N/A \\
+\multirow{3}{*}{10000} & \RktSym{queue} & 232 & 61 & 1072 \\
 \cline{2-5}
-& \RktSym{tail} & 91 & 8 & N/A \\
+& \RktSym{head} & 8 & 7 & 56 \\
 \cline{2-5}
-& \RktSym{enqueue} & 84 & 48687 & 147 \\
+& \RktSym{tail}@(superscript "3") & N/A & N/A & N/A \\
+\cline{2-5}
+& \RktSym{enqueue} & 11 & 314710 & 75 \\
 \hline
-\multirow{3}{*}{100000} & \RktSym{head} & 47 & 8 & 114 \\
+\multirow{3}{*}{100000} & \RktSym{queue} & 3410 & 860 & 12302 \\
 \cline{2-5}
-& \RktSym{tail} & 93 & 8 & 114 \\
+& \RktSym{head} & 9 & 8 & 51 \\
 \cline{2-5}
-& \RktSym{enqueue} & 85 & 524257 & 171 \\
+& \RktSym{tail} & 412 & 7 & 57 \\
+\cline{2-5}
+& \RktSym{enqueue} & 12 & 1289370 & 84 \\
 \hline
-\multirow{3}{*}{1000000} & \RktSym{head} & 53 & 8 & 101 \\
+\multirow{3}{*}{1000000} & \RktSym{queue} & 65590 & 31480 & 54 \\
 \cline{2-5}
-& \RktSym{tail} & 94 & 8 & 101 \\
+& \RktSym{head} & 8 & 7 & 56 \\
 \cline{2-5}
-& \RktSym{enqueue} & 87 & $\infty$ & 152 \\
+& \RktSym{tail} & 243 & 8 & 61 \\
+\cline{2-5}
+& \RktSym{enqueue} & 30 & $\infty$ & 68 \\
 \hline
 \end{tabular}}
 
@@ -130,43 +137,43 @@ implementation based on sorted lists, and a simple imperative heap.
 \hline
 Size & Operation & Leftist & List & Imperative \\
 \hline
-\multirow{3}{*}{1000} & \RktSym{heap} & 257 & 101 & 486 \\
+\multirow{3}{*}{1000} & \RktSym{heap} & 192 & 9 & 306 \\
 \cline{2-5}
-& \RktSym{insert} & 424 & 323874 & 855 \\
+& \RktSym{insert} & 372 & 323874 & 623 \\
 \cline{2-5}
-& \RktSym{find} & 23 & 6 & 28 \\
+& \RktSym{find} & 7 & 6 & 8 \\
 \cline{2-5}
-& \RktSym{delete} & 3379 & 8 & N/A \\
+& \RktSym{delete}@(superscript "3") & N/A & N/A & N/A \\
 \cline{2-5}
 @;& \RktSym{merge} & 1451 & 13583 & ? \\
 \hline
-\multirow{3}{*}{10000} & \RktSym{heap} & 3089 & 734 & 5287 \\
+\multirow{3}{*}{10000} & \RktSym{heap} & 2730 & 76 & 4897 \\
 \cline{2-5}
-& \RktSym{insert} & 457 & 409051 & 826 \\
+& \RktSym{insert} & 358 & 409051 & 628 \\
 \cline{2-5}
-& \RktSym{find} & 26 & 7 & 31 \\
+& \RktSym{find} & 9 & 7 & 7 \\
 \cline{2-5}
-& \RktSym{delete} & 4018 & 8 & N/A \\
+& \RktSym{delete}@(superscript "3") & N/A & N/A & N/A \\
 \cline{2-5}
 @;& \RktSym{merge} & 2109 & 161648 & ? \\
 \hline
-\multirow{3}{*}{100000} & \RktSym{heap} & 43975 & 7871 & 72981 \\
+\multirow{3}{*}{100000} & \RktSym{heap} & 40580 & 1010 & 69353 \\
 \cline{2-5}
-& \RktSym{insert} & 469 & 1087545 & 748 \\
+& \RktSym{insert} & 434 & 1087545 & 631 \\
 \cline{2-5}
-& \RktSym{find} & 27 & 7 & 32 \\
+& \RktSym{find} & 8 & 7 & 9 \\
 \cline{2-5}
-& \RktSym{delete} & 4867 & 9 & 2752 \\
+& \RktSym{delete} & 528 & 7 & 439 \\
 \cline{2-5}
 @;& \RktSym{merge} & 2655 & $\infty$ & ? \\
 \hline
-\multirow{3}{*}{1000000} & \RktSym{heap} & 512962 & 93830 & 858661 \\
+\multirow{3}{*}{1000000} & \RktSym{heap} & 471588 & 11140 & 858661 \\
 \cline{2-5}
-& \RktSym{insert} & 471 & $\infty$ & 717 \\
+& \RktSym{insert} & 438 & $\infty$ & 637 \\
 \cline{2-5}
-& \RktSym{find} & 29 & 7 & 37 \\
+& \RktSym{find} & 9 & 7 & 7 \\
 \cline{2-5}
-& \RktSym{delete} & 6142 & 8 & 4386 \\
+& \RktSym{delete} & 976 & 8 & 812 \\
 \cline{2-5}
 @;& \RktSym{merge} & 3229 & $\infty$ & ? \\
 \hline

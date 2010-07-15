@@ -2,7 +2,7 @@
 
 (require scheme/promise)
 
-(provide filter remove
+(provide filter remove Queue
          empty empty? enqueue head tail queue->list queue list->queue
          (rename-out [qmap map]) fold)
 
@@ -10,10 +10,10 @@
 ;; Maintains invariant lenr <= lenf
 ;; pref is empty only if lenf = 0
 (define-struct: (A) Queue ([preF  : (Listof A)]
-                            [front : (Promise (Listof A))]
-                            [lenf  : Integer]
-                            [rear  : (Listof A)]
-                            [lenr  : Integer]))
+                           [front : (Promise (Listof A))]
+                           [lenf  : Integer]
+                           [rear  : (Listof A)]
+                           [lenr  : Integer]))
 
 ;(define-type-alias (Queue A) (Queue A))
 

@@ -1,26 +1,28 @@
 #lang typed-scheme
 
-(provide (rename-out [heap-map map]) fold  filter remove
+(provide (rename-out [heap-map map]) fold  filter remove Heap
          heap merge insert find-min/max delete-min/max sorted-list)
 
 (define-struct: Mt ())
 (define-struct: (A) Tree ([rank : Integer]
                           [elem : A]
-                          [left : (Heap A)]
-                          [right : (Heap A)]))
+                          [left : (IntHeap A)]
+                          [right : (IntHeap A)]))
 
-(define-type-alias (Heap A) (U Mt (Tree A)))
+(define-type-alias (IntHeap A) (U Mt (Tree A)))
 
 (define-struct: (A) LeftistHeap ([comparer : (A A -> Boolean)]
-                                 [heap : (Heap A)]))
+                                 [heap : (IntHeap A)]))
+
+(define-type-alias (Heap A) (LeftistHeap A))
 
 (define empty (make-Mt))
 
-(: rank : (All (A) ((Heap A) -> Integer)))
+(: rank : (All (A) ((IntHeap A) -> Integer)))
 (define (rank lheap)
   (if (Mt? lheap) 0 (Tree-rank lheap)))
 
-(: make-lheap : (All (A) (A (Heap A) (Heap A) -> (Heap A))))
+(: make-lheap : (All (A) (A (IntHeap A) (IntHeap A) -> (IntHeap A))))
 (define (make-lheap elem heap1 heap2)
   (let ([rank1 (rank heap1)]
         [rank2 (rank heap2)])
@@ -49,7 +51,7 @@
                                 comparer))))
 
 (: in-merge : 
-   (All (A) ((Heap A) (Heap A) (A A -> Boolean) -> (Heap A))))
+   (All (A) ((IntHeap A) (IntHeap A) (A A -> Boolean) -> (IntHeap A))))
 (define (in-merge heap1 heap2 comparer)
   (cond
     [(Mt? heap2) heap1]
@@ -57,7 +59,7 @@
     [else (in-merge-helper heap1 heap2 comparer)]))
 
 (: in-merge-helper : 
-   (All (A) ((Tree A) (Tree A) (A A -> Boolean) -> (Heap A))))
+   (All (A) ((Tree A) (Tree A) (A A -> Boolean) -> (IntHeap A))))
 (define (in-merge-helper tree1 tree2 comparer)
   (let ([tr1-elm (Tree-elem tree1)]
         [tr2-elm (Tree-elem tree2)]

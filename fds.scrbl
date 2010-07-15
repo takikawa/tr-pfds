@@ -65,7 +65,7 @@ que
 
 @;(close-eval evaluate)
 
-@elemtag["bankers queue"]{@lpara{Banker's Queues}}
+@lpara{Banker's Queues}
 The Banker’s Queues@cite[oka] are amortized queues obtained using a method
 of amortization called the Banker's method. The Banker's Queue
 combines the techniques of lazy evaluation and memoization to obtain
@@ -75,7 +75,7 @@ evaluation. The Banker's Queue provides a amortized running time of
 @O1 for the operations @scheme[head], @scheme[tail] and
 @scheme[enqueue].
 
-@lpara{Physicist's Queue}
+@elemtag["physicist queue"]{@lpara{Physicist's Queue}}
 The Physicist's Queue@cite[oka] is a amortized queue obtained using a
 method of amortization called the Physicist's method. The Physicist's
 Queue also uses the techniques of lazy evaluation and memoization to
@@ -113,7 +113,7 @@ time. Implicit Queues provide an amortized running time of @O1 for the operation
 The technique of @italic{bootstrapping} is applicable to 
 problems whose solutions require solutions to simpler instances of the same
 problem. Bootstrapped Queues are a queue data structure developed using 
-a bootstrapping technique called \italic{structural decomposition}@cite[oka]. 
+a bootstrapping technique called @italic{structural decomposition}@cite[oka]. 
 In structural decomposition, an implementation that can handle data up to a certain bounded 
 size is used to implement a data structure which can handle data of unbounded
 size. Bootstrapped Queues give a worst-case running time of @O1 for the
@@ -247,7 +247,7 @@ hep
 
 (find-min/max (delete-min/max hep))
 
-(define new-hep (heap < -2 -3 -4 -5))
+(define new-hep (heap < -2 3 -4 5))
 
 (find-min/max (merge hep new-hep))
 ]
@@ -433,7 +433,7 @@ cal
 
 (define new-cal (list 10 20 30))
 
-(head (append new-cal cal))
+(first (append new-cal cal))
 ]
 
 
