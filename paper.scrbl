@@ -141,47 +141,47 @@ implementation based on sorted lists, and a simple imperative heap.
 }
 @exact{
 \medskip
-\begin{tabular}{|c|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
-Size & Operation & Leftist & Pairing & Bootstrapped & List & Imperative \\
+Size & Operation & Binomial & Leftist & Pairing & Bootstrapped & List & Imperative \\
 \hline
-\multirow{3}{*}{1000} & \RktSym{heap} & 192 & 30 & 122 & 9 & 306 \\
+\multirow{3}{*}{1000} & \RktSym{heap} & 45 & 192 & 30 & 122 & 9 & 306 \\
 \cline{2-7}
-& \RktSym{insert} & 372 & 24 & 218 & 323874 & 623 \\
+& \RktSym{insert} & 36 & 372 & 24 & 218 & 323874 & 623 \\
 \cline{2-7}
-& \RktSym{find} & 7 & 6 & 4 & 6 & 8 \\
+& \RktSym{find} & 64 & 7 & 6 & 4 & 6 & 8 \\
 \cline{2-7}
 & \RktSym{delete}@(superscript "3") & N/A & N/A & N/A & N/A & N/A \\
 \cline{2-7}
 @;& \RktSym{merge} & 1451 & 13583 & ? \\
 \hline
-\multirow{3}{*}{10000} & \RktSym{heap} & 2730 & 340 & 1283 & 76 & 4897 \\
+\multirow{3}{*}{10000} & \RktSym{heap} & 422 & 2730 & 340 & 1283 & 76 & 4897 \\
 \cline{2-7}
-& \RktSym{insert} & 358 & 28 & 224 & 409051 & 628 \\
+& \RktSym{insert} & 34 & 358 & 28 & 224 & 409051 & 628 \\
 \cline{2-7}
-& \RktSym{find} & 9 & 8 & 10 & 7 & 7 \\
+& \RktSym{find} & 52 & 9 & 8 & 10 & 7 & 7 \\
 \cline{2-7}
 & \RktSym{delete}@(superscript "3") & N/A & N/A & N/A & N/A & N/A \\
 \cline{2-7}
 @;& \RktSym{merge} & 2109 & 161648 & ? \\
 \hline
-\multirow{3}{*}{100000} & \RktSym{heap} & 40580 & 4863 & 24418 & 1010 & 69353 \\
+\multirow{3}{*}{100000} & \RktSym{heap} & 6310 & 40580 & 4863 & 24418 & 1010 & 69353 \\
 \cline{2-7}
-& \RktSym{insert} & 434 & 30 & 198 & 1087545 & 631 \\
+& \RktSym{insert} & 33 & 434 & 30 & 198 & 1087545 & 631 \\
 \cline{2-7}
-& \RktSym{find} & 8 & 8 & 10 & 7 & 9 \\
+& \RktSym{find} & 63 & 8 & 8 & 10 & 7 & 9 \\
 \cline{2-7}
-& \RktSym{delete} & 528 & 462 & 1946 & 7 & 439 \\
+& \RktSym{delete} & 986 & 528 & 462 & 1946 & 7 & 439 \\
 \cline{2-7}
 @;& \RktSym{merge} & 2655 & $\infty$ & ? \\
 \hline
-\multirow{3}{*}{1000000} & \RktSym{heap} & 471588 & 82840 & 293788 & 11140 & 858661 \\
+\multirow{3}{*}{1000000} & \RktSym{heap} & 109380 & 471588 & 82840 & 293788 & 11140 & 858661 \\
 \cline{2-7}
-& \RktSym{insert} & 438 & 28 & 218 & $\infty$ & 637 \\
+& \RktSym{insert} & 32 & 438 & 28 & 218 & $\infty$ & 637 \\
 \cline{2-7}
-& \RktSym{find} & 9 & 6 & 8 & 7 & 7 \\
+& \RktSym{find} & 76 & 9 & 6 & 8 & 7 & 7 \\
 \cline{2-7}
-& \RktSym{delete} & 976 & 1489 & 3063 & 8 & 812 \\
+& \RktSym{delete} & 1488 & 976 & 1489 & 3063 & 8 & 812 \\
 \cline{2-7}
 @;& \RktSym{merge} & 3229 & $\infty$ & ? \\
 \hline

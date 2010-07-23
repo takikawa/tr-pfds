@@ -437,7 +437,7 @@ cal
 ]
 
 
-@subsection{VList}
+@elemtag["vlist"]@subsection{VList}
 VLists@cite[bagwell-lists] are a data structure very similar to normal Scheme
 lists, but with efficient versions of many operations that are much
 slower on standard lists. VLists combine the extensibility of  linked lists with the 
