@@ -32,13 +32,14 @@ maintain the type invariants of the original definitions.}
 To demonstrate the practical usefulness of purely functional data
 structures, we provide microbenchmarks of a selected set of data
 structures, compared with both simple implementations based on lists,
-and imperative implementations. Both list based version is implemented 
-in Typed Scheme and imperative verstion is implemented in PLT Scheme.
+and imperative implementations. The list based version is implemented 
+in Typed Scheme and imperative version is implemented in PLT Scheme.
 The benchmaking was done on a 2.1 GHz Intel Core 2 Duo (Linux) 
 machine and we used PLT Racket version 5.0.0.9 for benchmarking. 
 
 In the tables below, all times are CPU time as reported by PLT Scheme,
-including garbage collection time.  The times are for performing each
+including garbage collection time. The times mentioned are in milli 
+seconds and they are time taken for performing each
 operation 100000 times, averaged over 10 runs.
 @note{The constructor functions @racket[queue], @racket[heap] and 
       @racket[list] were repeated only 100 times.}
@@ -117,7 +118,8 @@ Size & Operation & Physicist's & Banker's & Real-Time & Bootstrapped & List & Im
 @subsection{Heap Performance}
 The below table shows the performance of the 
 @elemref["leftist heap"]{Leftist Heap},
-@elemref["pairing heap"]{Pairing Heap} and
+@elemref["pairing heap"]{Pairing Heap},
+@elemref["binomial heap"]{Binomial Heap} and
 @elemref["bootstraped heap"]{Bootstrapped Heap}, compared with an
 implementation based on sorted lists, and a simple imperative heap.
 
