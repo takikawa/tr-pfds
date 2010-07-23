@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide (rename-out [heap-map map]) fold  filter remove
+(provide (rename-out [heap-map map]) fold  filter remove Heap
          heap merge insert find-min/max delete-min/max sorted-list)
 
 (define-struct: Mt ())

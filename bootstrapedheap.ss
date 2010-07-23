@@ -2,7 +2,7 @@
 
 (provide (rename-out [heap-map map]) fold  filter remove
          empty? insert find-min/max delete-min/max empty
-         merge sorted-list heap BSHeap)
+         merge sorted-list heap BSHeap Heap)
 
 (require (prefix-in bh: "skewbinomialheap.ss")
          scheme/match)
