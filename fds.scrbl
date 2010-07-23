@@ -65,7 +65,7 @@ que
 
 @;(close-eval evaluate)
 
-@lpara{Banker's Queues}
+@elemtag["banker's queue"]@lpara{Banker's Queues}
 The Banker’s Queues@cite[oka] are amortized queues obtained using a method
 of amortization called the Banker's method. The Banker's Queue
 combines the techniques of lazy evaluation and memoization to obtain
@@ -86,7 +86,7 @@ running time of @O1 for the operations @scheme[head], @scheme[tail]
 and @scheme[enqueue].
 
 
-@lpara{Real-Time Queue} Real-Time Queues eliminate the amortization of
+@elemtag["real-time queue"]@lpara{Real-Time Queue} Real-Time Queues eliminate the amortization of
 the Banker's and Physicist's Queues to produce a queue with excellent
 worst-case as well as amortized running times.  Real-Time Queues
 employ lazy evaluation and a technique called
@@ -109,7 +109,7 @@ time. Implicit Queues provide an amortized running time of @O1 for the operation
 @scheme[head], @scheme[tail] and @scheme[enqueue].
 
 
-@lpara{Bootstrapped Queue}
+@elemtag["bootstrapped queue"]@lpara{Bootstrapped Queue}
 The technique of @italic{bootstrapping} is applicable to 
 problems whose solutions require solutions to simpler instances of the same
 problem. Bootstrapped Queues are a queue data structure developed using 
@@ -275,7 +275,7 @@ operations
 running time of @O1 for 
 @scheme[find-min/max].
 
-@lpara{Pairing Heap}
+@elemtag["pairing heap"]@lpara{Pairing Heap}
 Pairing Heaps@cite[pairing] are a type of heap which have a very simple
 implementation and  
 extremely good amortized performance in practice. However, it has proved 
@@ -325,7 +325,7 @@ Pairing Heaps provide a worst-case running time of @O1 for the operations
 running time of @|Ologn|
 for the @scheme[delete-min/max] operation.
 
-@lpara{Bootstrapped Heap} Bootstrapped Heaps@cite[oka] use a technique
+@elemtag["bootstrapped heap"]@lpara{Bootstrapped Heap} Bootstrapped Heaps@cite[oka] use a technique
 of bootstrapping called @italic{structural abstraction}@cite[oka],
 where one data structure abstracts over a less efficient data
 structure to get better running times.  Bootstrapped Heaps provide a

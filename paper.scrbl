@@ -45,7 +45,10 @@ operation 100000 times, averaged over 10 runs.
 @subsection{Queue Performance}
 
 The below table shows the performance of the 
-@elemref["physicist queue"]{Physicist's Queue}, compared with an
+@elemref["physicist queue"]{Physicist's Queue}, 
+@elemref["banker's queue"]{Banker's Queue},
+@elemref["real-time queue"]{Real-Time Queue} and
+@elemref["bootstrapped queue"]{Bootstrapped Queue} compared with an
 implementation based on lists, and an imperative queue@cite[cce-queue].
 @note{Since 100000 (successive) @racket[tail] (or @racket[dequeue]) operations can not be 
 performed on 1000 element queue, we do not have running time for @scheme[tail] operation for 
@@ -113,7 +116,9 @@ Size & Operation & Physicist's & Banker's & Real-Time & Bootstrapped & List & Im
 
 @subsection{Heap Performance}
 The below table shows the performance of the 
-@elemref["leftist heap"]{Leftist Heap}, compared with an
+@elemref["leftist heap"]{Leftist Heap},
+@elemref["pairing heap"]{Pairing Heap} and
+@elemref["bootstraped heap"]{Bootstrapped Heap}, compared with an
 implementation based on sorted lists, and a simple imperative heap.
 
 @;{
@@ -181,6 +186,78 @@ Size & Operation & Leftist & Pairing & Bootstrapped & List & Imperative \\
 @;& \RktSym{merge} & 3229 & $\infty$ & ? \\
 \hline
 \end{tabular}}
+
+
+@;@subsection{List Performance}
+@;The below table shows the performance of the 
+@;@elemref["leftist heap"]{Leftist Heap}, compared with an
+@;implementation based on sorted lists, and a simple imperative heap.
+@; 
+@;@;{
+@;   @para{For 1000 elements}
+@;@para{@scheme[find-min/max] : LH : 23. Lists : 6. IH : 28.}
+@;@para{@scheme[delete-min/max] : LH : 3379. Lists : 8. IH : N/A.}
+@;@para{@scheme[merge] : LH : 1451. Lists : 3921. IH : .}
+@;@para{For 10000 elements}
+@;@para{@scheme[find-min/max] : LH : 26. Lists : 7. IH : 31.}
+@;@para{@scheme[delete-min/max] : LH : 4018. Lists : 8. IH : N/A.}
+@;@para{@scheme[merge] : LH : 2109. Lists : 44482. IH : .}
+@;@para{For 100000 elements}
+@;@para{@scheme[find-min/max] : LH : 27. Lists : 7. IH : 32.}
+@;@para{@scheme[delete-min/max] : LH : 4867. Lists : 9. IH : 2752.}
+@;@para{@scheme[merge] : LH : 2655. Lists : 441794. IH : .}
+@;@para{For 1000000 elements}
+@;@para{@scheme[find-min/max] : LH : 29. Lists : 7. IH : 37.}
+@;@para{@scheme[delete-min/max] : LH: 6142. Lists : 8. IH : 4386.}
+@;@para{@scheme[merge] : LH : 3229. Lists : infny. IH : .}
+@;}
+@;@exact{
+@;\medskip
+@;\begin{tabular}{|c|c|c|c|c|c|}
+@;\hline
+@;Size & Operation & RAList & Catenable & VList & List \\
+@;\hline
+@;\multirow{3}{*}{1000} & \RktSym{list} & 30 & 122 & 9 & 306 \\
+@;\cline{2-6}
+@;& \RktSym{cons} & 24 & 218 & 323874 & 623 \\
+@;\cline{2-6}
+@;& \RktSym{first} & 6 & 4 & 6 & 8 \\
+@;\cline{2-6}
+@;& \RktSym{rest}@(superscript "3") & N/A & N/A & N/A & N/A \\
+@;\cline{2-6}
+@;@;& \RktSym{merge} & 1451 & 13583 & ? \\
+@;\hline
+@;\multirow{3}{*}{10000} & \RktSym{list} & 30 & 122 & 9 & 306 \\
+@;\cline{2-6}
+@;& \RktSym{cons} & 24 & 218 & 323874 & 623 \\
+@;\cline{2-6}
+@;& \RktSym{first} & 6 & 4 & 6 & 8 \\
+@;\cline{2-6}
+@;& \RktSym{rest}@(superscript "3") & N/A & N/A & N/A & N/A \\
+@;\cline{2-6}
+@;@;& \RktSym{merge} & 2109 & 161648 & ? \\
+@;\hline
+@;\multirow{3}{*}{100000} & \RktSym{list} & 30 & 122 & 9 & 306 \\
+@;\cline{2-6}
+@;& \RktSym{cons} & 24 & 218 & 323874 & 623 \\
+@;\cline{2-6}
+@;& \RktSym{first} & 6 & 4 & 6 & 8 \\
+@;\cline{2-6}
+@;& \RktSym{rest}@(superscript "3") & N/A & N/A & N/A & N/A \\
+@;\cline{2-6}
+@;@;& \RktSym{merge} & 2655 & $\infty$ & ? \\
+@;\hline
+@;\multirow{3}{*}{1000000} & \RktSym{list} & 30 & 122 & 9 & 306 \\
+@;\cline{2-6}
+@;& \RktSym{cons} & 24 & 218 & 323874 & 623 \\
+@;\cline{2-6}
+@;& \RktSym{first} & 6 & 4 & 6 & 8 \\
+@;\cline{2-6}
+@;& \RktSym{rest}@(superscript "3") & N/A & N/A & N/A & N/A \\
+@;\cline{2-6}
+@;@;& \RktSym{merge} & 3229 & $\infty$ & ? \\
+@;\hline
+@;\end{tabular}}
 
 @section{Experience with Typed Scheme}
 
