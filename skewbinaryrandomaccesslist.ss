@@ -159,15 +159,19 @@
       (tree-drop size tree pos rest)
       (drop (- pos size) rest))))
 
+;(: list-length : (All (A) ((List A) -> Integer)))
+;(define (list-length ralist)
+;  (: int-length : (All (A) ((List A) Integer -> Integer)))
+;  (define (int-length int-ralist accum)
+;    (if (null? int-ralist)
+;        accum
+;        (int-length (tail int-ralist) (add1 accum))))
+;  (int-length ralist 0))
+;
+
 (: list-length : (All (A) ((List A) -> Integer)))
 (define (list-length ralist)
-  (: int-length : (All (A) ((List A) Integer -> Integer)))
-  (define (int-length int-ralist accum)
-    (if (null? int-ralist)
-        accum
-        (int-length (tail int-ralist) (add1 accum))))
-  (int-length ralist 0))
-
+  (foldl + 0 (map (inst getWeight A) ralist)))
 
 (: ramap : (All (A C B ...) 
                 ((A B ... B -> C) (List A) (List B) ... B -> (List C))))

@@ -40,8 +40,8 @@ machine and we used PLT Racket version 5.0.0.9 for benchmarking.
 In the tables below, all times are CPU time as reported by PLT Scheme,
 including garbage collection time.  The times are for performing each
 operation 100000 times, averaged over 10 runs.
-@note{The constructor operations @racket[queue] and @racket[heap] is 
-      performed only 100 times.}
+@note{The constructor functions @racket[queue], @racket[heap] and 
+      @racket[list] were repeated only 100 times.}
 @subsection{Queue Performance}
 
 The below table shows the performance of the 
@@ -188,76 +188,62 @@ Size & Operation & Leftist & Pairing & Bootstrapped & List & Imperative \\
 \end{tabular}}
 
 
-@;@subsection{List Performance}
-@;The below table shows the performance of the 
-@;@elemref["leftist heap"]{Leftist Heap}, compared with an
-@;implementation based on sorted lists, and a simple imperative heap.
-@; 
-@;@;{
-@;   @para{For 1000 elements}
-@;@para{@scheme[find-min/max] : LH : 23. Lists : 6. IH : 28.}
-@;@para{@scheme[delete-min/max] : LH : 3379. Lists : 8. IH : N/A.}
-@;@para{@scheme[merge] : LH : 1451. Lists : 3921. IH : .}
-@;@para{For 10000 elements}
-@;@para{@scheme[find-min/max] : LH : 26. Lists : 7. IH : 31.}
-@;@para{@scheme[delete-min/max] : LH : 4018. Lists : 8. IH : N/A.}
-@;@para{@scheme[merge] : LH : 2109. Lists : 44482. IH : .}
-@;@para{For 100000 elements}
-@;@para{@scheme[find-min/max] : LH : 27. Lists : 7. IH : 32.}
-@;@para{@scheme[delete-min/max] : LH : 4867. Lists : 9. IH : 2752.}
-@;@para{@scheme[merge] : LH : 2655. Lists : 441794. IH : .}
-@;@para{For 1000000 elements}
-@;@para{@scheme[find-min/max] : LH : 29. Lists : 7. IH : 37.}
-@;@para{@scheme[delete-min/max] : LH: 6142. Lists : 8. IH : 4386.}
-@;@para{@scheme[merge] : LH : 3229. Lists : infny. IH : .}
-@;}
-@;@exact{
-@;\medskip
-@;\begin{tabular}{|c|c|c|c|c|c|}
-@;\hline
-@;Size & Operation & RAList & Catenable & VList & List \\
-@;\hline
-@;\multirow{3}{*}{1000} & \RktSym{list} & 30 & 122 & 9 & 306 \\
-@;\cline{2-6}
-@;& \RktSym{cons} & 24 & 218 & 323874 & 623 \\
-@;\cline{2-6}
-@;& \RktSym{first} & 6 & 4 & 6 & 8 \\
-@;\cline{2-6}
-@;& \RktSym{rest}@(superscript "3") & N/A & N/A & N/A & N/A \\
-@;\cline{2-6}
-@;@;& \RktSym{merge} & 1451 & 13583 & ? \\
-@;\hline
-@;\multirow{3}{*}{10000} & \RktSym{list} & 30 & 122 & 9 & 306 \\
-@;\cline{2-6}
-@;& \RktSym{cons} & 24 & 218 & 323874 & 623 \\
-@;\cline{2-6}
-@;& \RktSym{first} & 6 & 4 & 6 & 8 \\
-@;\cline{2-6}
-@;& \RktSym{rest}@(superscript "3") & N/A & N/A & N/A & N/A \\
-@;\cline{2-6}
-@;@;& \RktSym{merge} & 2109 & 161648 & ? \\
-@;\hline
-@;\multirow{3}{*}{100000} & \RktSym{list} & 30 & 122 & 9 & 306 \\
-@;\cline{2-6}
-@;& \RktSym{cons} & 24 & 218 & 323874 & 623 \\
-@;\cline{2-6}
-@;& \RktSym{first} & 6 & 4 & 6 & 8 \\
-@;\cline{2-6}
-@;& \RktSym{rest}@(superscript "3") & N/A & N/A & N/A & N/A \\
-@;\cline{2-6}
-@;@;& \RktSym{merge} & 2655 & $\infty$ & ? \\
-@;\hline
-@;\multirow{3}{*}{1000000} & \RktSym{list} & 30 & 122 & 9 & 306 \\
-@;\cline{2-6}
-@;& \RktSym{cons} & 24 & 218 & 323874 & 623 \\
-@;\cline{2-6}
-@;& \RktSym{first} & 6 & 4 & 6 & 8 \\
-@;\cline{2-6}
-@;& \RktSym{rest}@(superscript "3") & N/A & N/A & N/A & N/A \\
-@;\cline{2-6}
-@;@;& \RktSym{merge} & 3229 & $\infty$ & ? \\
-@;\hline
-@;\end{tabular}}
+@subsection{List Performance}
+The below table shows the performance of the 
+@elemref["skew-bin-random-access list"]{Skew Binary Random Access List} and
+@elemref["vlist"]{VList} compared with in built lists.
+
+@exact{
+\medskip
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Size & Operation & RAList & VList & List \\
+\hline
+\multirow{3}{*}{1000} & \RktSym{list} & 24 & 51 & 2 \\
+\cline{2-5}
+& \RktSym{list-ref} & 77 & 86 & 240 \\
+\cline{2-5}
+& \RktSym{first} & 2 & 9 & 1 \\
+\cline{2-5}
+& \RktSym{rest} & 20 & 48 & 1 \\
+\cline{2-5}
+& \RktSym{last} & 178 & 40 & 520 \\
+\cline{2-5}
+\hline
+\multirow{3}{*}{10000} & \RktSym{list} & 263 & 476 & 40 \\
+\cline{2-5}
+& \RktSym{list-ref} & 98 & 110 & 2538 \\
+\cline{2-5}
+& \RktSym{first} & 2 & 9 & 1 \\
+\cline{2-5}
+& \RktSym{rest} & 9 & 28 & 1 \\
+\cline{2-5}
+& \RktSym{last} & 200 & 52 & 5414 \\
+\cline{2-5}
+\hline
+\multirow{3}{*}{100000} & \RktSym{list} & 2890 & 9796 & 513 \\
+\cline{2-5}
+& \RktSym{list-ref} & 124 & 131 & 33187 \\
+\cline{2-5}
+& \RktSym{first} & 3 & 10 & 1 \\
+\cline{2-5}
+& \RktSym{rest} & 18 & 40 & 1 \\
+\cline{2-5}
+& \RktSym{last} & 204 & 58 & 77217 \\
+\cline{2-5}
+\hline
+\multirow{3}{*}{1000000} & \RktSym{list} & 104410 & 147510 & 4860 \\
+\cline{2-5}
+& \RktSym{list-ref} & 172 & 178 & 380960 \\
+\cline{2-5}
+& \RktSym{first} & 2 & 10 & 1 \\
+\cline{2-5}
+& \RktSym{rest} & 20 & 42 & 1 \\
+\cline{2-5}
+& \RktSym{last} & 209 & 67 & 755520 \\
+\cline{2-5}
+\hline
+\end{tabular}}
 
 @section{Experience with Typed Scheme}
 

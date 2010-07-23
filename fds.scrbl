@@ -395,7 +395,7 @@ using complete binary leaf trees@cite[oka]. They have worst-case
 running times of @Ologn for the operations @scheme[cons],
 @scheme[first], @scheme[rest], @scheme[list-ref] and @scheme[list-set].
 
-@lpara{Skew Binary Random Access List}
+@elemtag["skew-bin-random-access list"]@lpara{Skew Binary Random Access List}
 Skew Binary Random Access Lists are similar to Binary Random Access
 Lists, but use the skew binary number representation, improving the
 running times of some operations. Skew Binary Random 
