@@ -141,43 +141,43 @@ implementation based on sorted lists, and a simple imperative heap.
 Size & Operation & Leftist & Pairing & Bootstrapped & List & Imperative \\
 \hline
 \multirow{3}{*}{1000} & \RktSym{heap} & 192 & 30 & 122 & 9 & 306 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{insert} & 372 & 24 & 218 & 323874 & 623 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{find} & 7 & 6 & 4 & 6 & 8 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{delete}@(superscript "3") & N/A & N/A & N/A & N/A & N/A \\
-\cline{2-5}
+\cline{2-7}
 @;& \RktSym{merge} & 1451 & 13583 & ? \\
 \hline
 \multirow{3}{*}{10000} & \RktSym{heap} & 2730 & 340 & 1283 & 76 & 4897 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{insert} & 358 & 28 & 224 & 409051 & 628 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{find} & 9 & 8 & 10 & 7 & 7 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{delete}@(superscript "3") & N/A & N/A & N/A & N/A & N/A \\
-\cline{2-5}
+\cline{2-7}
 @;& \RktSym{merge} & 2109 & 161648 & ? \\
 \hline
 \multirow{3}{*}{100000} & \RktSym{heap} & 40580 & 4863 & 24418 & 1010 & 69353 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{insert} & 434 & 30 & 198 & 1087545 & 631 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{find} & 8 & 8 & 10 & 7 & 9 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{delete} & 528 & 462 & 1946 & 7 & 439 \\
-\cline{2-5}
+\cline{2-7}
 @;& \RktSym{merge} & 2655 & $\infty$ & ? \\
 \hline
 \multirow{3}{*}{1000000} & \RktSym{heap} & 471588 & 82840 & 293788 & 11140 & 858661 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{insert} & 438 & 28 & 218 & $\infty$ & 637 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{find} & 9 & 6 & 8 & 7 & 7 \\
-\cline{2-5}
+\cline{2-7}
 & \RktSym{delete} & 976 & 1489 & 3063 & 8 & 812 \\
-\cline{2-5}
+\cline{2-7}
 @;& \RktSym{merge} & 3229 & $\infty$ & ? \\
 \hline
 \end{tabular}}
