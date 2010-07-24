@@ -139,10 +139,10 @@
 	    #:author (authors "Benjamin C. Pierce" "David N. Turner")))
 
 (define plt-manual
-  (make-bib #:title "Reference: PLT Scheme"
+  (make-bib #:title "Reference: Racket"
 	    #:author (authors "Matthew Flatt" "PLT")
 	    #:date "2010"
-	    #:location (techrpt-location #:number "PLT-TR2010-reference-v4.2.5"
+	    #:location (techrpt-location #:number "PLT-TR2010-reference-v5.0"
 					 #:institution "PLT Scheme Inc.")))
 
 (define skew

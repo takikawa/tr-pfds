@@ -30,26 +30,26 @@ polymorphic type @racket[(Queue A)], as well as the following
 functions:
 
 @(itemlist
-  @item{@italic{queue} : @scheme[(∀ (A) A * → (Queue A))]
+  @item{@italic{queue} : @racket[(∀ (A) A * → (Queue A))]
     @para{Constructs a queue with
-      the given elements in order. In the @scheme[queue] type signature,  
-      @scheme[∀] is a type constructor used for polymorphic types, binding
+      the given elements in order. In the @racket[queue] type signature,  
+      @racket[∀] is a type constructor used for polymorphic types, binding
       the given type variables, here @racket[A].
-      The function type constructor @scheme[→] is written infix between arguments and results.
+      The function type constructor @racket[→] is written infix between arguments and results.
        The annotation @racket[*] in the
       function type specifies that @racket[queue] accepts arbitrarily
       many elements of type @racket[A], producing a queue of type
-      @scheme[(Queue A)].}}
-  @item{@italic{enqueue} : @scheme[(∀ (A) A (Queue A) → (Queue A))]
+      @racket[(Queue A)].}}
+  @item{@italic{enqueue} : @racket[(∀ (A) A (Queue A) → (Queue A))]
     @para{Inserts the given element (the first argument) into the
       given queue (the second argument), producing a new queue.}}
-  @item{@italic{head} : @scheme[(∀ (A) (Queue A) → A)]
+  @item{@italic{head} : @racket[(∀ (A) (Queue A) → A)]
     @para{Returns the first element in the queue.  The queue is unchanged.}}
-  @item{@italic{tail} : @scheme[(∀ (A) (Queue A) → (Queue A))]
+  @item{@italic{tail} : @racket[(∀ (A) (Queue A) → (Queue A))]
     @para{Removes the first element from the given queue, producing a
       new queue.}})
 
-@(evaluate '(require typed/scheme))
+@(evaluate '(require typed/racket))
 @(evaluate '(require "bankers-queue.ss"))
 @interaction[#:eval evaluate
 (define que (queue -1 0 1 2 3 4))
@@ -72,8 +72,8 @@ combines the techniques of lazy evaluation and memoization to obtain
 good amortized running times. The Banker’s Queue implementation
 internally uses streams (see @secref["stream"]) to achieve lazy
 evaluation. The Banker's Queue provides a amortized running time of
-@O1 for the operations @scheme[head], @scheme[tail] and
-@scheme[enqueue].
+@O1 for the operations @racket[head], @racket[tail] and
+@racket[enqueue].
 
 @elemtag["physicist queue"]{@lpara{Physicist's Queue}}
 The Physicist's Queue@cite[oka] is a amortized queue obtained using a
@@ -82,8 +82,8 @@ Queue also uses the techniques of lazy evaluation and memoization to
 achieve excellent amortized running times for its operations. The only
 drawback of the Physicist's method is that it is much more complicated
 than the Banker's method. The Physicist's Queue provides an amortized
-running time of @O1 for the operations @scheme[head], @scheme[tail]
-and @scheme[enqueue].
+running time of @O1 for the operations @racket[head], @racket[tail]
+and @racket[enqueue].
 
 
 @elemtag["real-time queue"]{@lpara{Real-Time Queue} }
@@ -95,8 +95,8 @@ employ lazy evaluation and a technique called
 systematically so that no suspension takes more than constant time to
 execute, assuring ensures good asymptotic worst-case running time for
 the operations on the data structure. Real-Time Queues have an @O1
-worst-case running time for the operations @scheme[head],
-@scheme[tail] and @scheme[enqueue].
+worst-case running time for the operations @racket[head],
+@racket[tail] and @racket[enqueue].
 
 
 @lpara{Implicit Queue} Implicit Queues are a queue data structure
@@ -107,7 +107,7 @@ with a technique called @italic{recursive slowdown} developed by
 simpler than pure recursive slow-down, but with the disadvantage of
 amortized bounds on the running
 time. Implicit Queues provide an amortized running time of @O1 for the operations
-@scheme[head], @scheme[tail] and @scheme[enqueue].
+@racket[head], @racket[tail] and @racket[enqueue].
 
 
 @elemtag["bootstrapped queue"]{@lpara{Bootstrapped Queue}}
@@ -118,8 +118,8 @@ a bootstrapping technique called @italic{structural decomposition}@cite[oka].
 In structural decomposition, an implementation that can handle data up to a certain bounded 
 size is used to implement a data structure which can handle data of unbounded
 size. Bootstrapped Queues give a worst-case running time of @O1 for the
-operation @scheme[head] and @|Olog*n|@note{@log*n is at
-most 5 for all feasible queue lengths.} for @scheme[tail] and @scheme[enqueue].
+operation @racket[head] and @|Olog*n|@note{@log*n is at
+most 5 for all feasible queue lengths.} for @racket[tail] and @racket[enqueue].
 Our implementation of Bootstrapped Queues uses Real-Time Queues for bootstrapping.
 
 
@@ -129,8 +129,8 @@ technique, called @italic{global rebuilding}, to eliminate
 amortization from the complexity analysis.  In global rebuilding,
 rebalancing is done incrementally, a few steps of rebalancing per
 normal operation on the data structure. Hood-Melville Queues have 
-worst-case running times of @O1 for the operations @scheme[head],
-@scheme[tail] and @scheme[enqueue].
+worst-case running times of @O1 for the operations @racket[head],
+@racket[tail] and @racket[enqueue].
 
 
 @section{Deque} Double-ended queues are also known as
@@ -138,27 +138,27 @@ worst-case running times of @O1 for the operations @scheme[head],
 is that new elements of a deque can be inserted and deleted from
 either end. We have implemented several deque variants, each discussed
 below. All the deque data structures implement following interface and
-have the type @scheme[(Deque A)].
+have the type @racket[(Deque A)].
 
 @(itemlist 
-  @item{@italic{deque} : @scheme[(∀ (A) A * → (Deque A))] 
+  @item{@italic{deque} : @racket[(∀ (A) A * → (Deque A))] 
          @para{Constructs a double ended queue from the given elements
   in order.}}
-  @item{@italic{enqueue} : @scheme[(∀ (A) A (Deque A) → (Deque A))] 
+  @item{@italic{enqueue} : @racket[(∀ (A) A (Deque A) → (Deque A))] 
          @para{Inserts the given element to the rear of the 
          deque.}}
-  @item{@italic{enqueue-front} : @scheme[(∀ (A) A (Deque A) → (Deque A))]
+  @item{@italic{enqueue-front} : @racket[(∀ (A) A (Deque A) → (Deque A))]
          @para{Inserts the given element to the front of 
          the deque.}}
-  @item{@italic{head} : @scheme[(∀ (A) (Deque A) → A)]
+  @item{@italic{head} : @racket[(∀ (A) (Deque A) → A)]
          @para{Returns the first element from the front of the 
          deque.}}
-  @item{@italic{last} : @scheme[(∀ (A) (Deque A) → A)]
+  @item{@italic{last} : @racket[(∀ (A) (Deque A) → A)]
          @para{Returns the first element from the rear of the deque.}}
-  @item{@italic{tail} : @scheme[(∀ (A) (Deque A) → (Deque A))]
+  @item{@italic{tail} : @racket[(∀ (A) (Deque A) → (Deque A))]
          @para{Removes the first element from the front of the
          given deque, producing a new deque.}}
-  @item{@italic{init} : @scheme[(∀ (A) (Deque A) → (Deque A))]
+  @item{@italic{init} : @racket[(∀ (A) (Deque A) → (Deque A))]
          @para{Removes the first element from the rear of the
          given deque, producing a new deque.}})
 
@@ -185,26 +185,26 @@ dque
 @lpara{Banker's Deque}
 The Banker's Deque is an amortized deque. The Banker's Deque uses 
 the Banker's method and employs the same techniques used in the Banker's Queues 
-to achieve amortized running times of @O1 for the operations @scheme[head], 
-@scheme[tail], @scheme[last],
-@scheme[init], @scheme[enqueue-front] and @scheme[enqueue].
+to achieve amortized running times of @O1 for the operations @racket[head], 
+@racket[tail], @racket[last],
+@racket[init], @racket[enqueue-front] and @racket[enqueue].
 
 
 @lpara{Implicit Deque}
 The techniques used by Implicit Deques are same as that used in Implicit Queues i.e.
 Implicit Recursive Slowdown. Implicit Deque provides @O1
-amortized running times for the operations @scheme[head], 
-@scheme[tail], @scheme[last],
-@scheme[init], @scheme[enqueue-front] and @scheme[enqueue].
+amortized running times for the operations @racket[head], 
+@racket[tail], @racket[last],
+@racket[init], @racket[enqueue-front] and @racket[enqueue].
 
 
 @lpara{Real-Time Deque}
 The Real-Time Deques eliminate the amortization in the Banker's Deque to 
 produce deques with good worst-case behavior. The Real-Time Deques employ the same techniques
 employed by the Real-Time Queues to provide
-worst-case running time of @O1 for the operations @scheme[head], 
-@scheme[tail], @scheme[last],
-@scheme[init], @scheme[enqueue-front] and @scheme[enqueue].
+worst-case running time of @O1 for the operations @racket[head], 
+@racket[tail], @racket[last],
+@racket[init], @racket[enqueue-front] and @racket[enqueue].
 
 
 @section{Heaps}
@@ -221,22 +221,22 @@ requirements that a tree must meet in order for it to be a heap:
         children. A tree satisfying this property is said to be
 	@italic{heap-ordered}.})
 Below, we present several heap variants.
-Each variant has the type @scheme[(Heap A)] and implements the following
+Each variant has the type @racket[(Heap A)] and implements the following
 interface:
 
 @(itemlist 
-  @item{@italic{heap} :@scheme[(∀ (A) (A A → Boolean) A * → (Heap A))]
+  @item{@italic{heap} :@racket[(∀ (A) (A A → Boolean) A * → (Heap A))]
          @para{Constructs a heap from the 
          given elements and comparison function.}}
-  @item{@italic{find-min/max} : @scheme[(∀ (A) (Heap A) → A)]
+  @item{@italic{find-min/max} : @racket[(∀ (A) (Heap A) → A)]
          @para{Returns the min or max element of the given
          heap.}}
-  @item{@italic{delete-min/max} : @scheme[(∀ (A) (Heap A) → (Heap A))]
+  @item{@italic{delete-min/max} : @racket[(∀ (A) (Heap A) → (Heap A))]
          @para{Deletes the min or max element of the given 
          heap.}}
-  @item{@italic{insert} : @scheme[(∀ (A) A (Heap A) → (Heap A))]
+  @item{@italic{insert} : @racket[(∀ (A) A (Heap A) → (Heap A))]
          @para{Inserts an element into the heap.}}
-  @item{@italic{merge} : @scheme[(∀ (A) (Heap A) (Heap A) → (Heap A))]
+  @item{@italic{merge} : @racket[(∀ (A) (Heap A) (Heap A) → (Heap A))]
          @para{Merges the two given heaps.}})
 
 
@@ -259,8 +259,8 @@ A Binomial Heap@cite[vuillemin brown] is a
 heap-ordered binomial tree.  Binomial Heaps support a fast
 @racket[merge] operation using a special tree structure. Binomial
 Heaps provide a worst-case running time of @Ologn for the operations
-@scheme[insert], @scheme[find-min/max], @scheme[delete-min/max] and
-@scheme[merge].
+@racket[insert], @racket[find-min/max], @racket[delete-min/max] and
+@racket[merge].
 
 
 @elemtag["leftist heap"]{@lpara{Leftist Heap}}
@@ -273,9 +273,9 @@ node has a lower rank than the node itself. As a consequence of the leftist prop
 the right spine of any node is always the shortest path to a leaf node. 
 The Leftist Heaps provide a worst-case running time of @Ologn for the 
 operations
-@scheme[insert], @scheme[delete-min/max] and @scheme[merge] and a worst-case
+@racket[insert], @racket[delete-min/max] and @racket[merge] and a worst-case
 running time of @O1 for 
-@scheme[find-min/max].
+@racket[find-min/max].
 
 @elemtag["pairing heap"]{@lpara{Pairing Heap}}
 Pairing Heaps@cite[pairing] are a type of heap which have a very simple
@@ -285,9 +285,9 @@ extremely good amortized performance in practice. However, it has proved
  operations on Pairing Heaps. Pairing Heaps are represented either as a empty heap or a pair 
 of an
 element and a list of pairing heaps. Pairing Heaps provide a 
-worst-case running time of @O1 for the operations @scheme[insert], 
-@scheme[find-min/max] and @scheme[merge], and an amortized running time of @|Ologn|
-for @scheme[delete-min/max].
+worst-case running time of @O1 for the operations @racket[insert], 
+@racket[find-min/max] and @racket[merge], and an amortized running time of @|Ologn|
+for @racket[delete-min/max].
 
 @lpara{Splay Heap}
 Splay Heaps@cite[sla] are very similar to balanced binary search trees. 
@@ -297,8 +297,8 @@ maintain explicit balance information. Instead, every operation on a splay
 heap restructures the tree with simple transformations that increase the
 balance. Because of the restructuring on every operation, the 
 worst-case running time of all operations is @|On|. However,
- the amortized running time of the operations @scheme[insert], @scheme[find-min/max], 
-@scheme[delete-min/max] and @scheme[merge]
+ the amortized running time of the operations @racket[insert], @racket[find-min/max], 
+@racket[delete-min/max] and @racket[merge]
  is @|Ologn|.
 
 @lpara{Skew Binomial Heap} Skew Binomial Heaps are similar to Binomial
@@ -308,9 +308,9 @@ representation is used since incrementing skew binary numbers is
 quick and simple. Since the skew binary numbers have a complicated
 addition, the @racket[merge] operation is based on the ordinary binary numbers
 itself. Skew Binomial Heaps provide a worst-case running time of
-@Ologn for the operations @scheme[find-min/max],
-@scheme[delete-min/max] and @scheme[merge], and a worst-case running
-time of @O1 for the @scheme[insert] operation.
+@Ologn for the operations @racket[find-min/max],
+@racket[delete-min/max] and @racket[merge], and a worst-case running
+time of @O1 for the @racket[insert] operation.
 
 @lpara{Lazy Pairing Heap}
 Lazy Pairing Heaps@cite[oka] are similar to pairing heaps as described
@@ -323,18 +323,18 @@ Heaps to
 obtain exact asymptotic running times is difficult, as it is for
 Pairing Heaps. Lazy 
 Pairing Heaps provide a worst-case running time of @O1 for the operations 
-@scheme[insert], @scheme[find-min/max], and @scheme[merge], and an amortized
+@racket[insert], @racket[find-min/max], and @racket[merge], and an amortized
 running time of @|Ologn|
-for the @scheme[delete-min/max] operation.
+for the @racket[delete-min/max] operation.
 
 @elemtag["bootstrapped heap"]{@lpara{Bootstrapped Heap}} 
 Bootstrapped Heaps@cite[oka] use a technique
 of bootstrapping called @italic{structural abstraction}@cite[oka],
 where one data structure abstracts over a less efficient data
 structure to get better running times.  Bootstrapped Heaps provide a
-worst-case running time of @O1 for the @scheme[insert],
-@scheme[find-min/max] and @scheme[merge] operations and a worst-case
-running time of @Ologn for @scheme[delete-min/max] operation. Our
+worst-case running time of @O1 for the @racket[insert],
+@racket[find-min/max] and @racket[merge] operations and a worst-case
+running time of @Ologn for @racket[delete-min/max] operation. Our
 implementation of Bootstrapped Heap abstracts over Skew Binomial
 Heaps.
 
@@ -349,15 +349,15 @@ Each implemented variant is explained below.  All variants provide the
 type @racket[(List A)], and the following interface, which is extended
 for each implementation:
 @(itemlist 
-  @item{@italic{list} : @scheme[(∀ (A) A * → (List A))]
+  @item{@italic{list} : @racket[(∀ (A) A * → (List A))]
          @para{Constructs a list from the given elements,
 	 in order.}}
-  @item{@italic{cons} : @scheme[(∀ (A) A (List A) → (List A))]
+  @item{@italic{cons} : @racket[(∀ (A) A (List A) → (List A))]
          @para{Adds a given element into the front of a list.}}
-  @item{@italic{first} : @scheme[(∀ (A) (List A) → A)]
+  @item{@italic{first} : @racket[(∀ (A) (List A) → A)]
          @para{Returns the first element of the given 
          list.}}
-  @item{@italic{rest} : @scheme[(∀ (A) (List A) → (List A))]
+  @item{@italic{rest} : @racket[(∀ (A) (List A) → (List A))]
          @para{Produces a new list without the first element.}}
 )
 
@@ -367,10 +367,10 @@ array-like random access operations. These include @racket[list-ref]
 and @racket[list-set] (a functional analogue of @racket[vector-set!]).
 Random Access Lists extend the basic list interface with the following operations:
 @(itemlist 
-  @item{@italic{list-ref} : @scheme[(∀ (A) (List A) Integer → A)]
+  @item{@italic{list-ref} : @racket[(∀ (A) (List A) Integer → A)]
          @para{Returns the element at a given location in the 
           list.}}
-  @item{@italic{list-set} : @scheme[(∀ (A) (List A) Integer A → (List A))]
+  @item{@italic{list-set} : @racket[(∀ (A) (List A) Integer A → (List A))]
          @para{Updates the element at a given location in the 
          list with a new element.}}
 )
@@ -395,17 +395,17 @@ lst
 @lpara{Binary Random Access List} Binary Random Access Lists are
 implemented as using the framework of binary numerical representation
 using complete binary leaf trees@cite[oka]. They have worst-case
-running times of @Ologn for the operations @scheme[cons],
-@scheme[first], @scheme[rest], @scheme[list-ref] and @scheme[list-set].
+running times of @Ologn for the operations @racket[cons],
+@racket[first], @racket[rest], @racket[list-ref] and @racket[list-set].
 
 @elemtag["skew-bin-random-access list"]{@lpara{Skew Binary Random Access List}}
 Skew Binary Random Access Lists are similar to Binary Random Access
 Lists, but use the skew binary number representation, improving the
 running times of some operations. Skew Binary Random 
 Access Lists provide worst-case running times of @O1 for the operations 
-@scheme[cons], @scheme[head] and @scheme[tail] and 
-worst-case running times of @Ologn for @scheme[list-ref] 
-and @scheme[list-set] operations.
+@racket[cons], @racket[head] and @racket[tail] and 
+worst-case running times of @Ologn for @racket[list-ref] 
+and @racket[list-set] operations.
 
 @subsection[#:tag "catenable"]{Catenable List}
 Catenable Lists are a list data structure with an efficient append
@@ -415,10 +415,10 @@ abstracted over Real-Time Queues, and have an amortized running time
 of @O1 for the basic list operations as well as the following:
 
 @(itemlist 
-  @item{@italic{cons-to-end} : @scheme[(∀ (A) A (List A) → (List A))]
+  @item{@italic{cons-to-end} : @racket[(∀ (A) A (List A) → (List A))]
          @para{Inserts a given element to the rear end of the
                list.}}
-  @item{@italic{append} : @scheme[(∀ (A) (List A) * → (List A))]
+  @item{@italic{append} : @racket[(∀ (A) (List A) * → (List A))]
          @para{Appends several lists together.}})
 
 
@@ -454,9 +454,9 @@ VLists provide the standard list API given above, along with many
 other operations, some of which are given here.
 
 @(itemlist 
-  @item{@italic{last} : @scheme[(∀ (A) (List A) → A)]
+  @item{@italic{last} : @racket[(∀ (A) (List A) → A)]
          @para{Returns the last element of the given list.}}
-  @item{@italic{list-ref} : @scheme[(∀ (A) (List A) Integer → A)]
+  @item{@italic{list-ref} : @racket[(∀ (A) (List A) Integer → A)]
          @para{Gets the element at the given index in the list.}})
 
 @(evaluate '(require "vlist.ss"))
@@ -487,7 +487,7 @@ Streams@cite[oka] are simply lazy lists. They are similar to the
 ordinary lists and they
 provide the same functionality and API.
 Streams are used in many of the foregoing data structures to achieve lazy evaluation. 
-Streams do not change the asymptotic performance of any list operations, but introduce overhead at each suspension. Since streams have distinct evaluation behavior, they are given a distinct type, @scheme[(Stream A)].
+Streams do not change the asymptotic performance of any list operations, but introduce overhead at each suspension. Since streams have distinct evaluation behavior, they are given a distinct type, @racket[(Stream A)].
 
 @section{Hash Lists} Hash Lists@cite[bagwell-lists] are similar to
 association lists, here implemented using a modified VList structure. The
@@ -522,30 +522,30 @@ alternating black and red nodes, is no more then twice as long as the shortest
 possible path, the one with black nodes only. This balancing helps in achieving 
 good running times for the tree operations. Our implementation is based
 on one by @citet[oka-red-black]. The operations 
-@scheme[member?], @scheme[insert] and @scheme[delete], which respectively 
+@racket[member?], @racket[insert] and @racket[delete], which respectively 
 checks membership, inserts and deletes elements from the tree, have worst-case
 running time of @|Ologn|. 
 @;{
 It has the type 
-@scheme[(RedBlackTree A)]. 
+@racket[(RedBlackTree A)]. 
 Following are the functions implemented by the Red-Black Tree data structure
 
 @(itemlist 
   @item{@italic{redblacktree} : 
-         @schemeblock[(∀ (A) ((A A → Boolean) A * → 
+         @racketblock[(∀ (A) ((A A → Boolean) A * → 
                                           (RedBlackTree A)))] 
          The Red-Black Tree constructor function. Constructs 
          a red-black tree from the given elements and the
          comparison function.}
-  @item{@italic{insert} : @schemeblock[(∀ (A) (A (RedBlackTree A) → 
+  @item{@italic{insert} : @racketblock[(∀ (A) (A (RedBlackTree A) → 
                                                    (RedBlackTree A)))] 
          @para{Inserts a given element into the red-black tree.}}
-  @item{@italic{root} : @scheme[(∀ (A) ((RedBlackTree A) → A))] 
+  @item{@italic{root} : @racket[(∀ (A) ((RedBlackTree A) → A))] 
          @para{Returns the root element of the given red-black tree.}}
-  @item{@italic{member?} : @schemeblock[(∀ (A) (A (RedBlackTree A) → Boolean))] 
+  @item{@italic{member?} : @racketblock[(∀ (A) (A (RedBlackTree A) → Boolean))] 
          Checks if the given element is a member of the 
          red-black tree.}
-  @item{@italic{delete} : @schemeblock[(∀ (A) (A (RedBlackTree A) → 
+  @item{@italic{delete} : @racketblock[(∀ (A) (A (RedBlackTree A) → 
                                                    (RedBlackTree A)))] 
          @para{Deletes the given element from the given red-black 
          tree.}})

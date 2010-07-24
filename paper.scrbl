@@ -3,15 +3,14 @@
           scribble/core scribble/eval scriblib/footnote
           "bib.rkt" "utils.rkt" scribble/decode
           scribble/latex-properties)
-@title{Functional Data Structures for Typed Scheme}
+@title{Functional Data Structures for Typed Racket}
 
 @(authorinfo "Hari Prashanth K R"
              "Northeastern University"
              "krhari@ccs.neu.edu")
 
-@(authorinfo "Sam Tobin-Hochstadt"
+@(authorinfo "Sam Tobin-Hochstadt"             
              "Northeastern University"
-             @;(splice (list "Northeastern University" @note{Supported by a grant from the Mozilla Foundation}))
              "samth@ccs.neu.edu")
 
 
@@ -20,7 +19,7 @@ Scheme provides excellent language support for programming in a
 functional style, but little in the way of library support.  In this
 paper, we present a comprehensive library of functional data
 structures, drawing from several sources.  We have implemented the
-library in Typed Scheme, a typed variant of PLT Scheme, allowing us to
+library in Typed Racket, a typed variant of Racket, allowing us to
 maintain the type invariants of the original definitions.}
 
 @include-section["intro.scrbl"]
@@ -33,11 +32,11 @@ To demonstrate the practical usefulness of purely functional data
 structures, we provide microbenchmarks of a selected set of data
 structures, compared with both simple implementations based on lists,
 and imperative implementations. The list based version is implemented 
-in Typed Scheme and imperative version is implemented in PLT Scheme.
+in Typed Racket and imperative version is implemented in Racket.
 The benchmaking was done on a 2.1 GHz Intel Core 2 Duo (Linux) 
 machine and we used PLT Racket version 5.0.0.9 for benchmarking. 
 
-In the tables below, all times are CPU time as reported by PLT Scheme,
+In the tables below, all times are CPU time as reported by Racket,
 including garbage collection time. The times mentioned are in milli 
 seconds and they are time taken for performing each
 operation 100000 times, averaged over 10 runs.
@@ -45,7 +44,7 @@ operation 100000 times, averaged over 10 runs.
       @racket[list] were repeated only 100 times.}
 @subsection{Queue Performance}
 
-The below table shows the performance of the 
+The table in figure @exact{\ref{fig:queue}} shows the performance of the 
 @elemref["physicist queue"]{Physicist's Queue}, 
 @elemref["banker's queue"]{Banker's Queue},
 @elemref["real-time queue"]{Real-Time Queue} and
@@ -56,7 +55,8 @@ performed on 1000 element queue, we do not have running time for @scheme[tail] o
 for these sizes.}
 
 @exact{
-\medskip
+\begin{figure*}
+\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
 Size & Operation & Physicist's & Banker's & Real-Time & Bootstrapped & List & Imperative \\
@@ -65,16 +65,16 @@ Size & Operation & Physicist's & Banker's & Real-Time & Bootstrapped & List & Im
 \cline{2-8}
 & \RktSym{head} & 9 & 14 & 30 & 10 & 6 & 54 \\
 \cline{2-8}
-& \RktSym{tail}@(superscript "3") & N/A & N/A & N/A & N/A & N/A & N/A \\
-\cline{2-8}
+@;& \RktSym{tail}@(superscript "3") & N/A & N/A & N/A & N/A & N/A & N/A \\
+@;\cline{2-8}
 & \RktSym{enqueue} & 10 & 127 & 176 & 22 & 256450 & 73 \\
 \hline
 \multirow{3}{*}{10000} & \RktSym{queue} & 232 & 887 & 1576 & 227 & 61 & 746 \\
 \cline{2-8}
 & \RktSym{head} & 8 & 17 & 32 & 2 & 7 & 56 \\
 \cline{2-8}
-& \RktSym{tail}@(superscript "3") & N/A & N/A & N/A & N/A & N/A & N/A \\
-\cline{2-8}
+@;& \RktSym{tail}@(superscript "3") & N/A & N/A & N/A & N/A & N/A & N/A \\
+@;\cline{2-8}
 & \RktSym{enqueue} & 11 & 132 & 172 & 18 & 314710 & 75 \\
 \hline
 \multirow{3}{*}{100000} & \RktSym{queue} & 3410 & 13192 & 20332 & 2276 & 860 & 11647 \\
@@ -93,101 +93,76 @@ Size & Operation & Physicist's & Banker's & Real-Time & Bootstrapped & List & Im
 \cline{2-8}
 & \RktSym{enqueue} & 30 & 897 & 1218 & 20 & $\infty$ & 68 \\
 \hline
-\end{tabular}}
-
-
-@;{
-@para{For 1000 elements}
-@para{@scheme[head] : BQ : 46. Lists : 7.}
-@para{@scheme[tail] : BQ : 88. Lists : 6.}
-@para{@scheme[enqueue] : BQ : 81. Lists : 6478. IQ : 161.}
-@para{For 10000 elements}
-@para{@scheme[head] : BQ : 46. Lists : 7.}
-@para{@scheme[tail] : BQ : 91. Lists : 8.}
-@para{@scheme[enqueue] : BQ : 84. Lists : 48687. IQ : 147.}
-@para{For 100000 elements}
-@para{@scheme[head] : BQ : 47. Lists : 8.}
-@para{@scheme[tail] : BQ : 93. Lists : 8. IQ : 114.}
-@para{@scheme[enqueue] : BQ : 85. Lists : 524257. IQ : 172.}
-@para{For 1000000 elements}
-@para{@scheme[head] : BQ : 53. Lists : 8.}
-@para{@scheme[tail] : BQ : 94. Lists : 8. IQ : 101.}
-@para{@scheme[enqueue] : BQ : 87. Lists : Took too long to finish. IQ : 152.}
+\end{tabular}
+\caption{Queue Performance}
+\label{fig:queue}
+\end{center}
+\end{figure*}
 }
 
+
+
 @subsection{Heap Performance}
-The below table shows the performance of the 
+The table in figure @exact{\ref{fig:heap}} shows the performance of the 
 @elemref["leftist heap"]{Leftist Heap},
 @elemref["pairing heap"]{Pairing Heap},
 @elemref["binomial heap"]{Binomial Heap} and
 @elemref["bootstraped heap"]{Bootstrapped Heap}, compared with an
 implementation based on sorted lists, and a simple imperative heap.
 
-@;{
-   @para{For 1000 elements}
-@para{@scheme[find-min/max] : LH : 23. Lists : 6. IH : 28.}
-@para{@scheme[delete-min/max] : LH : 3379. Lists : 8. IH : N/A.}
-@para{@scheme[merge] : LH : 1451. Lists : 3921. IH : .}
-@para{For 10000 elements}
-@para{@scheme[find-min/max] : LH : 26. Lists : 7. IH : 31.}
-@para{@scheme[delete-min/max] : LH : 4018. Lists : 8. IH : N/A.}
-@para{@scheme[merge] : LH : 2109. Lists : 44482. IH : .}
-@para{For 100000 elements}
-@para{@scheme[find-min/max] : LH : 27. Lists : 7. IH : 32.}
-@para{@scheme[delete-min/max] : LH : 4867. Lists : 9. IH : 2752.}
-@para{@scheme[merge] : LH : 2655. Lists : 441794. IH : .}
-@para{For 1000000 elements}
-@para{@scheme[find-min/max] : LH : 29. Lists : 7. IH : 37.}
-@para{@scheme[delete-min/max] : LH: 6142. Lists : 8. IH : 4386.}
-@para{@scheme[merge] : LH : 3229. Lists : infny. IH : .}
-}
 @exact{
-\medskip
+\begin{figure*}
+\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
 Size & Operation & Binomial & Leftist & Pairing & Bootstrapped & List & Imperative \\
 \hline
 \multirow{3}{*}{1000} & \RktSym{heap} & 45 & 192 & 30 & 122 & 9 & 306 \\
-\cline{2-7}
+\cline{2-8}
 & \RktSym{insert} & 36 & 372 & 24 & 218 & 323874 & 623 \\
-\cline{2-7}
+\cline{2-8}
 & \RktSym{find} & 64 & 7 & 6 & 4 & 6 & 8 \\
-\cline{2-7}
-& \RktSym{delete}@(superscript "3") & N/A & N/A & N/A & N/A & N/A \\
-\cline{2-7}
+\cline{2-8}
+@;& \RktSym{delete}@(superscript "3") & N/A & N/A & N/A & N/A & N/A \\
+@;\cline{2-8}
 @;& \RktSym{merge} & 1451 & 13583 & ? \\
 \hline
 \multirow{3}{*}{10000} & \RktSym{heap} & 422 & 2730 & 340 & 1283 & 76 & 4897 \\
-\cline{2-7}
+\cline{2-8}
 & \RktSym{insert} & 34 & 358 & 28 & 224 & 409051 & 628 \\
-\cline{2-7}
+\cline{2-8}
 & \RktSym{find} & 52 & 9 & 8 & 10 & 7 & 7 \\
-\cline{2-7}
-& \RktSym{delete}@(superscript "3") & N/A & N/A & N/A & N/A & N/A \\
-\cline{2-7}
+\cline{2-8}
+@;& \RktSym{delete}@(superscript "3") & N/A & N/A & N/A & N/A & N/A & N\\
+@;\cline{2-8}
 @;& \RktSym{merge} & 2109 & 161648 & ? \\
 \hline
 \multirow{3}{*}{100000} & \RktSym{heap} & 6310 & 40580 & 4863 & 24418 & 1010 & 69353 \\
-\cline{2-7}
+\cline{2-8}
 & \RktSym{insert} & 33 & 434 & 30 & 198 & 1087545 & 631 \\
-\cline{2-7}
+\cline{2-8}
 & \RktSym{find} & 63 & 8 & 8 & 10 & 7 & 9 \\
-\cline{2-7}
+\cline{2-8}
 & \RktSym{delete} & 986 & 528 & 462 & 1946 & 7 & 439 \\
-\cline{2-7}
+\cline{2-8}
 @;& \RktSym{merge} & 2655 & $\infty$ & ? \\
 \hline
 \multirow{3}{*}{1000000} & \RktSym{heap} & 109380 & 471588 & 82840 & 293788 & 11140 & 858661 \\
-\cline{2-7}
+\cline{2-8}
 & \RktSym{insert} & 32 & 438 & 28 & 218 & $\infty$ & 637 \\
-\cline{2-7}
+\cline{2-8}
 & \RktSym{find} & 76 & 9 & 6 & 8 & 7 & 7 \\
-\cline{2-7}
+\cline{2-8}
 & \RktSym{delete} & 1488 & 976 & 1489 & 3063 & 8 & 812 \\
-\cline{2-7}
+\cline{2-8}
 @;& \RktSym{merge} & 3229 & $\infty$ & ? \\
 \hline
-\end{tabular}}
+\end{tabular}
+\end{center}
+\caption{Heap Performance}
+\label{fig:heap}
+\end{figure*}
+}
 
 
 @subsection{List Performance}
@@ -247,28 +222,28 @@ Size & Operation & RAList & VList & List \\
 \hline
 \end{tabular}}
 
-@section{Experience with Typed Scheme}
+@section{Experience with Typed Racket}
 
-This project involved writing 5300 lines of Typed Scheme code,
+This project involved writing 5300 lines of Typed Racket code,
 including 1300 lines of tests, almost all written by the first author,
-who had little previous experience with Typed Scheme.  This allows us
-to report on the experience of using Typed Scheme for a programmer
+who had little previous experience with Typed Racket.  This allows us
+to report on the experience of using Typed Racket for a programmer
 coming from other languages. 
 
-@subsection{Benefits of Typed Scheme}
-Several features of Typed Scheme makes programming in Typed Scheme 
-quite enjoyable. First, the type error messages in Typed Scheme are very 
+@subsection{Benefits of Typed Racket}
+Several features of Typed Racket makes programming in Typed Racket 
+quite enjoyable. First, the type error messages in Typed Racket are very 
 clear and easy 
 to understand. The type checker highlights precise locations which are
 responsible for type errors. This makes it very easy to debug the type errors. 
 
-Second, Typed Scheme's syntax is very intuitive, using
+Second, Typed Racket's syntax is very intuitive, using
       the infix operator 
 @scheme[→] for the type of a function. The Kleene star @scheme[*] is 
 used to indicate zero or more elements for rest arguments. @scheme[∀] is the 
 type constructor used by the polymorphic functions, and so on.
 
-Typed Scheme comes with a unit testing framework which makes it
+Typed Racket comes with a unit testing framework which makes it
 simple to write tests, as in the below example: 
 
 @schemeblock[(require typed/test-engine/scheme-tests)
@@ -281,22 +256,22 @@ The @racket[check-expect] form takes the actual and expected value, and
 compares them, printing a message at the end summarizing the results
 of all tests.
 
-The introductory and reference manuals of PLT Scheme in general and
-Typed Scheme in particular are comprehensive and quite easy to follow
+The introductory and reference manuals of Racket in general and
+Typed Racket in particular are comprehensive and quite easy to follow
 and understand.
 
-@subsection{Disadvantages of Typed Scheme} 
+@subsection{Disadvantages of Typed Racket} 
 Even though overall
-experience with Typed Scheme was positive, there are negative aspects
-to programming in Typed Scheme. 
+experience with Typed Racket was positive, there are negative aspects
+to programming in Typed Racket. 
 
 
-Most significantly for this work, Typed Scheme does not support
+Most significantly for this work, Typed Racket does not support
  polymorphic non-uniform recursive datatype definitions, which are
  used extensively by @citet[oka].  Because of this limitation, many
  definitions had to be first converted to uniform recursive datatypes
  before being implemented. For instance, the following definition of
- @racket[Seq] structure is not allowed by Typed Scheme.
+ @racket[Seq] structure is not allowed by Typed Racket.
 
  @schemeblock[(define-struct: (A) Seq 
                 ([elem : A] [recur : (Seq (Pair A A))]))]
@@ -312,18 +287,18 @@ recursion, as follows:
                    ([elem  : (EP A)] [recur : (Seq A)]))]
 Unfortunately, this translation introduces the possibility of illegal
 states that the typechecker is unable to rule out.  We hope to support
-polymorphic recursion in a future version of Typed Scheme.
+polymorphic recursion in a future version of Typed Racket.
 
 
 It is currently not
 possible to correctly type Scheme functions such as @racket[foldr] and
-@racket[foldl] because of the limitations of Typed Scheme's handling
+@racket[foldl] because of the limitations of Typed Racket's handling
 of variable-arity functions@cite[stf-esop].
 
-Typed Scheme's use of local type inference also leads to potential
+Typed Racket's use of local type inference also leads to potential
 errors, especially in the presence of precise types for Scheme's
 numeric hierarchy. For example,
-Typed Scheme distinguishes integers from positive integers, leading to
+Typed Racket distinguishes integers from positive integers, leading to
 a type error in the following expression:
 @schemeblock[(vector-append (vector -1 2) (vector 1 2))]
  since the first vector contains integers, and the second positive
@@ -331,15 +306,15 @@ a type error in the following expression:
  this requires manual annotation to ensure that both vectors have
  element type @racket[Integer].
 
-Although PLT Scheme supports extension of the behavior of
+Although Racket supports extension of the behavior of
 primitive operations such as printing and equality on user-defined
-data types, Typed Scheme currently does not support this.  Thus, it is
+data types, Typed Racket currently does not support this.  Thus, it is
 not possible to compare any of our data structures accurately using
 @racket[equal?], and they are printed opaquely, as seen in the
 examples in @secref["fds"].
 
 
-@;{item{Even though Typed Scheme test engine is pretty good, there are couple 
+@;{item{Even though Typed Racket test engine is pretty good, there are couple 
         of draw backs in it. For example,
         @schememod[typed/scheme
                    (require "bankers-queue.ss")
@@ -354,7 +329,7 @@ examples in @secref["fds"].
               example, all queue data structures have the function 
               @scheme[queue->list].}}}
 
-Typed Scheme allows programmers to name arbitrary type expressions
+Typed Racket allows programmers to name arbitrary type expressions
 with the @racket[define-type] form.  However, the type printer does
 not take into account definitions of polymorphic type aliases when
 printing types, leading to the internal implementations of some types
@@ -382,7 +357,7 @@ With the above exceptions, the implementation is
 structurally similar the original work.
 
 We know of no existing comprehensive library of functional data
-structures for Scheme.  PLT Scheme's existing collection of user-provided
+structures for Scheme.  Racket's existing collection of user-provided
 libraries, PLaneT@cite[planet], contains an implementation of Random
 Access Lists@cite[dvh-ra], as well as a collection of several
 functional data structures@cite[galore].  
@@ -396,7 +371,7 @@ Java Virtual Machine.
 Efficient and productive functional programming requires efficient and
 expressive functional data structures.  In this paper, we present a
 comprehensive library of functional data structures, implemented and
-available in Typed Scheme. We hope that this enables programmers to
+available in Typed Racket. We hope that this enables programmers to
 write functional programs, and inspires library writers to use
 functional designs and to produce new libraries to enable functional
 programming.  
@@ -404,6 +379,7 @@ programming.
 @subsection[#:style 'unnumbered]{Acknowledgments}
 
 Thanks to Matthias Felleisen for his support of this work, and to
-Vincent St-Amour and Carl Eastlund for valuable feedback.
+Vincent St-Amour and Carl Eastlund for valuable feedback.  
+Sam Tobin-Hochstadt is supported by a grant from the Mozilla Foundation.
 
 @gen-bib[]
