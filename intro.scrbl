@@ -13,7 +13,7 @@ Scheme does provide one supremely valuable functional
 data structure---the linked list.  This is sufficient to support many
 forms of functional programming @cite[srfi/1] (although lists are sadly mutable
 in most Schemes), but not nearly sufficient.  To truly support efficient
-programming in a functional style, additional data structures are need.
+programming in a functional style, additional data structures are needed.
 
 Fortunately, the last 15 years have seen the development of many
 efficient and useful functional data structures, in particular by @citet[oka] and 
