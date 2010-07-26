@@ -1,4 +1,4 @@
-#lang scribble/sigplan
+#lang scribble/sigplan @nocopyright
 @(require (except-in scribble/manual cite) scriblib/autobib
           scribble/core scribble/eval scriblib/footnote
           "bib.rkt" "utils.rkt" scribble/decode
@@ -13,6 +13,11 @@
              "Northeastern University"
              "samth@ccs.neu.edu")
 
+@exact{
+\renewcommand{\SConferenceInfo}[2]{}
+\renewcommand{\SCopyrightYear}[1]{}
+\renewcommand{\SCopyrightData}[1]{}
+}
 
 @abstract{
 Scheme provides excellent language support for programming in a
@@ -34,7 +39,7 @@ structures, compared with both simple implementations based on lists,
 and imperative implementations. The list based version is implemented 
 in Typed Racket and imperative version is implemented in Racket.
 The benchmaking was done on a 2.1 GHz Intel Core 2 Duo (Linux) 
-machine and we used PLT Racket version 5.0.0.9 for benchmarking. 
+machine and we used Racket version 5.0.0.9 for benchmarking. 
 
 In the tables below, all times are CPU time as reported by Racket,
 including garbage collection time. The times mentioned are in milli 
