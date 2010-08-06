@@ -1,12 +1,12 @@
 #lang typed/scheme
 
-(require (prefix-in rtq: "realtimequeue.ss"))
+(require (prefix-in pq: "physicists-queue.ss"))
 (provide filter remove
          empty empty? enqueue head tail queue queue->list Queue
          (rename-out [qmap map]) fold)
 
 (require scheme/promise)
-(define-type-alias (Mid A) (rtq:Queue (Promise (Listof A))))
+(define-type-alias (Mid A) (pq:Queue (Promise (Listof A))))
 (define-struct: (A) IntQue ([F : (Listof A)]
                             [M : (Mid A)]
                             [LenFM : Integer]
@@ -29,14 +29,14 @@
 (define (internal-queue f m lenfm r lenr)
   (if (<= lenr lenfm) 
       (checkF (make-IntQue f m lenfm r lenr))
-      (checkF (make-IntQue f (rtq:enqueue (delay (reverse r)) m) 
+      (checkF (make-IntQue f (pq:enqueue (delay (reverse r)) m) 
                           (+ lenfm lenr)
                           null 0))))
 
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))
 (define (enqueue elem bsq)
   (if (EmptyBSQueue? bsq)
-      (make-IntQue (cons elem null) rtq:empty 1 null 0)
+      (make-IntQue (cons elem null) pq:empty 1 null 0)
       (internal-queue (IntQue-F bsq)
                       (IntQue-M bsq)
                       (IntQue-LenFM bsq)
@@ -65,10 +65,10 @@
   (let* ([front (IntQue-F que)]
          [mid (IntQue-M que)])
     (if (null? front) 
-        (if (rtq:empty? mid) 
+        (if (pq:empty? mid) 
             empty
-            (make-IntQue (force (rtq:head mid))
-                        (rtq:tail mid)
+            (make-IntQue (force (pq:head mid))
+                        (pq:tail mid)
                         (IntQue-LenFM que)
                         (IntQue-R que)
                         (IntQue-LenR que)))

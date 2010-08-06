@@ -1,16 +1,16 @@
-#lang typed-scheme
+#lang typed/scheme
 
 (provide (rename-out [heap-map map]) fold  filter remove
          empty? insert find-min/max delete-min/max empty
          merge sorted-list heap BSHeap Heap)
 
-(require (prefix-in bh: "skewbinomialheap.ss")
+(require (prefix-in ph: "pairingheap.ss")
          scheme/match)
 
 (define-struct: Mt ())
 
 (define-struct: (A) IntHeap ([elem : A]
-                             [heap : (bh:Heap (IntHeap A))]))
+                             [heap : (ph:Heap (IntHeap A))]))
 
 (define-type-alias (Heaps A) (U Mt (IntHeap A)))
 
@@ -24,7 +24,7 @@
 (: empty? : (All (A) ((BSHeap A) -> Boolean)))
 (define (empty? bsheap)
   (let ([hp (BSHeap-heap bsheap)])
-    (if (Mt? hp) #t (bh:empty? (IntHeap-heap hp)))))
+    (if (Mt? hp) #t (ph:empty? (IntHeap-heap hp)))))
 
 
 (: merge : (All (A) ((BSHeap A) (BSHeap A) -> (BSHeap A))))
@@ -44,8 +44,8 @@
                 [p1 (IntHeap-heap heap1)]
                 [p2 (IntHeap-heap heap2)]) 
             (if (func elem1 elem2)
-                (make-IntHeap elem1 (bh:insert heap2 p1))
-                (make-IntHeap elem2 (bh:insert heap1 p2))))]))
+                (make-IntHeap elem1 (ph:insert heap2 p1))
+                (make-IntHeap elem2 (ph:insert heap1 p2))))]))
 
 (: insert : (All (A) (A (BSHeap A) -> (BSHeap A))))
 (define (insert elem bsheap)
@@ -59,9 +59,9 @@
         [else (func (IntHeap-elem h1) (IntHeap-elem h2))]))
     (make-BSHeap func 
                  (merge-help (make-IntHeap elem 
-                                        (ann ((inst bh:heap (IntHeap A)) 
+                                        (ann ((inst ph:heap (IntHeap A)) 
                                               comp)
-                                             (bh:Heap (IntHeap A))))
+                                             (ph:Heap (IntHeap A))))
                              inheap func))))
 
 
@@ -79,13 +79,13 @@
     (if (Mt? heap)
         (error 'delete-min/max "given heap is empty")
         (let ([bheap (IntHeap-heap heap)])
-          (if (bh:empty? bheap)
+          (if (ph:empty? bheap)
               ((inst make-BSHeap A) func (ann (make-Mt) (Heaps A)))
-              (let ([min-heap (bh:find-min/max bheap)]
-                    [del (bh:delete-min/max bheap)])
+              (let ([min-heap (ph:find-min/max bheap)]
+                    [del (ph:delete-min/max bheap)])
                 (make-BSHeap func 
                              (make-IntHeap (IntHeap-elem min-heap) 
-                                        (bh:merge (IntHeap-heap min-heap) 
+                                        (ph:merge (IntHeap-heap min-heap) 
                                                   del)))))))))
 
 (: heap : (All (A) ((A A -> Boolean) A * -> (BSHeap A))))
@@ -105,7 +105,7 @@
   (let ([heap (BSHeap-heap bsheap)])
     (cond 
       [(Mt? heap) null]
-      [(bh:empty? (IntHeap-heap heap)) (list (IntHeap-elem heap))]
+      [(ph:empty? (IntHeap-heap heap)) (list (IntHeap-elem heap))]
       [else (cons (find-min/max bsheap) 
                   (sorted-list (delete-min/max bsheap)))])))
 
