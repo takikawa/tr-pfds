@@ -14,24 +14,29 @@
 (define-struct: (A) Heap ([comparer : (A A -> Boolean)]
                           [trees : (Trees A)]))
 
-;(define-type-alias (Heap A) (Heap A))
 (define-type-alias (Trees A) (Listof (Tree A)))
 
 (define-type-alias (FUNC A) (A A -> Boolean))
+
+;; Checks for empty
 (: empty? : (All (A) ((Heap A) -> Boolean)))
 (define (empty? heap)
   (null? (Heap-trees heap)))
 
+;; An empty heap
 (define empty null)
 
+;; Returns the rank of the tree
 (: rank : (All (A) ((Tree A) -> Integer)))
 (define (rank tree)
   (Tree-rank tree))
 
+;; Returns the root of the tree
 (: root : (All (A) ((Tree A) -> A)))
 (define (root tree)
   (Tree-elem tree))
 
+;; Helper functions for merge and insert functions
 (: link : (All (A) ((Tree A) (Tree A) (A A -> Boolean) -> (Tree A))))
 (define (link tree1 tree2 func)
   (let ([root1 (root tree1)]
@@ -42,6 +47,7 @@
                    (cons tree2 (Tree-trees tree1)))
         (make-Tree new-rank root2 (Tree-elems tree2) 
                    (cons tree1 (Tree-trees tree2))))))
+
 
 (: skew-link : (All (A) (A (Tree A) (Tree A) (FUNC A) -> (Tree A))))
 (define (skew-link elem tree1 tree2 func)
@@ -89,6 +95,9 @@
       trees
       (ins-tree (car trees) (cdr trees) func)))
 
+;; -----------------------------------------------------------------
+
+;; Inserts an element into the heap
 (: insert : (All (A) (A (Heap A) -> (Heap A))))
 (define (insert elem heap)
   (let* ([trees (Heap-trees heap)]
@@ -102,6 +111,7 @@
            new-ts)]
       [else new-ts])))
 
+;; Merges two given heaps
 (: merge : (All (A) ((Heap A) (Heap A) -> (Heap A))))
 (define (merge heap1 heap2)
   (let ([func (Heap-comparer heap1)]
@@ -111,6 +121,7 @@
                                  (normalize trees2 func)
                                  func))))
 
+;; Helper for find and delete-min/max
 (: remove-mintree : 
    (All (A) ((Trees A) (FUNC A) -> (Pair (Tree A) (Trees A)))))
 (define (remove-mintree trees func)
@@ -125,6 +136,8 @@
            (cons t ts)
            (cons t1 (cons t ts1))))]))
 
+;; Returns min or max element of the heap. Uses exception handling to
+;; throw specific errors
 (: find-min/max : (All (A) ((Heap A) -> A)))
 (define (find-min/max heap)
   (let* ([func (Heap-comparer heap)]
@@ -136,6 +149,8 @@
          [tree (car pair)])
     (root tree)))
 
+;; Deletes min or max element of the heap. Uses exception handling to
+;; throw specific errors as bot h find and delete use the same helper. 
 (: delete-min/max : (All (A) ((Heap A) -> (Heap A))))
 (define (delete-min/max heap)
   (let* ([func (Heap-comparer heap)]
@@ -156,10 +171,11 @@
              (merge (make-Heap func (reverse (Tree-trees tree))) 
                     (make-Heap func ts)))))
 
-
+;; Heap constructor
 (: heap : (All (A) ((FUNC A) A * -> (Heap A))))
 (define (heap func . lst)
   (foldl (inst insert A) ((inst make-Heap A) func null) lst))
+
 
 (: sorted-list : (All (A) ((Heap A) -> (Listof A))))
 (define (sorted-list heap)
@@ -168,7 +184,11 @@
       (cons (find-min/max heap) (sorted-list (delete-min/max heap)))))
 
 
-(: heap-map : (All (A C B ...) ((C C -> Boolean) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
+;; similar to list map function
+(: heap-map : (All (A C B ...) ((C C -> Boolean) 
+                                (A B ... B -> C) 
+                                (Heap A) 
+                                (Heap B) ... B -> (Heap C))))
 (define (heap-map comp func fst . rst)
   (: in-map : (All (A C B ...) ((Heap C) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
   (define (in-map accum func fst . rst)
@@ -182,6 +202,7 @@
   (apply in-map ((inst make-Heap C) comp empty) func fst rst))
 
 
+;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Heap A) -> (Heap A))))
 (define (filter func hep)
   (: inner : (All (A) ((A -> Boolean) (Heap A) (Heap A) -> (Heap A))))
@@ -196,6 +217,7 @@
   (inner func hep ((inst make-Heap A) (Heap-comparer hep) empty)))
 
 
+;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Heap A) -> (Heap A))))
 (define (remove func hep)
   (: inner : (All (A) ((A -> Boolean) (Heap A) (Heap A) -> (Heap A))))
@@ -209,6 +231,7 @@
               (inner func tail (insert head accum))))))
   (inner func hep ((inst make-Heap A) (Heap-comparer hep) empty)))
 
+;; similar to list fold function
 (: fold : (All (A C B ...)
                ((C A B ... B -> C) C (Heap A) (Heap B) ... B -> C)))
 (define (fold func base hep . heps)

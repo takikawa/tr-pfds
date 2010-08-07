@@ -13,23 +13,16 @@
                                  [heap : (IntHeap A)]))
 
 (define-type-alias (Heap A) (PairingHeap A))
-  
+
+;; An empty heap
 (define empty (make-Mt))
 
-(: merge-pairs : (All (A) ((Listof (IntHeap A)) (A A -> Boolean) -> (IntHeap A))))
-(define (merge-pairs lst comparer)
-  (cond
-    [(null? lst) empty]
-    [(null? (cdr lst)) (car lst)]
-    [else (in-merge (in-merge (car lst) (cadr lst) comparer) 
-                    (merge-pairs (cddr lst) comparer) 
-                    comparer)]))
-
+;; Checks for empty
 (: empty? : (All (A) ((PairingHeap A) -> Boolean)))
 (define (empty? pheap)
   (Mt? (PairingHeap-heap pheap)))
 
-
+;; Insers an element into the heap
 (: insert : (All (A) (A (PairingHeap A) -> (PairingHeap A))))
 (define (insert elem pheap)
   (let ([comparer (PairingHeap-comparer pheap)])
@@ -38,6 +31,7 @@
                                 (PairingHeap-heap pheap)
                                 comparer))))
 
+;; Merges two given heaps
 (: merge : (All (A) ((PairingHeap A) (PairingHeap A) -> (PairingHeap A))))
 (define (merge heap1 heap2)
   (let ([comparer (PairingHeap-comparer heap1)])
@@ -46,6 +40,7 @@
                                 (PairingHeap-heap heap2) 
                                 comparer))))
 
+;; Helper for merge
 (: in-merge : 
    (All (A) ((IntHeap A) (IntHeap A) (A A -> Boolean) -> (IntHeap A))))
 (define (in-merge heap1 heap2 comparer)
@@ -65,6 +60,7 @@
         (make-Tree tr1-elm (cons tree2 tr1-heaps))
         (make-Tree tr2-elm (cons tree1 tr2-heaps)))))
 
+;; Returns min or max element of the heap
 (: find-min/max : (All (A) ((PairingHeap A) -> A)))
 (define (find-min/max pheap)
   (let ([heap (PairingHeap-heap pheap)]
@@ -73,6 +69,17 @@
         (error 'find-min/max "given heap is empty")
         (Tree-elem heap))))
 
+;; A helper for delete-min/max
+(: merge-pairs : (All (A) ((Listof (IntHeap A)) (A A -> Boolean) -> (IntHeap A))))
+(define (merge-pairs lst comparer)
+  (cond
+    [(null? lst) empty]
+    [(null? (cdr lst)) (car lst)]
+    [else (in-merge (in-merge (car lst) (cadr lst) comparer) 
+                    (merge-pairs (cddr lst) comparer) 
+                    comparer)]))
+
+;; Deletes an element of the heap
 (: delete-min/max  : (All (A) ((PairingHeap A) -> (PairingHeap A))))
 (define (delete-min/max pheap)
   (let ([heap (PairingHeap-heap pheap)]
@@ -82,10 +89,15 @@
         (make-PairingHeap comparer
                           (merge-pairs (Tree-heaps heap) comparer)))))
 
-
-(: heap-map : (All (A C B ...) ((C C -> Boolean) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
+;; Similar to list map function
+(: heap-map : 
+   (All (A C B ...) 
+        ((C C -> Boolean) 
+         (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
 (define (heap-map comp func fst . rst)
-  (: in-map : (All (A C B ...) ((Heap C) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
+  (: in-map : 
+     (All (A C B ...) 
+          ((Heap C) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
   (define (in-map accum func fst . rst)
     (if (or (empty? fst) (ormap empty? rst))
         accum
@@ -96,7 +108,7 @@
                (map delete-min/max rst))))
   (apply in-map ((inst make-PairingHeap C) comp (make-Mt)) func fst rst))
 
-
+;; Similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Heap A) -> (Heap A))))
 (define (filter func hep)
   (: inner : (All (A) ((A -> Boolean) (Heap A) (Heap A) -> (Heap A))))
@@ -112,7 +124,7 @@
                    (PairingHeap-comparer hep)
                    (make-Mt))))
 
-
+;; Similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Heap A) -> (Heap A))))
 (define (remove func hep)
   (: inner : (All (A) ((A -> Boolean) (Heap A) (Heap A) -> (Heap A))))
@@ -135,11 +147,13 @@
       null
       (cons (find-min/max pheap) (sorted-list (delete-min/max pheap)))))
 
+;; Heap constructor function
 (: heap : (All (A) ((A A -> Boolean) A * -> (PairingHeap A))))
 (define (heap comparer . lst)
   (let ([first ((inst make-PairingHeap A) comparer (make-Mt))])
     (foldl (inst insert A) first lst)))
 
+;; Similar to list fold functions
 (: fold : (All (A C B ...)
                ((C A B ... B -> C) C (Heap A) (Heap B) ... B -> C)))
 (define (fold func base hep . heps)

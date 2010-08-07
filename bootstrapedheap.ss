@@ -19,14 +19,16 @@
 
 (define-type-alias (Heap A) (BSHeap A))
 
+;; An empty heap
 (define empty (make-Mt))
 
+;; Checks for empty
 (: empty? : (All (A) ((BSHeap A) -> Boolean)))
 (define (empty? bsheap)
   (let ([hp (BSHeap-heap bsheap)])
     (if (Mt? hp) #t (ph:empty? (IntHeap-heap hp)))))
 
-
+;; Merges two given heaps
 (: merge : (All (A) ((BSHeap A) (BSHeap A) -> (BSHeap A))))
 (define (merge heap1 heap2)
   (let ([func (BSHeap-comparer heap1)]
@@ -34,6 +36,7 @@
         [inheap2 (BSHeap-heap heap2)])
     (make-BSHeap func (merge-help inheap1 inheap2 func))))
 
+;; Helper
 (: merge-help : (All (A) ((Heaps A) (Heaps A) (A A -> Boolean) -> (Heaps A))))
 (define (merge-help heap1 heap2 func)
   (cond
@@ -47,6 +50,7 @@
                 (make-IntHeap elem1 (ph:insert heap2 p1))
                 (make-IntHeap elem2 (ph:insert heap1 p2))))]))
 
+;; Inserts an element into the heap
 (: insert : (All (A) (A (BSHeap A) -> (BSHeap A))))
 (define (insert elem bsheap)
   (let ([func (BSHeap-comparer bsheap)]
@@ -64,7 +68,7 @@
                                              (ph:Heap (IntHeap A))))
                              inheap func))))
 
-
+;; Returns the min or max element of the heap
 (: find-min/max : (All (A) ((BSHeap A) -> A)))
 (define (find-min/max bsheap)
   (let ([heap (BSHeap-heap bsheap)])
@@ -72,6 +76,7 @@
         (error 'find-min/max "given heap is empty")
         (IntHeap-elem heap))))
 
+;; Deletes min or max element of the heap
 (: delete-min/max : (All (A) ((BSHeap A) -> (BSHeap A))))
 (define (delete-min/max bsheap)
   (let ([heap (BSHeap-heap bsheap)]
@@ -88,6 +93,7 @@
                                         (ph:merge (IntHeap-heap min-heap) 
                                                   del)))))))))
 
+;; Heap constructor 
 (: heap : (All (A) ((A A -> Boolean) A * -> (BSHeap A))))
 (define (heap func . lst)
   (: comp : ((Heaps A) (Heaps A) -> Boolean))
@@ -109,10 +115,14 @@
       [else (cons (find-min/max bsheap) 
                   (sorted-list (delete-min/max bsheap)))])))
 
-
-(: heap-map : (All (A C B ...) ((C C -> Boolean) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
+;; Similar to list map function
+(: heap-map : (All (A C B ...) 
+                   ((C C -> Boolean) 
+                    (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
 (define (heap-map comp func fst . rst)
-  (: in-map : (All (A C B ...) ((Heap C) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
+  (: in-map : (All (A C B ...) 
+                   ((Heap C) 
+                    (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
   (define (in-map accum func fst . rst)
     (if (or (empty? fst) (ormap empty? rst))
         accum
@@ -123,7 +133,7 @@
                (map delete-min/max rst))))
   (apply in-map ((inst make-BSHeap C) comp empty) func fst rst))
 
-
+;; Similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Heap A) -> (Heap A))))
 (define (filter func hep)
   (: inner : (All (A) ((A -> Boolean) (Heap A) (Heap A) -> (Heap A))))
@@ -137,7 +147,7 @@
               (inner func tail accum)))))
   (inner func hep ((inst make-BSHeap A) (BSHeap-comparer hep) empty)))
 
-
+;; Similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Heap A) -> (Heap A))))
 (define (remove func hep)
   (: inner : (All (A) ((A -> Boolean) (Heap A) (Heap A) -> (Heap A))))
@@ -151,6 +161,7 @@
               (inner func tail (insert head accum))))))
   (inner func hep ((inst make-BSHeap A) (BSHeap-comparer hep) empty)))
 
+;; Similar to list fold functions
 (: fold : (All (A C B ...)
                ((C A B ... B -> C) C (Heap A) (Heap B) ... B -> C)))
 (define (fold func base hep . heps)

@@ -6,24 +6,34 @@
 (require scheme/promise scheme/match)
 
 (define-struct: Zero ())
+
 (define-struct: (A) One ([elem : A]))
+
 (define-struct: (A) Two ([fst : A]
                          [snd : A]))
+
 (define-type-alias ZeroOne (All (A) (U Zero (One A))))
+
 (define-type-alias OneTwo (All (A) (U (One A) (Two A))))
+
 (define-struct: (A) Shallow ([elem : (ZeroOne A)]))
+
 (define-struct: (A) Deep ([F : (OneTwo A)]
                           [M : (Promise (Pair (Queue A) (Queue A)))]
                           [R : (ZeroOne A)]))
 
 (define-type-alias Queue (All (A) (U (Shallow A) (Deep A))))
 
+
+;; An empty queue
 (define empty (make-Shallow (make-Zero)))
 
+;; Check for empty queue
 (: empty? : (All (A) ((Queue A) -> Boolean)))
 (define (empty? que)
   (and (Shallow? que) (Zero? (Shallow-elem que))))
 
+;; Inserts an element into the queue
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))
 (define (enqueue elem que)
   (match que
@@ -38,7 +48,7 @@
                                  (enqueue elem (cdr forced-mid))))
                   (make-Zero)))]))
 
-
+;; Returns the first element of the queue
 (: head : (All (A) ((Queue A) -> A)))
 (define (head que)
   (match que
@@ -47,6 +57,7 @@
     [(struct Deep ((struct One (one)) _ _)) one]
     [(struct Deep ((struct Two (one two)) _ _)) one]))
 
+;; Returns the rest of the queue
 (: tail : (All (A) ((Queue A) -> (Queue A))))
 (define (tail que)
   (match que
@@ -64,7 +75,7 @@
                   [new-mid (delay (cons (tail carm) (tail cdrm)))])
              (make-Deep (make-Two fst snd) new-mid r))))]))
 
-
+;; similar to list map function
 (: qmap : (All (A C B ...) 
                ((A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C))))
 (define (qmap func que . ques)
@@ -81,7 +92,7 @@
                (map tail ques))))
   (apply in-map empty func que ques))
 
-
+;; similar to list fold functions
 (: fold : (All (A C B ...)
                ((C A B ... B -> C) C (Queue A) (Queue B) ... B -> C)))
 (define (fold func base que . ques)
@@ -99,10 +110,12 @@
       null
       (cons (head que) (queue->list (tail que)))))
 
+;; Queue constructor
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
   (foldl (inst enqueue A) (make-Shallow (make-Zero)) lst))
 
+;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (filter func que)
   (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
@@ -116,7 +129,7 @@
               (inner func tail accum)))))
   (inner func que empty))
 
-
+;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (remove func que)
   (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))

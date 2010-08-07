@@ -11,10 +11,10 @@
                            [scdul : (Stream A)]))
 
 
-;(define-type-alias (Queue A) (Queue A))
+;; An empty queue
 (define empty (make-Queue empty-stream null empty-stream))
 
-
+;; Function to check for empty queue
 (: empty? : (All (A) ((Queue A) -> Boolean)))
 (define (empty? rtq)
   (empty-stream? (Queue-front rtq)))

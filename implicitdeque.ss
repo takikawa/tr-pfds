@@ -23,12 +23,15 @@
 
 (define-type-alias Deque (All (A) (U (Shallow A) (Deep A))))
 
+;; An empty deque
 (define empty (make-Shallow (make-Zero)))
 
+;; Check for empty deque
 (: empty? : (All (A) ((Deque A) -> Boolean)))
 (define (empty? que)
   (and (Shallow? que) (Zero? (Shallow-elem que))))
 
+;; Inserts an element into the front of deque
 (: enqueue-front : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue-front elem que)
   (match que    
@@ -50,6 +53,7 @@
                      (delay (cons (enqueue-front s fst) (enqueue-front t snd)))
                      r))]))
 
+;; Inserts into the rear of the queue
 (: enqueue : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue elem que)
   (match que    
@@ -71,6 +75,7 @@
                      (delay (cons (enqueue f fst) (enqueue s snd)))
                      (make-Two t elem)))]))
 
+;; Returns the first element of the deque
 (: head : (All (A) ((Deque A) -> A)))
 (define (head que)
   (match que    
@@ -83,6 +88,7 @@
     [(struct Deep ((struct Two (f s)) m r)) f]
     [(struct Deep ((struct Three (f s t)) m r)) f]))
 
+;; Returns the last element of the deque 
 (: last : (All (A) ((Deque A) -> A)))
 (define (last que)
   (match que    
@@ -95,7 +101,7 @@
     [(struct Deep (fi m (struct Two (f s)))) s]
     [(struct Deep (fi m (struct Three (f s t)))) t]))
 
-
+;; Returns a deque without the first element
 (: tail : (All (A) ((Deque A) -> (Deque A))))
 (define (tail que)
   (match que    
@@ -118,7 +124,7 @@
     [(struct Deep ((struct Three (_ s t)) m r)) 
      (make-Deep (make-Two s t) m r)]))
 
-
+;; Returns a deque without the last element
 (: init : (All (A) ((Deque A) -> (Deque A))))
 (define (init que)
   (match que
@@ -142,7 +148,7 @@
     [(struct Deep (fi m (struct Three (f s t)))) 
      (make-Deep fi m (make-Two f s))]))
 
-
+;; similar to list map function
 (: dqmap : (All (A C B ...) 
                ((A B ... B -> C) (Deque A) (Deque B) ... B -> (Deque C))))
 (define (dqmap func que . ques)
@@ -159,7 +165,7 @@
                (map tail ques))))
   (apply in-map empty func que ques))
 
-
+;; similar to list foldr function
 (: foldr : (All (A C B ...)
                ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
 (define (foldr func base que . ques)
@@ -171,7 +177,7 @@
                (tail que)
                (map tail ques))))
 
-
+;; similar to list foldl function
 (: dqfoldl : (All (A C B ...)
                ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
 (define (dqfoldl func base que . ques)
@@ -196,10 +202,12 @@
       null
       (cons (last que) (deque->rev-list (init que)))))
 
+;; Deque constructor
 (: deque : (All (A) (A * -> (Deque A))))
 (define (deque . lst)
   (foldl (inst enqueue A) empty lst))
 
+;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Deque A) -> (Deque A))))
 (define (filter func que)
   (: inner : (All (A) ((A -> Boolean) (Deque A) (Deque A) -> (Deque A))))
@@ -213,7 +221,7 @@
               (inner func tail accum)))))
   (inner func que empty))
 
-
+;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Deque A) -> (Deque A))))
 (define (remove func que)
   (: inner : (All (A) ((A -> Boolean) (Deque A) (Deque A) -> (Deque A))))

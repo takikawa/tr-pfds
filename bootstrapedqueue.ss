@@ -15,15 +15,17 @@
 
 (define-struct: EmptyBSQueue ())
 
+;; An empty queue
 (define empty (make-EmptyBSQueue))
 
 (define-type-alias (Queue A) (U EmptyBSQueue (IntQue A)))
 
+;; Checks for empty
 (: empty? : (All (A) ((Queue A) -> Boolean)))
 (define (empty? bsq)
   (EmptyBSQueue? bsq))
 
-
+;; Maintains invarients
 (: internal-queue : (All (A) ((Listof A) (Mid A) Integer (Listof A) Integer 
                                          -> (Queue A))))
 (define (internal-queue f m lenfm r lenr)
@@ -33,6 +35,7 @@
                           (+ lenfm lenr)
                           null 0))))
 
+;; Inserts an element into the queue
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))
 (define (enqueue elem bsq)
   (if (EmptyBSQueue? bsq)
@@ -43,13 +46,14 @@
                       (cons elem (IntQue-R bsq))
                       (add1 (IntQue-LenR bsq)))))
 
+;; Returns the first element of the queue
 (: head : (All (A) ((Queue A) -> A)))
 (define (head bsq)
   (if (EmptyBSQueue? bsq)
       (error 'head "given queue is empty")
       (car (IntQue-F bsq))))
 
-
+;; Returns the rest of the queue
 (: tail : (All (A) ((Queue A) -> (Queue A))))
 (define (tail bsq)
   (if (EmptyBSQueue? bsq)
@@ -60,6 +64,7 @@
                       (IntQue-R bsq)
                       (IntQue-LenR bsq))))
 
+;; Invarient check
 (: checkF : (All (A) ((IntQue A) -> (Queue A))))
 (define (checkF que)
   (let* ([front (IntQue-F que)]
@@ -75,6 +80,7 @@
         que)))
 
 
+;; similar to list map function
 (: qmap : (All (A C B ...) 
                ((A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C))))
 (define (qmap func que . ques)
@@ -91,7 +97,7 @@
                (map tail ques))))
   (apply in-map empty func que ques))
 
-
+;; similar to list fold functions
 (: fold : (All (A C B ...)
                ((C A B ... B -> C) C (Queue A) (Queue B) ... B -> C)))
 (define (fold func base que . ques)
@@ -109,10 +115,12 @@
       null
       (cons (head bsq) (queue->list (tail bsq))))) 
 
+;; Queue constructor
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
   (foldl (inst enqueue A) empty lst))
 
+;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (filter func que)
   (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
@@ -126,7 +134,7 @@
               (inner func tail accum)))))
   (inner func que empty))
 
-
+;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (remove func que)
   (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))

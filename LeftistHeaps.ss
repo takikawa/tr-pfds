@@ -16,11 +16,14 @@
 
 (define-type-alias (Heap A) (LeftistHeap A))
 
+;; An empty heap
 (define empty (make-Mt))
 
+;; Returns the rank of the heap
 (: rank : (All (A) ((IntHeap A) -> Integer)))
 (define (rank lheap)
   (if (Mt? lheap) 0 (Tree-rank lheap)))
+
 
 (: make-lheap : (All (A) (A (IntHeap A) (IntHeap A) -> (IntHeap A))))
 (define (make-lheap elem heap1 heap2)
@@ -30,10 +33,12 @@
         (make-Tree (add1 rank2) elem heap1 heap2)
         (make-Tree (add1 rank1) elem heap2 heap1))))
 
+;; Checks for empty heap
 (: empty? : (All (A) ((LeftistHeap A) -> Boolean)))
 (define (empty? lheap)
   (Mt? (LeftistHeap-heap lheap)))
 
+;; Inserts an element into the heap
 (: insert : (All (A) (A (LeftistHeap A) -> (LeftistHeap A))))
 (define (insert elem lheap)
   (let ([comparer (LeftistHeap-comparer lheap)])
@@ -42,6 +47,7 @@
                                 (LeftistHeap-heap lheap)
                                 comparer))))
 
+;; Merges two heaps.
 (: merge : (All (A) ((LeftistHeap A) (LeftistHeap A) -> (LeftistHeap A))))
 (define (merge heap1 heap2)
   (let ([comparer (LeftistHeap-comparer heap1)])
@@ -50,6 +56,7 @@
                                 (LeftistHeap-heap heap2) 
                                 comparer))))
 
+;; Helper for merge
 (: in-merge : 
    (All (A) ((IntHeap A) (IntHeap A) (A A -> Boolean) -> (IntHeap A))))
 (define (in-merge heap1 heap2 comparer)
@@ -73,6 +80,7 @@
         (make-lheap tr2-elm tr2-lft 
                     (in-merge tree1 tr2-rgt comparer)))))
 
+;; Returns min or max element of the heap
 (: find-min/max : (All (A) ((LeftistHeap A) -> A)))
 (define (find-min/max lheap)
   (let ([heap (LeftistHeap-heap lheap)]
@@ -81,6 +89,7 @@
         (error 'find-min/max "given heap is empty")
         (Tree-elem heap))))
 
+;; Deletes min or max element of the heap
 (: delete-min/max : (All (A) ((LeftistHeap A) -> (LeftistHeap A))))
 (define (delete-min/max lheap)
   (let ([heap (LeftistHeap-heap lheap)]
@@ -92,21 +101,31 @@
                                     (Tree-right heap) 
                                     comparer)))))
 
+;; Returns a sorted list 
 (: sorted-list : (All (A) ((LeftistHeap A) -> (Listof A))))
 (define (sorted-list lheap)
   (if (Mt? (LeftistHeap-heap lheap))
       null
       (cons (find-min/max lheap) (sorted-list (delete-min/max lheap)))))
 
+;; Heap constructor
 (: heap : (All (A) ((A A -> Boolean) A * -> (LeftistHeap A))))
 (define (heap comparer . lst)
   (let ([first ((inst make-LeftistHeap A) comparer empty)])
     (foldl (inst insert A) first lst)))
 
-
-(: heap-map : (All (A C B ...) ((C C -> Boolean) (A B ... B -> C) (LeftistHeap A) (LeftistHeap B) ... B -> (LeftistHeap C))))
+;; similar to list map function
+(: heap-map : 
+   (All (A C B ...) ((C C -> Boolean) 
+                     (A B ... B -> C) 
+                     (LeftistHeap A) 
+                     (LeftistHeap B) ... B -> (LeftistHeap C))))
 (define (heap-map comp func fst . rst)
-  (: in-map : (All (A C B ...) ((LeftistHeap C) (A B ... B -> C) (LeftistHeap A) (LeftistHeap B) ... B -> (LeftistHeap C))))
+  (: in-map : 
+     (All (A C B ...) ((LeftistHeap C) 
+                       (A B ... B -> C) 
+                       (LeftistHeap A) 
+                       (LeftistHeap B) ... B -> (LeftistHeap C))))
   (define (in-map accum func fst . rst)
     (if (or (empty? fst) (ormap empty? rst))
         accum
@@ -117,7 +136,7 @@
                (map delete-min/max rst))))
   (apply in-map ((inst make-LeftistHeap C) comp empty) func fst rst))
 
-
+;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (LeftistHeap A) -> (LeftistHeap A))))
 (define (filter func hep)
   (: inner : (All (A) ((A -> Boolean) (LeftistHeap A) (LeftistHeap A) -> (LeftistHeap A))))
@@ -131,7 +150,7 @@
               (inner func tail accum)))))
   (inner func hep ((inst make-LeftistHeap A) (LeftistHeap-comparer hep) empty)))
 
-
+;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (LeftistHeap A) -> (LeftistHeap A))))
 (define (remove func hep)
   (: inner : (All (A) ((A -> Boolean) (LeftistHeap A) (LeftistHeap A) -> (LeftistHeap A))))
@@ -145,6 +164,7 @@
               (inner func tail (insert head accum))))))
   (inner func hep ((inst make-LeftistHeap A) (LeftistHeap-comparer hep) empty)))
 
+;; similar to list fold function
 (: fold : (All (A C B ...)
                ((C A B ... B -> C) C (LeftistHeap A) (LeftistHeap B) ... B -> C)))
 (define (fold func base hep . heps)

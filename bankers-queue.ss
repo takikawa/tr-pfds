@@ -60,7 +60,7 @@
                       (Queue-rear que)
                       (Queue-lenr que))))
 
-
+;; similar to list map function 
 (: qmap : (All (A C B ...) 
                ((A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C))))
 (define (qmap func que . ques)
@@ -77,7 +77,7 @@
                (map tail ques))))
   (apply in-map empty func que ques))
 
-
+;; similar to list foldr or foldl
 (: fold : (All (A C B ...)
                ((C A B ... B -> C) C (Queue A) (Queue B) ... B -> C)))
 (define (fold func base que . ques)
@@ -89,7 +89,7 @@
                (tail que)
                (map tail ques))))
 
-
+;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (filter func que)
   (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
@@ -103,7 +103,7 @@
               (inner func tail accum)))))
   (inner func que empty))
 
-
+;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (remove func que)
   (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))

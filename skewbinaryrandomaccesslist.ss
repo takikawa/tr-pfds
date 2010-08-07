@@ -16,16 +16,20 @@
 
 (define-type-alias List (All (A) (Listof (Root A))))
 
+;; An empty list
 (define empty null)
 
+;; Checks for empty
 (: empty? : (All (A) ((List A) -> Boolean)))
 (define (empty? sralist)
   (null? sralist))
 
+;; Helper to get the weight of the root
 (: getWeight : (All (A) ((Root A) -> Integer)))
 (define (getWeight root)
   (Root-weight root))
 
+;; Similar to list cons function
 (: cons  : (All (A) (A (List A) -> (List A))))
 (define (cons  elem sralist)
   (if (or (null? sralist) (null? (cdr sralist)))
@@ -40,6 +44,7 @@
                   (cdr (cdr sralist)))
             (sh:cons (make-Root 1 (make-Leaf elem)) sralist)))))
 
+;; Similar to list car function
 (: head : (All (A) ((List A) -> A)))
 (define (head sralist)
   (if (null? sralist) 
@@ -49,7 +54,7 @@
             (Leaf-fst fst)
             (Node-fst fst)))))
 
-
+;; Similar to list cdr function
 (: tail : (All (A) ((List A) -> (List A))))
 (define (tail sralist)
   (if (null? sralist)
@@ -62,6 +67,7 @@
                    (make-Root wgt (Node-rgt fst))
                    (cdr sralist))))))
 
+;; Helper for list-ref
 (: tree-lookup : (All (A) (Integer (Tree A) Integer -> A)))
 (define (tree-lookup wgt tre pos)
   (let ([new-wgt (arithmetic-shift wgt -1)]
@@ -80,6 +86,7 @@
      (tree-lookup new-wgt (Node-lft tre) (sub1 pos))]
     [else (tree-lookup new-wgt (Node-rgt tre) (- pos 1 new-wgt))]))
 
+;; Helper for list-set
 (: tree-update : (All (A) (Integer (Tree A) Integer A -> (Tree A))))
 (define (tree-update wgt tre pos elem)
   (let ([new-wgt (arithmetic-shift wgt -1)]
@@ -103,7 +110,7 @@
       [else (make-Node fst lft (tree-update new-wgt rgt 
                                             (- pos 1 new-wgt) elem))])))
 
-
+;; Similar to list list-ref function
 (: list-ref : (All (A) ((List A) Integer -> A)))
 (define (list-ref sralist pos)
   (cond
@@ -112,7 +119,7 @@
      (tree-lookup (getWeight (car sralist)) (Root-fst (car sralist)) pos)]
     [else (list-ref (cdr sralist) (- pos (getWeight (car sralist))))]))
 
-
+;; Similar to list list-set function
 (: list-set : (All (A) ((List A) Integer A -> (List A))))
 (define (list-set sralist pos elem)
   (cond
@@ -127,6 +134,7 @@
                              (- pos (getWeight (car sralist)))
                              elem))]))
 
+;; Helper for drop
 (: tree-drop : (All (A) (Integer (Tree A) Integer (List A) -> (List A))))
 (define (tree-drop size tre pos ralist)
   (let ([newsize (arithmetic-shift size -1)])
@@ -143,7 +151,7 @@
                   ralist)]
       [else (error 'drop "given index out of bounds")])))
 
-
+;; Similar to list drop function
 (: drop : (All (A) (Integer (List A) -> (List A))))
 (define (drop pos ralist)
   (cond
@@ -159,20 +167,12 @@
       (tree-drop size tree pos rest)
       (drop (- pos size) rest))))
 
-;(: list-length : (All (A) ((List A) -> Integer)))
-;(define (list-length ralist)
-;  (: int-length : (All (A) ((List A) Integer -> Integer)))
-;  (define (int-length int-ralist accum)
-;    (if (null? int-ralist)
-;        accum
-;        (int-length (tail int-ralist) (add1 accum))))
-;  (int-length ralist 0))
-;
-
+;; Similar to list length function
 (: list-length : (All (A) ((List A) -> Integer)))
 (define (list-length ralist)
   (foldl + 0 (map (inst getWeight A) ralist)))
 
+;; Similar to list map function
 (: ramap : (All (A C B ...) 
                 ((A B ... B -> C) (List A) (List B) ... B -> (List C))))
 (define (ramap func lst . lsts)
@@ -184,7 +184,7 @@
                    (tail lst)
                    (map tail lsts)))))
 
-
+;; Similar to list foldr function
 (: rafoldr : (All (A C B ...)
                   ((C A B ... B -> C) C (List A) (List B) ... B -> C)))
 (define (rafoldr func base lst . lsts)
@@ -196,7 +196,7 @@
                          (tail lst)
                          (map tail lsts)) (head lst) (map head lsts))))
 
-
+;; Similar to list foldl function
 (: rafoldl : (All (A C B ...)
                   ((C A B ... B -> C) C (List A) (List B) ... B -> C)))
 (define (rafoldl func base lst . lsts)
@@ -208,13 +208,14 @@
                (tail lst)
                (map tail lsts))))
 
-
+;; RAList to normal list
 (: ->list : (All (A) ((List A) -> (Listof A))))
 (define (->list ralist)
   (if (empty? ralist)
       null
       (sh:cons (head ralist) (->list (tail ralist)))))
 
+;; list constructor
 (: list : (All (A) (A * -> (List A))))
 (define (list . lst)
   (foldr (inst cons  A) null lst))
@@ -222,6 +223,7 @@
 (define first* head)
 (define rest* tail)
 
+;; Similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (List A) -> (List A))))
 (define (filter func ral)
   (if (empty? ral)
@@ -232,7 +234,7 @@
         (cons head (filter func tail))
         (filter func tail)))))
 
-
+;; Similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (List A) -> (List A))))
 (define (remove func ral)
   (if (empty? ral)

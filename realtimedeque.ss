@@ -22,7 +22,7 @@
 (define empty (make-Deque empty-stream 0 empty-stream
                           empty-stream 0 empty-stream))
 
-
+;; Check for empty dequeue
 (: empty? : (All (A) ((Deque A) -> Boolean)))
 (define (empty? rtdq)
   (zero? (+ (Deque-lenf rtdq) (Deque-lenr rtdq))))
@@ -174,7 +174,7 @@
                             (sub1 (Deque-lenr rtdq))
                             (exec-two (Deque-scdulR rtdq)))))))
 
-
+;; similar to list map function
 (: dqmap : (All (A C B ...) 
                 ((A B ... B -> C) (Deque A) (Deque B) ... B -> (Deque C))))
 (define (dqmap func que . ques)
@@ -191,7 +191,7 @@
                (map tail ques))))
   (apply in-map empty func que ques))
 
-
+;; similar to list foldr function
 (: foldr : (All (A C B ...)
                 ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
 (define (foldr func base que . ques)
@@ -203,7 +203,7 @@
              (tail que)
              (map tail ques))))
 
-
+;; similar to list foldl function
 (: dqfoldl : (All (A C B ...)
                   ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
 (define (dqfoldl func base que . ques)
@@ -233,6 +233,7 @@
 (define (deque . lst)
   (foldl (inst enqueue A) empty lst))
 
+;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Deque A) -> (Deque A))))
 (define (filter func que)
   (: inner : (All (A) ((A -> Boolean) (Deque A) (Deque A) -> (Deque A))))
@@ -246,7 +247,7 @@
               (inner func tail accum)))))
   (inner func que empty))
 
-
+;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Deque A) -> (Deque A))))
 (define (remove func que)
   (: inner : (All (A) ((A -> Boolean) (Deque A) (Deque A) -> (Deque A))))

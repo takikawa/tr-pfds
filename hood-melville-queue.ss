@@ -70,12 +70,15 @@
       (exec2 (+ lenf lenr) front 
              (make-Reversing 0 front null rear null) 0 null)))
 
+;; Check for empty queue
 (: empty? : (All (A) ((Queue A) -> Boolean)))
 (define (empty? que)
   (zero? (Queue-lenf que)))
 
+;; An empty queue
 (define empty (make-Queue 0 null (make-Idle) 0 null))
 
+;; Inserts an element into the queue
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))
 (define (enqueue elem que)
   (check (Queue-lenf que)
@@ -84,6 +87,7 @@
          (add1 (Queue-lenr que))
          (cons elem (Queue-rear que))))
 
+;; Returns the first element of the queue
 (: head : (All (A) ((Queue A) -> A)))
 (define (head que)
   (let ([fr (Queue-front que)])
@@ -91,6 +95,7 @@
         (error 'head "given queue is empty")
         (car fr))))
 
+;; Returns the rest of the queue
 (: tail : (All (A) ((Queue A) -> (Queue A))))
 (define (tail que)
   (let ([fr (Queue-front que)])
@@ -102,6 +107,7 @@
                (Queue-lenr que)
                (Queue-rear que)))))
 
+;; similar to list map function
 (: qmap : (All (A C B ...) 
                ((A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C))))
 (define (qmap func que . ques)
@@ -118,7 +124,7 @@
                (map tail ques))))
   (apply in-map empty func que ques))
 
-
+;; similar to list fold functions
 (: fold : (All (A C B ...)
                ((C A B ... B -> C) C (Queue A) (Queue B) ... B -> C)))
 (define (fold func base que . ques)
@@ -130,9 +136,11 @@
                (tail que)
                (map tail ques))))
 
+;; Queue constructor function
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
   (foldl (inst enqueue A) empty lst))
+
 
 (: queue->list (All (A) ((Queue A) -> (Listof A))))
 (define (queue->list que)
@@ -140,6 +148,7 @@
       null
       (cons (head que) (queue->list (tail que)))))
 
+;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (filter func que)
   (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
@@ -153,7 +162,7 @@
               (inner func tail accum)))))
   (inner func que empty))
 
-
+;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (remove func que)
   (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))

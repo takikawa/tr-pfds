@@ -22,21 +22,25 @@
 
 (define-struct: Null-RaList ())
 
+;; An empty list
 (define empty (make-Null-RaList))
 
 (define One 1)
 (define Zero 0)
 
+;; Checks for empty list
 (: empty? : (All (A) ((RAList A) -> Boolean)))
 (define (empty? list)
   (Null-RaList? list))
 
+;; Returns the length of the list
 (: list-length : (All (A) ((RAList A) -> Integer)))
 (define (list-length list)
   (if (Null-RaList? list)
       0
       (+ (Root-size list) (list-length (Root-rst list)))))
 
+;; Similar to list cons function
 (: cons : (All (A) (A (RAList A) -> (RAList A))))
 (define (cons elem list)
   (if (Null-RaList? list) 
@@ -50,20 +54,21 @@
                        (rest rst))
             (make-Root One (make-Leaf elem) list)))))
 
+;; Helper for cons
 (: first : (All (A) ((RAList A) -> (Tree A))))
 (define (first list )
   (if (Null-RaList? list)
-      (error 'cons "given list is empty")
+      (error 'cons "given list is empty") ;; Should never come
       (Root-fst list)))
 
-
+;; Helper for cons
 (: rest : (All (A) ((RAList A) -> (RAList A))))
 (define (rest list)
   (if (Null-RaList? list)
-      (error 'rest "given list is empty")
+      (error 'cons "given list is empty") ;; Should never come here
       (Root-rst list)))
 
-
+;; Similar to list car function
 (: head : (All (A) ((RAList A) -> A)))
 (define (head list)
   (if (Null-RaList? list) 
@@ -73,7 +78,7 @@
             (Leaf-fst fst)
             (Node-fst fst)))))
 
-
+;; Similar to list cdr function
 (: tail : (All (A) ((RAList A) -> (RAList A))))
 (define (tail list)
   (if (Null-RaList? list) 
@@ -86,6 +91,8 @@
           (make-Root size (Node-lft fst) 
                      (make-Root size (Node-rgt fst) rst))))))
 
+
+;; Helpers for list-ref
 (: tree-lookup : (All (A) (Integer (Tree A) Integer -> A)))
 (define (tree-lookup size tre pos)
   (let ([pos-zero? (zero? pos)])
@@ -102,7 +109,7 @@
       [(<= pos newsize) (tree-lookup newsize (Node-lft tre) (- pos 1))]
       [else (tree-lookup newsize (Node-rgt tre) (- pos 1 newsize))])))
 
-
+;; Helpers for list-set
 (: tree-update : (All (A) (Integer (Tree A) Integer A -> (Tree A))))
 (define (tree-update size tre pos elem)
   (let ([newsize (arithmetic-shift size -1)]
@@ -124,7 +131,8 @@
        (make-Node first (tree-update newsize left (- pos 1) elem) right)]
       [else (make-Node first left 
                        (tree-update newsize right (- pos 1 newsize) elem))])))
-    
+
+;; Similar to list list-ref function
 (: list-ref : (All (A) ((RAList A) Integer -> A)))
 (define (list-ref list pos)
   (if (Null-RaList? list) 
@@ -134,7 +142,7 @@
             (tree-lookup size (Root-fst list) pos)
             (list-ref (Root-rst list) (- pos size))))))
 
-
+;; Similar to list list-set function
 (: list-set : (All (A) ((RAList A) Integer A -> (RAList A))))
 (define (list-set list pos elem)
   (if (Null-RaList? list) 
@@ -146,6 +154,7 @@
             (make-Root size (tree-update size fst pos elem) rst)
             (make-Root size fst (list-set rst (- pos size) elem))))))
 
+;; Helpers for drop
 (: tree-drop : (All (A) (Integer (Tree A) Integer (RAList A) -> (RAList A))))
 (define (tree-drop size tre pos list)
   (cond 
@@ -165,6 +174,7 @@
                    (make-Root newsize right list))
         (tree-drop newsize right (- pos 1 newsize) list))))
 
+;; Similar to list drop function
 (: drop : (All (A) (Integer (RAList A) -> (RAList A))))
 (define (drop pos list)
   (cond
@@ -181,7 +191,7 @@
         (tree-drop size fst pos rst)
         (drop (- pos size) rst))))
 
-
+;; Similar to list map function
 (: ramap : (All (A C B ...) 
                 ((A B ... B -> C) (List A) (List B) ... B -> (List C))))
 (define (ramap func lst . lsts)
@@ -193,7 +203,7 @@
                    (tail lst)
                    (map tail lsts)))))
 
-
+;; Similar to list foldr function
 (: rafoldr : (All (A C B ...)
                   ((C A B ... B -> C) C (List A) (List B) ... B -> C)))
 (define (rafoldr func base lst . lsts)
@@ -205,7 +215,7 @@
                          (tail lst)
                          (map tail lsts)) (head lst) (map head lsts))))
 
-
+;; Similar to list foldl function
 (: rafoldl : (All (A C B ...)
                   ((C A B ... B -> C) C (List A) (List B) ... B -> C)))
 (define (rafoldl func base lst . lsts)
@@ -218,13 +228,14 @@
                (map tail lsts))))
 
 
-
+;; Convers the random access list to normal list
 (: ->list : (All (A) ((RAList A) -> (Listof A))))
 (define (->list list)
   (if (empty? list)
       null
       (sh:cons (head list) (->list (tail list)))))
 
+;; list constructor
 (: list : (All (A) (A * -> (RAList A))))
 (define (list . rst)
   (foldr (inst cons A) empty rst))
@@ -232,7 +243,7 @@
 (define first* head)
 (define rest* tail)
 
-
+;; Similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (List A) -> (List A))))
 (define (filter func ral)
   (if (empty? ral)
@@ -243,7 +254,7 @@
         (cons head (filter func tail))
         (filter func tail)))))
 
-
+;; Similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (List A) -> (List A))))
 (define (remove func ral)
   (if (empty? ral)

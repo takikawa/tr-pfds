@@ -18,8 +18,10 @@
 
 (define-type-alias CatenableList (All (A) (U (List A) EmptyList)))
 
+;; An empty list
 (define empty (make-EmptyList))
 
+;; Checks for empty list
 (: empty? : (All (A) ((CatenableList A) -> Boolean)))
 (define (empty? cat)
   (EmptyList? cat))
@@ -37,6 +39,7 @@
         hd
         (link hd (delay (link-all tl))))))
 
+;; Append helper 
 (: append-inner : (All (A) ((CatenableList A) (CatenableList A) -> (CatenableList A))))
 (define (append-inner cat1 cat2)
   (cond
@@ -44,26 +47,31 @@
     [(EmptyList? cat2) cat1]
     [else (link cat1 (delay cat2))]))
 
+;; List append
 (: append : (All (A) ((CatenableList A) * -> (CatenableList A))))
 (define (append . cats)
   (if (null? cats)
       empty
       (append-inner (car cats) (apply append (cdr cats)))))
 
+;; Similar to list cons function
 (: kons : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (kons elem cat)
   (append (make-List elem rtq:empty) cat))
 
+;; Inserts an element at the rear end of the list
 (: kons-rear : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (kons-rear elem cat)
   (append cat (make-List elem rtq:empty)))
 
+;; Similar to list car function
 (: head : (All (A) ((CatenableList A) -> A)))
 (define (head cat)
   (if (EmptyList? cat)
       (error 'first "given list is empty")
       (List-elem cat)))
 
+;; Similar to list cdr function
 (: tail : (All (A) ((CatenableList A) -> (CatenableList A))))
 (define (tail cat)
   (if (EmptyList? cat) 
@@ -77,6 +85,7 @@
         empty
         (link-all ques))))
 
+;; Similar to list map function
 (: cmap : (All (A C B ...) ((A B ... B -> C) (CatenableList A) 
                                              (CatenableList B) ... B -> 
                                              (CatenableList C))))
@@ -86,6 +95,7 @@
       (kons (apply func (head lst) (map head lsts)) 
             (apply cmap func (tail lst) (map tail lsts)))))
 
+;; Similar to list foldl function
 (: cfoldl : 
    (All (C A B ...) ((C A B ... B -> C) C (CatenableList A) 
                                         (CatenableList B) ... B -> C)))
@@ -98,6 +108,7 @@
              (tail fst)
              (map tail rst))))
 
+;; Similar to list foldr function
 (: cfoldr : 
    (All (C A B ...) ((C A B ... B -> C) C (CatenableList A) 
                                         (CatenableList B) ... B -> C)))
@@ -110,6 +121,7 @@
                          (tail fst)
                          (map tail rst)) (head fst) (map head rst))))
 
+;; Similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (CatenableList A) -> (CatenableList A))))
 (define (filter func que)
   (: inner : (All (A) ((A -> Boolean) (CatenableList A) (CatenableList A) -> (CatenableList A))))
@@ -123,7 +135,7 @@
               (inner func tail accum)))))
   (inner func que empty))
 
-
+;; Similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (CatenableList A) -> (CatenableList A))))
 (define (remove func que)
   (: inner : (All (A) ((A -> Boolean) (CatenableList A) (CatenableList A) -> (CatenableList A))))
@@ -137,10 +149,11 @@
               (inner func tail (kons head accum))))))
   (inner func que empty))
 
-
+;; list constructor
 (: clist : (All (A) (A * -> (CatenableList A))))
 (define (clist . lst)
   (foldr (inst kons A) empty lst))
+
 
 (: clist->list : (All (A) ((CatenableList A) -> (Listof A))))
 (define (clist->list cat)
