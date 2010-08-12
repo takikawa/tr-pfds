@@ -33,22 +33,22 @@
 (require slideshow/code)
 
 
-(slide
- #:title "Outline"
- (item #:bullet custom-bullet "Motivation") 
- (item #:bullet custom-bullet "Typed Racket in a Nutshell") 
- (item #:bullet custom-bullet "Purely Functional Data Structures")
- (item #:bullet custom-bullet "Benchmarks")
- (item #:bullet custom-bullet "Conclusion"))
-
-
-(slide
- #:title "Outline"
- (item #:bullet sel-bul "Motivation") 
- (item #:bullet custom-bullet "Typed Racket in a Nutshell") 
- (item #:bullet custom-bullet "Purely Functional Data Structures")
- (item #:bullet custom-bullet "Benchmarks")
- (item #:bullet custom-bullet "Conclusion"))
+;(slide
+; #:title "Outline"
+; (item #:bullet custom-bullet "Motivation") 
+; (item #:bullet custom-bullet "Typed Racket in a Nutshell") 
+; (item #:bullet custom-bullet "Purely Functional Data Structures")
+; (item #:bullet custom-bullet "Benchmarks")
+; (item #:bullet custom-bullet "Conclusion"))
+;
+;
+;(slide
+; #:title "Outline"
+; (item #:bullet sel-bul "Motivation") 
+; (item #:bullet custom-bullet "Typed Racket in a Nutshell") 
+; (item #:bullet custom-bullet "Purely Functional Data Structures")
+; (item #:bullet custom-bullet "Benchmarks")
+; (item #:bullet custom-bullet "Conclusion"))
 
 
 (slide
@@ -273,7 +273,7 @@
 ;             'next
 ;             pict-id)
        (list (subitem #:bullet invis-bul 
-                      "Lazy evaluation with memoization solves of this problem") 
+                      "Lazy evaluation with memoization solves this problem") 
              'next
              'alts
              (list
@@ -297,7 +297,7 @@
                (vc-append 16 
                           (subitem #:bullet invis-bul
                                    (hc-append 10
-                                              (new-text "Amortized runing time of O(1) for the operations") 
+                                              (new-text "Amortized running time of O(1) for the operations") 
                                               (code enqueue)))
                           (subitem #:bullet invis-bul
                                    (hc-append (code dequeue) 

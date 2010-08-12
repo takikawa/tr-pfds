@@ -1,6 +1,6 @@
 #lang typed-scheme
 
-(provide lookup bind make-trie trie Trie tries)
+(provide lookup bind trie insert Trie tries)
 
 (require scheme/match)
 (define-type-alias (Key A) (Listof A))
@@ -55,11 +55,9 @@
                  (make-immutable-hash 
                   (list (cons (car lstk) (build val (cdr lstk))))))))
 
-(: make-trie : (All (K) ((Listof (Listof K)) -> (Trie K Integer))))
-(define (make-trie lst)
-  (trie (ann (empty) (Trie K Integer))
-        (get-vals lst)
-        lst))
+(: trie : (All (K) ((Listof (Listof K)) -> (Trie K Integer))))
+(define (trie lst)
+  (insert (get-vals lst) lst (ann (empty) (Trie K Integer))))
 
 (: get-vals : (All (K) ((Listof (Listof K)) -> (Listof Integer))))
 (define (get-vals lst)
@@ -74,26 +72,25 @@
 ;; if   (hash-ref hash k) throws an error, 
 ;; then it means that that there is no entry for k. So build a new
 ;;      Trie for rest of the key and create an entry for k. 
-;; else go deeper into the trie searching for the rest of the key.
+;; else go deeper into the insert searching for the rest of the key.
 
-(: trie : 
-   (All (K V) ((Trie K V) (Listof V) (Listof (Listof K)) -> (Trie K V))))
-(define (trie tri lstv lstk)
+(: insert : 
+   (All (K V) ((Listof V) (Listof (Listof K)) (Trie K V) -> (Trie K V))))
+(define (insert lstv lstk tri)
   (match (list lstv lstk)
     [(list null null) tri]
     [(list (cons v vs) (cons (cons k ks) rstk))
-      (let* ([hash (Trie-map tri)]
-             [tree (ann (with-handlers ([exn:fail? (lambda (error?) 
-                                                     (build v ks))])
-                          (go-deep (hash-ref hash k) ks v)) 
-                        (Trie K V))])
-        (trie (make-Trie (Trie-opt tri) (hash-set hash k tree))
-              vs rstk))]))
+     (let* ([hash (Trie-map tri)]
+            [tree (ann (with-handlers ([exn:fail? (lambda (error?) 
+                                                    (build v ks))])
+                         (go-deep (hash-ref hash k) ks v)) 
+                       (Trie K V))])
+       (insert vs rstk
+               (make-Trie (Trie-opt tri) (hash-set hash k tree))))]))
 
-(: tries : 
-   (All (K V) ((Listof V) (Listof (Listof K)) -> (Trie K V))))
+(: tries : (All (K V) ((Listof V) (Listof (Listof K)) -> (Trie K V))))
 (define (tries lstv lstk)
-  (trie (ann (empty) (Trie K V)) lstv lstk))
+  (insert lstv lstk (ann (empty) (Trie K V))))
 
 ;; Uses the same trick as previous one does
 (: go-deep : (All (K V) ((Trie K V) (Listof K) V -> (Trie K V))))
@@ -103,8 +100,8 @@
       (let* ([hash (Trie-map tri)]
              [k (car lstk)]
              [ks (cdr lstk)]
-             [trie (ann (with-handlers
-                            ([exn:fail? (lambda (error?) (build val ks))])
-                          (go-deep (hash-ref hash k) ks val))
-                        (Trie K V))])
-        (make-Trie (Trie-opt tri) (hash-set hash k trie)))))
+             [insert (ann (with-handlers
+                              ([exn:fail? (lambda (error?) (build val ks))])
+                            (go-deep (hash-ref hash k) ks val))
+                          (Trie K V))])
+        (make-Trie (Trie-opt tri) (hash-set hash k insert)))))

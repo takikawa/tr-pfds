@@ -1,4 +1,4 @@
-#lang typed/scheme
+#lang typed/scheme #:optimize
 (require (prefix-in sh: scheme/base))
 (provide filter remove
          list ->list empty? cons empty head tail

@@ -1,4 +1,4 @@
-#lang typed/scheme
+#lang typed/scheme #:optimize
 
 (provide (rename-out [heap-map map]) fold  filter remove
          empty? insert find-min/max delete-min/max empty

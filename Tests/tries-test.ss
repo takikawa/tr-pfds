@@ -5,7 +5,7 @@
 (check-expect
  (lookup (string->list "Hari")
          (bind (string->list "JP") 5 
-               (make-trie 
+               (trie 
                 (map string->list 
                      (list "Hari Prashanth" "Hari" "Hari " "K R H P")))))
  2)

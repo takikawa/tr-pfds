@@ -1,7 +1,7 @@
 #lang scribble/manual
 @(defmodule "../redblacktrees.ss")
 @(require (for-label "../redblacktrees.ss"))
-
+@(require "helper.rkt")
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
@@ -111,4 +111,60 @@ list of all the elements in the given red black tree.
 @examples[#:eval evaluate
 
 (redblacktree->list (redblacktree > 1 2 3 4 5))
+]}
+
+
+@defproc[(map [comparer (C C -> Boolean)]
+              [func (A B ... B -> C)] 
+              [rbt1 (RedBlackTree A)]
+              [rbt2 (RedBlackTree B)] ...) (RedBlackTree A)]{
+Function @scheme[map] is similar to @|racket-map| for lists.
+@examples[#:eval evaluate
+
+(redblacktree->list (map < add1 (redblacktree < 1 2 3 4 5 6)))
+
+(redblacktree->list (map < * (redblacktree < 1 2 3 4 5 6) 
+                             (redblacktree < 1 2 3 4 5 6)))
+]}
+
+@defproc[(fold [func (C A B ... B -> C)]
+               [init C]
+               [rbt1 (RedBlackTree A)]
+               [rbt2 (RedBlackTree B)] ...) C]{
+Function @scheme[fold] is similar to @|racket-foldl| or @|racket-foldr|
+@margin-note{@scheme[fold] currently does not produce correct results when the 
+             given function is non-commutative.}
+
+@examples[#:eval evaluate
+
+(fold + 0 (redblacktree < 1 2 3 4 5 6))
+
+(fold * 1 (redblacktree < 1 2 3 4 5 6) (redblacktree < 1 2 3 4 5 6))
+]}
+
+@defproc[(filter [func (A -> Boolean)] [rbt (RedBlackTree A)]) (RedBlackTree A)]{
+Function @scheme[filter] is similar to @|racket-filter|. 
+@examples[#:eval evaluate
+
+(define rbt (redblacktree < 1 2 3 4 5 6))
+
+(redblacktree->list (filter (λ: ([x : Integer]) (> x 5)) rbt))
+
+(redblacktree->list (filter (λ: ([x : Integer]) (< x 5)) rbt))
+
+(redblacktree->list (filter (λ: ([x : Integer]) (<= x 5)) rbt))
+]}
+
+@defproc[(remove [func (A -> Boolean)] [rbt (RedBlackTree A)]) (RedBlackTree A)]{
+Function @scheme[remove] is similar to @|racket-remove|. 
+@examples[#:eval evaluate
+
+(redblacktree->list (remove (λ: ([x : Integer]) (> x 5))
+                    (redblacktree < 1 2 3 4 5 6)))
+
+(redblacktree->list (remove (λ: ([x : Integer]) (< x 5))
+                    (redblacktree < 1 2 3 4 5 6)))
+
+(redblacktree->list (remove (λ: ([x : Integer]) (<= x 5))
+                    (redblacktree < 1 2 3 4 5 6)))
 ]}

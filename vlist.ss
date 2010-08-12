@@ -1,4 +1,4 @@
-#lang typed/scheme
+#lang typed/scheme #:optimize
 
 (provide vlist->list empty empty? first rest last list-ref)
 (provide (rename-out

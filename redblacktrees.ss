@@ -1,7 +1,8 @@
-#lang typed-scheme
+#lang typed/scheme #:optimize
 
-(provide RBTree member? delete insert redblacktree 
-         redblacktree->list root delete-root empty? RedBlackTree)
+(provide member? delete insert redblacktree
+         redblacktree->list root delete-root empty? RedBlackTree
+         (rename-out [rb-map map]) fold filter remove)
 (require scheme/match)
 (define-struct: Red ())
 (define-struct: Black ())
@@ -312,3 +313,66 @@
 (: redblacktree : (All (A) ((A A -> Boolean) A * -> (RBTree A))))
 (define (redblacktree func . lst)
   (foldl (inst insert A) ((inst make-RBTree A) func empty) lst))
+
+
+;; similar to list map function
+(: rb-map : 
+   (All (A C B ...) ((C C -> Boolean) 
+                     (A B ... B -> C) 
+                     (RedBlackTree A) 
+                     (RedBlackTree B) ... B -> (RedBlackTree C))))
+(define (rb-map comp func fst . rst)
+  (: in-map : 
+     (All (A C B ...) ((RedBlackTree C) 
+                       (A B ... B -> C) 
+                       (RedBlackTree A) 
+                       (RedBlackTree B) ... B -> (RedBlackTree C))))
+  (define (in-map accum func fst . rst)
+    (if (or (empty? fst) (ormap empty? rst))
+        accum
+        (apply in-map
+               (insert (apply func (root fst) (map root rst)) accum)
+               func
+               (delete-root fst) 
+               (map delete-root rst))))
+  (apply in-map ((inst make-RBTree C) comp empty) func fst rst))
+
+;; similar to list fold functions
+(: fold : (All (A C B ...)
+               ((C A B ... B -> C) C (RedBlackTree A) (RedBlackTree B) ... B -> C)))
+(define (fold func base hep . heps)
+  (if (or (empty? hep) (ormap empty? heps))
+      base
+      (apply fold 
+             func 
+             (apply func base (root hep) (map root heps))
+             (delete-root hep)
+             (map delete-root heps))))
+
+;; similar to list filter function
+(: filter : (All (A) ((A -> Boolean) (RedBlackTree A) -> (RedBlackTree A))))
+(define (filter func hep)
+  (: inner : (All (A) ((A -> Boolean) (RedBlackTree A) (RedBlackTree A) -> (RedBlackTree A))))
+  (define (inner func hep accum)
+    (if (empty? hep)
+        accum
+        (let ([head (root hep)]
+              [tail (delete-root hep)])
+          (if (func head)
+              (inner func tail (insert head accum))
+              (inner func tail accum)))))
+  (inner func hep ((inst make-RBTree A) (RBTree-comparer hep) empty)))
+
+;; similar to list remove function
+(: remove : (All (A) ((A -> Boolean) (RedBlackTree A) -> (RedBlackTree A))))
+(define (remove func hep)
+  (: inner : (All (A) ((A -> Boolean) (RedBlackTree A) (RedBlackTree A) -> (RedBlackTree A))))
+  (define (inner func hep accum)
+    (if (empty? hep)
+        accum
+        (let ([head (root hep)]
+              [tail (delete-root hep)])
+          (if (func head)
+              (inner func tail accum)
+              (inner func tail (insert head accum))))))
+  (inner func hep ((inst make-RBTree A) (RBTree-comparer hep) empty)))

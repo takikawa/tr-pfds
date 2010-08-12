@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/scheme #:optimize
 
 (provide clist empty? head tail
          CatenableList append empty filter remove
@@ -9,7 +9,7 @@
                      [cfoldl foldl] [cfoldr foldr]))
 (require scheme/promise)
 
-(require (prefix-in rtq: "realtimequeue.ss"))
+(require (prefix-in rtq: "bootstrapedqueue.ss"))
 
 (define-struct: EmptyList ())
 
