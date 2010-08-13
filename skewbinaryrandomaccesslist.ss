@@ -149,14 +149,14 @@
        (tree-drop newsize 
                   (Node-rgt tre) (- pos 1 newsize) 
                   ralist)]
-      [else (error 'drop "given index out of bounds")])))
+      [else (error 'drop "not enough elements to drop")])))
 
 ;; Similar to list drop function
 (: drop : (All (A) (Integer (List A) -> (List A))))
 (define (drop pos ralist)
   (cond
     [(zero? pos) ralist]
-    [(null? ralist) (error 'drop "given index out of bounds")]
+    [(null? ralist) (error 'drop "not enough elements to drop")]
     [else (drop-helper (car ralist) (cdr ralist) pos)]))
 
 (: drop-helper : (All (A) ((Root A) (List A) Integer -> (List A))))

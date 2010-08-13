@@ -24,9 +24,9 @@
 (check-expect (->list (drop 0 (list 1 2 3 4 5 6 7)))
               (sh:list 1 2 3 4 5 6 7))
 (check-error (drop 8 (list 1 2 3 4 5 6 7)) 
-             "drop: Not enough elements to drop")
+             "drop: not enough elements to drop")
 (check-error (drop -1 (list 1 2 3 4 5 6 7)) 
-             "drop: Not enough elements to drop")
+             "drop: not enough elements to drop")
 
 (check-expect (->list (list-set (list 1 2 3 4 5 6 7) 2 1234))
               (sh:list 1 2 1234 4 5 6 7))

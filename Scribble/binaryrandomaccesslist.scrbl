@@ -156,3 +156,5 @@ elements in in the given list.
 
 (list-length empty)
 ]}
+
+@(close-eval evaluate)

@@ -153,3 +153,5 @@ rather than finishing the whole computation.}
 
 In the above example, @scheme[(take 3 (stream 1 2 3 4 5 6))] returns
 @scheme[(stream 1 2 3)].}
+
+@(close-eval evaluate)

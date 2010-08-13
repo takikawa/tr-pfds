@@ -20,6 +20,8 @@ And the data structures have been entirely implemented in Typed Scheme.
 @include-section{vlist.scrbl}
 @include-section{streams.scrbl}
 @include-section{redblacktrees.scrbl}
+@include-section{tries.scrbl}
+@include-section{set.scrbl}
 
 
 @;@subsection[#:tag "Hash List"]{VHash List}

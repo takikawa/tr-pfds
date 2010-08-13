@@ -1,8 +1,6 @@
 #lang scribble/manual
 @(defmodule "../vlist.ss")
-@;(defmodule "helper.rkt")
 @(require (for-label "../vlist.ss")
-          ;(for-label "helper.rkt")
           "helper.rkt")
 
 @(require scribble/eval)
@@ -10,13 +8,6 @@
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/scheme))
 @(evaluate '(require "../vlist.ss"))
-
-@;{(require (for-label (only-in scheme
-                              [map sh:map] 
-                              [foldr sh:foldr] 
-                              [foldl sh:foldl] 
-                              [filter sh:filter])))}
-@;(defmodule scheme map)
 
 @title{VList}
 
@@ -28,8 +19,6 @@ operations. Indexing and length operations have a running time of
 paper @italic{Fast Functional Lists, Hash-Lists, vlists and
               Variable Length Arrays} by  Phil Bagwell.
 VLists implementation internally uses @secref["bral"].
-
-@;section{VList Construction and Operations}
 
 @defproc[(list [a A] ...) (List A)]{
 Function @scheme[list] creates a vlist with the given inputs. 
@@ -209,3 +198,5 @@ Function @scheme[filter] is similar to @|racket-filter|.
 
 (vlist->list (filter (λ:([x : Integer]) (<= x 4)) vlst))
 ]}
+
+@(close-eval evaluate)

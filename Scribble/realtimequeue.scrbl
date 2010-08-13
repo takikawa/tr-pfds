@@ -84,9 +84,7 @@ If the given queue is empty, then it returns an empty list.
 
 @examples[#:eval evaluate
 
-(define que (queue 10 2 34 4 15 6))
-
-(queue->list que)
+(queue->list (queue 10 2 34 4 15 6))
 ]}
 
 @defproc[(map [func (A B ... B -> C)] 
@@ -129,7 +127,7 @@ Function @scheme[filter] is similar to @|racket-filter|.
 ]}
 
 @defproc[(remove [func (A -> Boolean)] [que (Queue A)]) (Queue A)]{
-Function @scheme[remove] is similar to @|racket-remove|. 
+Function @scheme[remove] is similar to @|racket-filter| but @scheme[remove] removes the elements which match the predicate. 
 @examples[#:eval evaluate
 
 (queue->list (remove (λ: ([x : Integer]) (> x 5))
@@ -141,3 +139,5 @@ Function @scheme[remove] is similar to @|racket-remove|.
 (queue->list (remove (λ: ([x : Integer]) (<= x 5))
                      (queue 1 2 3 4 5 6)))
 ]}
+
+@(close-eval evaluate)

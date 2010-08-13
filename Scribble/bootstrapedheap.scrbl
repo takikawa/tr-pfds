@@ -169,7 +169,7 @@ Function @scheme[filter] is similar to @|racket-filter|.
 ]}
 
 @defproc[(remove [func (A -> Boolean)] [hep (Heap A)]) (Heap A)]{
-Function @scheme[remove] is similar to @|racket-remove|. 
+Function @scheme[remove] is similar to @|racket-filter| but @scheme[remove] removes the elements which match the predicate. 
 @examples[#:eval evaluate
 
 (sorted-list (remove (λ: ([x : Integer]) (> x 5))
@@ -181,3 +181,5 @@ Function @scheme[remove] is similar to @|racket-remove|.
 (sorted-list (remove (λ: ([x : Integer]) (<= x 5))
                     (heap < 1 2 3 4 5 6)))
 ]}
+
+@(close-eval evaluate)

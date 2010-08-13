@@ -161,7 +161,7 @@
     [(zero? pos) (make-Root size tre list)]
     [(and (Leaf? tre) (= pos 1)) list]
     [(Node? tre) (tree-drop-help size tre pos list)]
-    [else (error 'drop "Not enough elements to drop")]))
+    [else (error 'drop "not enough elements to drop")]))
 
 (: tree-drop-help : 
    (All (A) (Integer (Node A) Integer (RAList A) -> (RAList A))))
@@ -180,7 +180,7 @@
   (cond
     [(zero? pos) list]
     [(Root? list) (drop-help list pos)]
-    [else (error 'drop "Not enough elements to drop")]))
+    [else (error 'drop "not enough elements to drop")]))
 
 (: drop-help : (All (A) ((Root A) Integer -> (RAList A))))
 (define (drop-help list pos)

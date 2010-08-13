@@ -92,3 +92,4 @@ returned. Else throws an error.
         (tries (list 1 2 3 4)  
                (map string->list (list "123" "abc" "xyz" "abcde"))))
 ]}
+@(close-eval evaluate)

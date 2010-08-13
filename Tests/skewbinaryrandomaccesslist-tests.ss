@@ -52,9 +52,9 @@
               (sh:list 5 6))
 (check-expect (drop 0 null) null)
 (check-error (drop 5 (list 1 2 3 5)) 
-             "drop: given index out of bounds")
+             "drop: not enough elements to drop")
 (check-error (drop -1 null)
-             "drop: given index out of bounds")
+             "drop: not enough elements to drop")
 
 (define lst (build-list 100 (λ(x) x)))
 (check-expect (->list (apply list lst)) lst)

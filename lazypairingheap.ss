@@ -22,7 +22,7 @@
 ;; Checks for empty
 (: empty? : (All (A) ((PairingHeap A) -> Boolean)))
 (define (empty? pheap)
-  (Mt? pheap))
+  (Mt? (PairingHeap-heap pheap)))
 
 ;; An empty heap
 (define empty (make-Mt))
