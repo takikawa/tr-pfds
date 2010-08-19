@@ -13,12 +13,6 @@
              "Northeastern University"
              "samth@ccs.neu.edu")
 
-@exact{
-\renewcommand{\SConferenceInfo}[2]{}
-\renewcommand{\SCopyrightYear}[1]{}
-\renewcommand{\SCopyrightData}[1]{}
-}
-
 @abstract{
 Scheme provides excellent language support for programming in a
 functional style, but little in the way of library support.  In this
