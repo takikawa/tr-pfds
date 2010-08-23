@@ -1,4 +1,4 @@
-#lang typed/scheme
+#lang typed/scheme #:optimize
 
 (require (prefix-in pq: "physicists-queue.ss"))
 (provide filter remove

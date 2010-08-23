@@ -1,4 +1,4 @@
-#lang typed/scheme #:optimize
+#lang typed/scheme ;#:optimize
 
 (require "stream.ss")
 
