@@ -3,7 +3,7 @@
 (provide filter remove
          empty empty? enqueue enqueue-front init 
          last head tail deque deque->list Deque
-         foldr (rename-out [dqmap map] [dqfoldl foldl]))
+         foldr (rename-out [deque-map map] [dqfoldl foldl]))
 
 (require "stream.ss")
 
@@ -174,47 +174,89 @@
                             (sub1 (Deque-lenr rtdq))
                             (exec-two (Deque-scdulR rtdq)))))))
 
-;; similar to list map function
-(: dqmap : (All (A C B ...) 
-                ((A B ... B -> C) (Deque A) (Deque B) ... B -> (Deque C))))
-(define (dqmap func que . ques)
-  (: in-map : (All (A C B ...) 
-                   ((Deque C) (A B ... B -> C) (Deque A) (Deque B) ... B -> 
-                              (Deque C))))
-  (define (in-map accum func que . ques)
-    (if (or (empty? que) (ormap empty? ques))
-        accum
-        (apply in-map 
-               (enqueue (apply func (head que) (map head ques)) accum)
-               func 
-               (tail que)
-               (map tail ques))))
-  (apply in-map empty func que ques))
+;; similar to list map function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: deque-map : 
+   (All (A C B ...) 
+        (case-lambda 
+          ((A -> C) (Deque A) -> (Deque C))
+          ((A B ... B -> C) (Deque A) (Deque B) ... B -> (Deque C)))))
+(define deque-map
+  (pcase-lambda: (A C B ...)
+                 [([func : (A -> C)]
+                   [deq  : (Deque A)])
+                  (map-single empty func deq)]
+                 [([func : (A B ... B -> C)]
+                   [deq  : (Deque A)] . [deqs : (Deque B) ... B])
+                  (apply map-multiple empty func deq deqs)]))
 
-;; similar to list foldr function
-(: foldr : (All (A C B ...)
-                ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
-(define (foldr func base que . ques)
+
+(: map-single : (All (A C) ((Deque C) (A -> C) (Deque A) -> (Deque C))))
+(define (map-single accum func que)
+  (if (empty? que)
+      accum
+      (map-single (enqueue (func (head que)) accum) func (tail que))))
+
+(: map-multiple : 
+   (All (A C B ...) 
+        ((Deque C) (A B ... B -> C) (Deque A) (Deque B) ... B -> (Deque C))))
+(define (map-multiple accum func que . ques)
   (if (or (empty? que) (ormap empty? ques))
-      base
-      (apply foldr 
+      accum
+      (apply map-multiple
+             (enqueue (apply func (head que) (map head ques)) accum)
              func 
-             (apply func base (head que) (map head ques))
              (tail que)
              (map tail ques))))
 
-;; similar to list foldl function
-(: dqfoldl : (All (A C B ...)
-                  ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C)))
-(define (dqfoldl func base que . ques)
-  (if (or (empty? que) (ormap empty? ques))
-      base
-      (apply dqfoldl 
-             func 
-             (apply func base (last que) (map last ques))
-             (init que)
-             (map init ques))))
+;; Similar to list foldr function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: foldr : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (Deque A) -> C)
+                     ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C))))
+(define foldr
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [que  : (Deque A)])
+                  (if (empty? que)
+                      base
+                      (foldr func (func base (head que)) (tail que)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [que  : (Deque A)] . [ques : (Deque B) ... B])
+                  (if (or (empty? que) (ormap empty? ques))
+                      base
+                      (apply foldr 
+                             func 
+                             (apply func base (head que) (map head ques))
+                             (tail que)
+                             (map tail ques)))]))
 
+;; similar to list foldl function
+(: dqfoldl : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (Deque A) -> C)
+                     ((C A B ... B -> C) C (Deque A) (Deque B) ... B -> C))))
+(define dqfoldl
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [que  : (Deque A)])
+                  (if (empty? que)
+                      base
+                      (dqfoldl func (func base (last que)) (init que)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [que  : (Deque A)] . [ques : (Deque B) ... B])
+                  (if (or (empty? que) (ormap empty? ques))
+                      base
+                      (apply dqfoldl 
+                             func 
+                             (apply func base (last que) (map last ques))
+                             (init que)
+                             (map init ques)))]))
 
 
 (: deque->list : (All (A) ((Deque A) -> (Listof A))))
