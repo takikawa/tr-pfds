@@ -1,4 +1,4 @@
-#lang typed/scheme ;#:optimize
+#lang typed/scheme #:optimize
 
 (provide (rename-out [heap-map map]) fold  filter remove Heap
          heap merge insert find-min/max delete-min/max sorted-list)
@@ -30,8 +30,8 @@
   (let ([rank1 (rank heap1)]
         [rank2 (rank heap2)])
     (if (>= rank1 rank2)
-        (make-Tree (add1 rank2) elem heap1 heap2)
-        (make-Tree (add1 rank1) elem heap2 heap1))))
+      (make-Tree (add1 rank2) elem heap1 heap2)
+      (make-Tree (add1 rank1) elem heap2 heap1))))
 
 ;; Checks for empty heap
 (: empty? : (All (A) ((LeftistHeap A) -> Boolean)))
@@ -75,10 +75,10 @@
         [tr1-rgt (Tree-right tree1)]
         [tr2-rgt (Tree-right tree2)])
     (if (comparer tr1-elm tr2-elm)
-        (make-lheap tr1-elm tr1-lft 
-                    (in-merge tr1-rgt tree2 comparer))
-        (make-lheap tr2-elm tr2-lft 
-                    (in-merge tree1 tr2-rgt comparer)))))
+      (make-lheap tr1-elm tr1-lft 
+                  (in-merge tr1-rgt tree2 comparer))
+      (make-lheap tr2-elm tr2-lft 
+                  (in-merge tree1 tr2-rgt comparer)))))
 
 ;; Returns min or max element of the heap
 (: find-min/max : (All (A) ((LeftistHeap A) -> A)))
@@ -86,8 +86,8 @@
   (let ([heap (LeftistHeap-heap lheap)]
         [comparer (LeftistHeap-comparer lheap)])
     (if (Mt? heap)
-        (error 'find-min/max "given heap is empty")
-        (Tree-elem heap))))
+      (error 'find-min/max "given heap is empty")
+      (Tree-elem heap))))
 
 ;; Deletes min or max element of the heap
 (: delete-min/max : (All (A) ((LeftistHeap A) -> (LeftistHeap A))))
@@ -95,18 +95,18 @@
   (let ([heap (LeftistHeap-heap lheap)]
         [comparer (LeftistHeap-comparer lheap)])
     (if (Mt? heap)
-        (error 'delete-min/max "given heap is empty")
-        (make-LeftistHeap comparer
-                          (in-merge (Tree-left heap) 
-                                    (Tree-right heap) 
-                                    comparer)))))
+      (error 'delete-min/max "given heap is empty")
+      (make-LeftistHeap comparer
+                        (in-merge (Tree-left heap) 
+                                  (Tree-right heap) 
+                                  comparer)))))
 
 ;; Returns a sorted list 
 (: sorted-list : (All (A) ((LeftistHeap A) -> (Listof A))))
 (define (sorted-list lheap)
   (if (Mt? (LeftistHeap-heap lheap))
-      null
-      (cons (find-min/max lheap) (sorted-list (delete-min/max lheap)))))
+    null
+    (cons (find-min/max lheap) (sorted-list (delete-min/max lheap)))))
 
 ;; Heap constructor
 (: heap : (All (A) ((A A -> Boolean) A * -> (LeftistHeap A))))
@@ -114,40 +114,18 @@
   (let ([first ((inst make-LeftistHeap A) comparer empty)])
     (foldl (inst insert A) first lst)))
 
-;; similar to list map function
-(: heap-map : 
-   (All (A C B ...) ((C C -> Boolean) 
-                     (A B ... B -> C) 
-                     (LeftistHeap A) 
-                     (LeftistHeap B) ... B -> (LeftistHeap C))))
-(define (heap-map comp func fst . rst)
-  (: in-map : 
-     (All (A C B ...) ((LeftistHeap C) 
-                       (A B ... B -> C) 
-                       (LeftistHeap A) 
-                       (LeftistHeap B) ... B -> (LeftistHeap C))))
-  (define (in-map accum func fst . rst)
-    (if (or (empty? fst) (ormap empty? rst))
-        accum
-        (apply in-map
-               (insert (apply func (find-min/max fst) (map find-min/max rst)) accum)
-               func
-               (delete-min/max fst) 
-               (map delete-min/max rst))))
-  (apply in-map ((inst make-LeftistHeap C) comp empty) func fst rst))
-
 ;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (LeftistHeap A) -> (LeftistHeap A))))
 (define (filter func hep)
   (: inner : (All (A) ((A -> Boolean) (LeftistHeap A) (LeftistHeap A) -> (LeftistHeap A))))
   (define (inner func hep accum)
     (if (empty? hep)
-        accum
-        (let ([head (find-min/max hep)]
-              [tail (delete-min/max hep)])
-          (if (func head)
-              (inner func tail (insert head accum))
-              (inner func tail accum)))))
+      accum
+      (let ([head (find-min/max hep)]
+            [tail (delete-min/max hep)])
+        (if (func head)
+          (inner func tail (insert head accum))
+          (inner func tail accum)))))
   (inner func hep ((inst make-LeftistHeap A) (LeftistHeap-comparer hep) empty)))
 
 ;; similar to list remove function
@@ -156,22 +134,82 @@
   (: inner : (All (A) ((A -> Boolean) (LeftistHeap A) (LeftistHeap A) -> (LeftistHeap A))))
   (define (inner func hep accum)
     (if (empty? hep)
-        accum
-        (let ([head (find-min/max hep)]
-              [tail (delete-min/max hep)])
-          (if (func head)
-              (inner func tail accum)
-              (inner func tail (insert head accum))))))
+      accum
+      (let ([head (find-min/max hep)]
+            [tail (delete-min/max hep)])
+        (if (func head)
+          (inner func tail accum)
+          (inner func tail (insert head accum))))))
   (inner func hep ((inst make-LeftistHeap A) (LeftistHeap-comparer hep) empty)))
 
-;; similar to list fold function
-(: fold : (All (A C B ...)
-               ((C A B ... B -> C) C (LeftistHeap A) (LeftistHeap B) ... B -> C)))
-(define (fold func base hep . heps)
-  (if (or (empty? hep) (ormap empty? heps))
-      base
-      (apply fold 
-             func 
-             (apply func base (find-min/max hep) (map find-min/max heps))
-             (delete-min/max hep)
-             (map delete-min/max heps))))
+;; similar to list map function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: heap-map : 
+   (All (A C B ...) 
+        (case-lambda 
+          ((C C -> Boolean) (A -> C) (Heap A) -> (Heap C))
+          ((C C -> Boolean)
+           (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C)))))
+(define heap-map
+  (pcase-lambda: (A C B ...)
+                 [([comp : (C C -> Boolean)]
+                   [func : (A -> C)]
+                   [heap : (Heap A)])
+                  (map-single ((inst make-LeftistHeap C) comp empty) func heap)]
+                 [([comp : (C C -> Boolean)]
+                   [func : (A B ... B -> C)]
+                   [heap : (Heap A)] . [heaps : (Heap B) ... B])
+                  (apply map-multiple
+                         ((inst make-LeftistHeap C) comp empty)
+                         func heap heaps)]))
+
+
+(: map-single : (All (A C) ((Heap C) (A -> C) (Heap A) -> (Heap C))))
+(define (map-single accum func heap)
+  (if (empty? heap)
+    accum
+    (map-single (insert (func (find-min/max heap)) accum)
+                func
+                (delete-min/max heap))))
+
+(: map-multiple : 
+   (All (A C B ...) 
+        ((Heap C) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
+(define (map-multiple accum func heap . heaps)
+  (if (or (empty? heap) (ormap empty? heaps))
+    accum
+    (apply map-multiple
+           (insert (apply func
+                          (find-min/max heap)
+                          (map find-min/max heaps))
+                   accum)
+           func 
+           (delete-min/max heap)
+           (map delete-min/max heaps))))
+
+
+;; similar to list foldr or foldl
+(: fold : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (Heap A) -> C)
+                     ((C A B ... B -> C) C (Heap A) (Heap B) ... B -> C))))
+(define fold
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [heap  : (Heap A)])
+                  (if (empty? heap)
+                    base
+                    (fold func (func base (find-min/max heap))
+                          (delete-min/max heap)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [heap  : (Heap A)] . [heaps : (Heap B) ... B])
+                  (if (or (empty? heap) (ormap empty? heaps))
+                    base
+                    (apply fold 
+                           func 
+                           (apply func base (find-min/max heap)
+                                  (map find-min/max heaps))
+                           (delete-min/max heap)
+                           (map delete-min/max heaps)))]))

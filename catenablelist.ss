@@ -5,26 +5,23 @@
          (rename-out [clist->list ->list]
                      [clist list] [kons cons]
                      [head first] [tail rest]
-                     [kons-rear cons-to-end] [cmap map]
-                     [cfoldl foldl] [cfoldr foldr]))
-(require scheme/promise)
+                     [kons-rear cons-to-end] [list-map map]
+                     [list-foldl foldl] [list-foldr foldr]))
 
 (require (prefix-in rtq: "bootstrapedqueue.ss"))
-
-(define-struct: EmptyList ())
 
 (define-struct: (A) List ([elem : A]
                           [ques : (rtq:Queue (Promise (List A)))]))
 
-(define-type-alias CatenableList (All (A) (U (List A) EmptyList)))
+(define-type (CatenableList A) (U (List A) Null))
 
 ;; An empty list
-(define empty (make-EmptyList))
+(define empty null)
 
 ;; Checks for empty list
 (: empty? : (All (A) ((CatenableList A) -> Boolean)))
 (define (empty? cat)
-  (EmptyList? cat))
+  (null? cat))
 
 
 (: link : (All (A) ((List A) (Promise (List A)) -> (List A))))
@@ -40,11 +37,12 @@
         (link hd (delay (link-all tl))))))
 
 ;; Append helper 
-(: append-inner : (All (A) ((CatenableList A) (CatenableList A) -> (CatenableList A))))
+(: append-inner :
+   (All (A) ((CatenableList A) (CatenableList A) -> (CatenableList A))))
 (define (append-inner cat1 cat2)
   (cond
-    [(EmptyList? cat1) cat2]
-    [(EmptyList? cat2) cat1]
+    [(null? cat1) cat2]
+    [(null? cat2) cat1]
     [else (link cat1 (delay cat2))]))
 
 ;; List append
@@ -67,14 +65,14 @@
 ;; Similar to list car function
 (: head : (All (A) ((CatenableList A) -> A)))
 (define (head cat)
-  (if (EmptyList? cat)
+  (if (null? cat)
       (error 'first "given list is empty")
       (List-elem cat)))
 
 ;; Similar to list cdr function
 (: tail : (All (A) ((CatenableList A) -> (CatenableList A))))
 (define (tail cat)
-  (if (EmptyList? cat) 
+  (if (null? cat) 
       (error 'rest "given list is empty")
       (tail-helper cat)))
 
@@ -85,69 +83,134 @@
         empty
         (link-all ques))))
 
-;; Similar to list map function
-(: cmap : (All (A C B ...) ((A B ... B -> C) (CatenableList A) 
-                                             (CatenableList B) ... B -> 
-                                             (CatenableList C))))
-(define (cmap func lst . lsts)
-  (if (or (empty? lst) (ormap empty? lsts))
-      empty
-      (kons (apply func (head lst) (map head lsts)) 
-            (apply cmap func (tail lst) (map tail lsts)))))
+;; similar to list map function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: list-map : 
+   (All (A C B ...) 
+        (case-lambda 
+          ((A -> C) (CatenableList A) -> (CatenableList C))
+          ((A B ... B -> C)
+           (CatenableList A) (CatenableList B) ... B -> (CatenableList C)))))
+(define list-map
+  (pcase-lambda: (A C B ...)
+                 [([func : (A -> C)]
+                   [list  : (CatenableList A)])
+                  (map-single empty func list)]
+                 [([func : (A B ... B -> C)]
+                   [list  : (CatenableList A)]
+                   .
+                   [lists : (CatenableList B) ... B])
+                  (apply map-multiple empty func list lists)]))
 
-;; Similar to list foldl function
-(: cfoldl : 
-   (All (C A B ...) ((C A B ... B -> C) C (CatenableList A) 
-                                        (CatenableList B) ... B -> C)))
-(define (cfoldl func base fst . rst)
-  (if (or (empty? fst) (ormap empty? rst))
-      base
-      (apply cfoldl 
+
+(: map-single :
+   (All (A C)
+        ((CatenableList C) (A -> C) (CatenableList A) -> (CatenableList C))))
+(define (map-single accum func list)
+  (if (empty? list)
+      accum
+      (map-single (kons (func (head list)) accum) func (tail list))))
+
+(: map-multiple : 
+   (All (A C B ...) 
+        ((CatenableList C) (A B ... B -> C)
+         (CatenableList A) (CatenableList B) ... B -> (CatenableList C))))
+(define (map-multiple accum func list . lists)
+  (if (or (empty? list) (ormap empty? lists))
+      accum
+      (apply map-multiple
+             (kons (apply func (head list) (map head lists)) accum)
              func 
-             (apply func base (head fst) (map head rst))
-             (tail fst)
-             (map tail rst))))
+             (tail list)
+             (map tail lists))))
 
-;; Similar to list foldr function
-(: cfoldr : 
-   (All (C A B ...) ((C A B ... B -> C) C (CatenableList A) 
-                                        (CatenableList B) ... B -> C)))
-(define (cfoldr func base fst . rst)
-  (if (or (empty? fst) (ormap empty? rst))
-      base
-      (apply func (apply cfoldr 
-                         func 
-                         base
-                         (tail fst)
-                         (map tail rst)) (head fst) (map head rst))))
+
+
+;; Similar to list foldr function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: list-foldr : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (CatenableList A) -> C)
+                     ((C A B ... B -> C)
+                      C
+                      (CatenableList A) (CatenableList B) ... B -> C))))
+(define list-foldr
+  (pcase-lambda: (A C B ...)
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [list : (CatenableList A)])
+                  (if (empty? list)
+                      base
+                      (func (list-foldr func base (tail list)) (head list)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [list  : (CatenableList A)]
+                   .
+                   [lists : (CatenableList B) ... B])
+                  (if (or (empty? list) (ormap empty? lists))
+                      base
+                      (apply func (apply list-foldr func base
+                                         (tail list) (map tail lists))
+                             (head list)
+                             (map head lists)))]))
+
+;; similar to list foldl function
+(: list-foldl : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (CatenableList A) -> C)
+                     ((C A B ... B -> C) C
+                      (CatenableList A) (CatenableList B) ... B -> C))))
+(define list-foldl
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [list : (CatenableList A)])
+                  (if (empty? list)
+                      base
+                      (list-foldl func (func base (head list)) (tail list)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [list  : (CatenableList A)]
+                   .
+                   [lists : (CatenableList B) ... B])
+                  (if (or (empty? list) (ormap empty? lists))
+                      base
+                      (apply list-foldl func
+                             (apply func base (head list) (map head lists))
+                             (tail list)
+                             (map tail lists)))]))
 
 ;; Similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (CatenableList A) -> (CatenableList A))))
-(define (filter func que)
-  (: inner : (All (A) ((A -> Boolean) (CatenableList A) (CatenableList A) -> (CatenableList A))))
-  (define (inner func que accum)
-    (if (empty? que)
+(define (filter func list)
+  (: inner :
+     (All (A) ((A -> Boolean)
+               (CatenableList A) (CatenableList A) -> (CatenableList A))))
+  (define (inner func list accum)
+    (if (empty? list)
         accum
-        (let ([head (head que)]
-              [tail (tail que)])
+        (let ([head (head list)]
+              [tail (tail list)])
           (if (func head)
               (inner func tail (kons head accum))
               (inner func tail accum)))))
-  (inner func que empty))
+  (inner func list empty))
 
 ;; Similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (CatenableList A) -> (CatenableList A))))
-(define (remove func que)
-  (: inner : (All (A) ((A -> Boolean) (CatenableList A) (CatenableList A) -> (CatenableList A))))
-  (define (inner func que accum)
-    (if (empty? que)
+(define (remove func list)
+  (: inner :
+     (All (A) ((A -> Boolean) (CatenableList A)
+               (CatenableList A) -> (CatenableList A))))
+  (define (inner func list accum)
+    (if (empty? list)
         accum
-        (let ([head (head que)]
-              [tail (tail que)])
+        (let ([head (head list)]
+              [tail (tail list)])
           (if (func head)
               (inner func tail accum)
               (inner func tail (kons head accum))))))
-  (inner func que empty))
+  (inner func list empty))
 
 ;; list constructor
 (: clist : (All (A) (A * -> (CatenableList A))))
@@ -157,6 +220,6 @@
 
 (: clist->list : (All (A) ((CatenableList A) -> (Listof A))))
 (define (clist->list cat)
-  (if (EmptyList? cat)
+  (if (null? cat)
       null
       (cons (head cat) (clist->list (tail cat)))))

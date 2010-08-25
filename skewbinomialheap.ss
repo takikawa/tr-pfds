@@ -184,24 +184,6 @@
       (cons (find-min/max heap) (sorted-list (delete-min/max heap)))))
 
 
-;; similar to list map function
-(: heap-map : (All (A C B ...) ((C C -> Boolean) 
-                                (A B ... B -> C) 
-                                (Heap A) 
-                                (Heap B) ... B -> (Heap C))))
-(define (heap-map comp func fst . rst)
-  (: in-map : (All (A C B ...) ((Heap C) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
-  (define (in-map accum func fst . rst)
-    (if (or (empty? fst) (ormap empty? rst))
-        accum
-        (apply in-map
-               (insert (apply func (find-min/max fst) (map find-min/max rst)) accum)
-               func
-               (delete-min/max fst) 
-               (map delete-min/max rst))))
-  (apply in-map ((inst make-Heap C) comp empty) func fst rst))
-
-
 ;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Heap A) -> (Heap A))))
 (define (filter func hep)
@@ -231,14 +213,74 @@
               (inner func tail (insert head accum))))))
   (inner func hep ((inst make-Heap A) (Heap-comparer hep) empty)))
 
-;; similar to list fold function
-(: fold : (All (A C B ...)
-               ((C A B ... B -> C) C (Heap A) (Heap B) ... B -> C)))
-(define (fold func base hep . heps)
-  (if (or (empty? hep) (ormap empty? heps))
-      base
-      (apply fold 
-             func 
-             (apply func base (find-min/max hep) (map find-min/max heps))
-             (delete-min/max hep)
-             (map delete-min/max heps))))
+;; similar to list map function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: heap-map : 
+   (All (A C B ...) 
+        (case-lambda 
+          ((C C -> Boolean) (A -> C) (Heap A) -> (Heap C))
+          ((C C -> Boolean)
+           (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C)))))
+(define heap-map
+  (pcase-lambda: (A C B ...)
+                 [([comp : (C C -> Boolean)]
+                   [func : (A -> C)]
+                   [heap : (Heap A)])
+                  (map-single ((inst make-Heap C) comp empty) func heap)]
+                 [([comp : (C C -> Boolean)]
+                   [func : (A B ... B -> C)]
+                   [heap : (Heap A)] . [heaps : (Heap B) ... B])
+                  (apply map-multiple
+                         ((inst make-Heap C) comp empty)
+                         func heap heaps)]))
+
+
+(: map-single : (All (A C) ((Heap C) (A -> C) (Heap A) -> (Heap C))))
+(define (map-single accum func heap)
+  (if (empty? heap)
+    accum
+    (map-single (insert (func (find-min/max heap)) accum)
+                func
+                (delete-min/max heap))))
+
+(: map-multiple : 
+   (All (A C B ...) 
+        ((Heap C) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
+(define (map-multiple accum func heap . heaps)
+  (if (or (empty? heap) (ormap empty? heaps))
+    accum
+    (apply map-multiple
+           (insert (apply func
+                          (find-min/max heap)
+                          (map find-min/max heaps))
+                   accum)
+           func 
+           (delete-min/max heap)
+           (map delete-min/max heaps))))
+
+
+;; similar to list foldr or foldl
+(: fold : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (Heap A) -> C)
+                     ((C A B ... B -> C) C (Heap A) (Heap B) ... B -> C))))
+(define fold
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [heap  : (Heap A)])
+                  (if (empty? heap)
+                    base
+                    (fold func (func base (find-min/max heap))
+                          (delete-min/max heap)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [heap  : (Heap A)] . [heaps : (Heap B) ... B])
+                  (if (or (empty? heap) (ormap empty? heaps))
+                    base
+                    (apply fold 
+                           func 
+                           (apply func base (find-min/max heap)
+                                  (map find-min/max heaps))
+                           (delete-min/max heap)
+                           (map delete-min/max heaps)))]))

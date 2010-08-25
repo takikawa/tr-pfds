@@ -2,8 +2,8 @@
 (require (prefix-in sh: scheme/base))
 (provide filter remove
          list ->list empty? cons empty head tail
-         (rename-out [first* first] [rest* rest] [ramap map] 
-                     [rafoldr foldr] [rafoldl foldl]) 
+         (rename-out [first* first] [rest* rest] [list-map map] 
+                     [list-foldr foldr] [list-foldl foldl]) 
          list-ref list-set drop list-length List)
 
 (define-struct: (A) Leaf ([fst : A]))
@@ -172,41 +172,75 @@
 (define (list-length ralist)
   (foldl + 0 (map (inst getWeight A) ralist)))
 
-;; Similar to list map function
-(: ramap : (All (A C B ...) 
-                ((A B ... B -> C) (List A) (List B) ... B -> (List C))))
-(define (ramap func lst . lsts)
-  (if (or (empty? lst) (ormap empty? lsts))
-      empty
-      (cons (apply func (head lst) (map head lsts))
-            (apply ramap 
-                   func 
-                   (tail lst)
-                   (map tail lsts)))))
 
-;; Similar to list foldr function
-(: rafoldr : (All (A C B ...)
-                  ((C A B ... B -> C) C (List A) (List B) ... B -> C)))
-(define (rafoldr func base lst . lsts)
-  (if (or (empty? lst) (ormap empty? lsts))
-      base
-      (apply func (apply rafoldr 
-                         func 
-                         base
-                         (tail lst)
-                         (map tail lsts)) (head lst) (map head lsts))))
+;; similar to list map function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: list-map : 
+   (All (A C B ...) 
+        (case-lambda 
+          ((A -> C) (List A) -> (List C))
+          ((A B ... B -> C) (List A) (List B) ... B -> (List C)))))
+(define list-map
+  (pcase-lambda: (A C B ...)
+                 [([func : (A -> C)]
+                   [list  : (List A)])
+                  (if (empty? list)
+                      empty
+                      (cons (func (head list)) (list-map func (tail list))))]
+                 [([func : (A B ... B -> C)]
+                   [list  : (List A)] . [lists : (List B) ... B])
+                  (if (or (empty? list) (ormap empty? lists))
+                      empty
+                      (cons (apply func (head list) (map head lists))
+                            (apply list-map func (tail list)
+                                   (map tail lists))))]))
 
-;; Similar to list foldl function
-(: rafoldl : (All (A C B ...)
-                  ((C A B ... B -> C) C (List A) (List B) ... B -> C)))
-(define (rafoldl func base lst . lsts)
-  (if (or (empty? lst) (ormap empty? lsts))
-        base
-        (apply rafoldl 
-               func 
-               (apply func base (head lst) (map head lsts))
-               (tail lst)
-               (map tail lsts))))
+
+;; Similar to list foldr function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: list-foldr : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (List A) -> C)
+                     ((C A B ... B -> C) C (List A) (List B) ... B -> C))))
+(define list-foldr
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [list  : (List A)])
+                  (if (empty? list)
+                      base
+                      (func (list-foldr func base (tail list))
+                            (head list)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [list  : (List A)] . [lists : (List B) ... B])
+                  (if (or (empty? list) (ormap empty? lists))
+                      base
+                      (apply func (apply list-foldr func base (tail list)
+                                         (map tail lists))
+                             (head list) (map head lists)))]))
+
+;; similar to list foldl function
+(: list-foldl : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (List A) -> C)
+                     ((C A B ... B -> C) C (List A) (List B) ... B -> C))))
+(define list-foldl
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [list  : (List A)])
+                  (if (empty? list)
+                      base
+                      (list-foldl func (func base (head list)) (tail list)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [list  : (List A)] . [lists : (List B) ... B])
+                  (if (or (empty? list) (ormap empty? lists))
+                      base
+                      (apply list-foldl func
+                             (apply func base (head list) (map head lists))
+                             (tail list) (map tail lists)))]))
 
 ;; RAList to normal list
 (: ->list : (All (A) ((List A) -> (Listof A))))

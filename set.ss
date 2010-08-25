@@ -8,7 +8,7 @@
 
 (define-struct: Mt ())
 (define-struct: (A) Tree ([lset : (USet A)]
-                          [elem : A]                         
+                          [elem : A]
                           [rset : (USet A)]))
 
 (define-type-alias (USet A) (U Mt (Tree A)))
@@ -21,7 +21,7 @@
 (: empty? : (All (A) ((Set A) -> Boolean)))
 (define (empty? uset)
   (Mt? (Set-set uset)))
-  
+
 
 (: member? : (All (A) (A (Set A) -> Boolean)))
 (define (member? key uset)
@@ -68,9 +68,9 @@
 (: helper : (All (A) ((USet A) (Listof A) -> (Listof A))))
 (define (helper set accum)
   (if (Mt? set)
-      accum
-      (helper (Tree-lset set) 
-              (cons (Tree-elem set) (helper (Tree-rset set) accum)))))
+    accum
+    (helper (Tree-lset set) 
+            (cons (Tree-elem set) (helper (Tree-rset set) accum)))))
 
 (: set->list : (All (A) ((Set A) -> (Listof A))))
 (define (set->list set)
@@ -80,12 +80,12 @@
 (: union-helper : (All (A) ((USet A) (USet A) (A A -> Boolean) -> (USet A))))
 (define (union-helper set accum comp)
   (if (Mt? set)
-      accum
-      (union-helper (Tree-lset set) 
-                    (ins (Tree-elem set) 
-                         (union-helper (Tree-rset set) accum comp)
-                         comp)
-                    comp)))
+    accum
+    (union-helper (Tree-lset set) 
+                  (ins (Tree-elem set) 
+                       (union-helper (Tree-rset set) accum comp)
+                       comp)
+                  comp)))
 
 (: union : (All (A) ((Set A) (Set A) -> (Set A))))
 (define (union set1 set2)
@@ -100,13 +100,13 @@
     (: helper : (All (A) ((Set A) (USet A) (USet A) -> (USet A))))
     (define (helper set uset accum)
       (if (Mt? uset)
-            accum
-            (let ([elem (Tree-elem uset)]
-                  [lset (Tree-lset uset)]
-                  [rset (Tree-rset uset)])
-              (if (member? elem set)
-                  (helper set rset (helper set lset (ins elem accum comp)))
-                  (helper set rset (helper set lset accum))))))
+        accum
+        (let ([elem (Tree-elem uset)]
+              [lset (Tree-lset uset)]
+              [rset (Tree-rset uset)])
+          (if (member? elem set)
+            (helper set rset (helper set lset (ins elem accum comp)))
+            (helper set rset (helper set lset accum))))))
     (make-Set comp (helper set1 (Set-set set2) (make-Mt))))) 
 
 
@@ -116,13 +116,13 @@
     (: helper : (All (A) ((Set A) (USet A) (USet A) -> (USet A))))
     (define (helper set uset accum)
       (if (Mt? uset)
-            accum
-            (let ([elem (Tree-elem uset)]
-                  [lset (Tree-lset uset)]
-                  [rset (Tree-rset uset)])
-              (if (member? elem set)
-                  (helper set rset (helper set lset accum))
-                  (helper set rset (helper set lset (ins elem accum comp)))))))
+        accum
+        (let ([elem (Tree-elem uset)]
+              [lset (Tree-lset uset)]
+              [rset (Tree-rset uset)])
+          (if (member? elem set)
+            (helper set rset (helper set lset accum))
+            (helper set rset (helper set lset (ins elem accum comp)))))))
     (make-Set comp (helper set2 (Set-set set1) (make-Mt)))))
 
 
@@ -143,20 +143,20 @@
 (: lset : (All (A) ((USet A) -> (USet A))))
 (define (lset uset)
   (if (Mt? uset)
-      (error "Internal error")
-      (Tree-lset uset)))
+    (error "Internal error")
+    (Tree-lset uset)))
 
 (: rset : (All (A) ((USet A) -> (USet A))))
 (define (rset uset)
   (if (Mt? uset)
-      (error "Internal error")
-      (Tree-rset uset)))
+    (error "Internal error")
+    (Tree-rset uset)))
 
 (: elem : (All (A) ((USet A) -> A)))
 (define (elem uset)
   (if (Mt? uset)
-      (error "Internal error")
-      (Tree-elem uset)))
+    (error "Internal error")
+    (Tree-elem uset)))
 
 
 ;; similar to list map function
@@ -172,10 +172,10 @@
      (All (A C B ...) ((A B ... B -> C) (USet A) (USet B) ... B -> (USet C))))
   (define (in-map func fst . rst)
     (if (and (Tree? fst) (andmap Tree? rst))
-        (make-Tree (apply in-map func (Tree-lset fst) (map lset rst))
-                   (apply func (Tree-elem fst) (map elem rst))
-                   (apply in-map func (Tree-rset fst) (map rset rst)))
-        empty))
+      (make-Tree (apply in-map func (Tree-lset fst) (map lset rst))
+                 (apply func (Tree-elem fst) (map elem rst))
+                 (apply in-map func (Tree-rset fst) (map rset rst)))
+      empty))
   (make-Set comp (apply in-map func (Set-set fst) (map Set-set rst))))
 
 
@@ -187,13 +187,13 @@
     (: helper : (All (A) ((USet A) (USet A) -> (USet A))))
     (define (helper uset accum)
       (if (Mt? uset)
-          accum
-          (let ([elem (Tree-elem uset)]
-                [lset (Tree-lset uset)]
-                [rset (Tree-rset uset)])
-            (if (pred elem)
-                (helper rset (helper lset (ins elem accum comp)))
-                (helper rset (helper lset accum))))))
+        accum
+        (let ([elem (Tree-elem uset)]
+              [lset (Tree-lset uset)]
+              [rset (Tree-rset uset)])
+          (if (pred elem)
+            (helper rset (helper lset (ins elem accum comp)))
+            (helper rset (helper lset accum))))))
     (make-Set comp (helper (Set-set set) (make-Mt)))))
 
 ;;; similar to list remove function
@@ -203,11 +203,11 @@
     (: helper : (All (A) ((USet A) (USet A) -> (USet A))))
     (define (helper uset accum)
       (if (Mt? uset)
-          accum
-          (let ([elem (Tree-elem uset)]
-                [lset (Tree-lset uset)]
-                [rset (Tree-rset uset)])
-            (if (pred elem)
-                (helper rset (helper lset accum))
-                (helper rset (helper lset (ins elem accum comp)))))))
+        accum
+        (let ([elem (Tree-elem uset)]
+              [lset (Tree-lset uset)]
+              [rset (Tree-rset uset)])
+          (if (pred elem)
+            (helper rset (helper lset accum))
+            (helper rset (helper lset (ins elem accum comp)))))))
     (make-Set comp (helper (Set-set set) (make-Mt)))))

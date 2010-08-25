@@ -2,8 +2,8 @@
 (require (prefix-in sh: scheme/base))
 (provide filter remove
          empty empty? list-length cons head tail 
-         (rename-out [first* first] [rest* rest] [ramap map] 
-                     [rafoldr foldr] [rafoldl foldl]) 
+         (rename-out [first* first] [rest* rest] [list-map map] 
+                     [list-foldr foldr] [list-foldl foldl]) 
          list-ref list-set drop ->list list)
 
 (define-struct: (A) Leaf ([fst : A]))
@@ -83,13 +83,13 @@
 (define (tail list)
   (if (Null-RaList? list) 
       (error 'tail "given list is empty")
-    (let ([fst (Root-fst list)]
-          [rst (Root-rst list)]
-          [size (arithmetic-shift (Root-size list) -1)])
-      (if (Leaf? fst) 
-          rst 
-          (make-Root size (Node-lft fst) 
-                     (make-Root size (Node-rgt fst) rst))))))
+      (let ([fst (Root-fst list)]
+            [rst (Root-rst list)]
+            [size (arithmetic-shift (Root-size list) -1)])
+        (if (Leaf? fst) 
+            rst 
+            (make-Root size (Node-lft fst) 
+                       (make-Root size (Node-rgt fst) rst))))))
 
 
 ;; Helpers for list-ref
@@ -191,42 +191,83 @@
         (tree-drop size fst pos rst)
         (drop (- pos size) rst))))
 
-;; Similar to list map function
-(: ramap : (All (A C B ...) 
-                ((A B ... B -> C) (List A) (List B) ... B -> (List C))))
-(define (ramap func lst . lsts)
-  (if (or (empty? lst) (ormap empty? lsts))
-      empty
-      (cons (apply func (head lst) (map head lsts))
-            (apply ramap 
-                   func 
-                   (tail lst)
-                   (map tail lsts)))))
+;; similar to list map function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: list-map : 
+   (All (A C B ...) 
+        (case-lambda 
+          ((A -> C) (List A) -> (List C))
+          ((A B ... B -> C) (List A) (List B) ... B -> (List C)))))
+(define list-map
+  (pcase-lambda: (A C B ...)
+                 [([func : (A -> C)]
+                   [list  : (List A)])
+                  (if (empty? list)
+                      empty
+                      (cons (func (head list)) 
+                            (list-map func (tail list))))]
+                 [([func : (A B ... B -> C)]
+                   [list  : (List A)] . [lists : (List B) ... B])
+                  (if (or (empty? list) (ormap empty? lists))
+                      empty
+                      (cons (apply func (head list) (map head lists))
+                            (apply list-map
+                                   func 
+                                   (tail list)
+                                   (map tail lists))))]))
 
-;; Similar to list foldr function
-(: rafoldr : (All (A C B ...)
-                  ((C A B ... B -> C) C (List A) (List B) ... B -> C)))
-(define (rafoldr func base lst . lsts)
-  (if (or (empty? lst) (ormap empty? lsts))
-      base
-      (apply func (apply rafoldr 
-                         func 
-                         base
-                         (tail lst)
-                         (map tail lsts)) (head lst) (map head lsts))))
 
-;; Similar to list foldl function
-(: rafoldl : (All (A C B ...)
-                  ((C A B ... B -> C) C (List A) (List B) ... B -> C)))
-(define (rafoldl func base lst . lsts)
-  (if (or (empty? lst) (ormap empty? lsts))
-        base
-        (apply rafoldl 
-               func 
-               (apply func base (head lst) (map head lsts))
-               (tail lst)
-               (map tail lsts))))
+;; Similar to list foldr function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: list-foldr : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (List A) -> C)
+                     ((C A B ... B -> C) C (List A) (List B) ... B -> C))))
+(define list-foldr
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [list  : (List A)])
+                  (if (empty? list)
+                      base
+                      (func (list-foldr func base (tail list))
+                            (head list)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [list  : (List A)] . [lists : (List B) ... B])
+                  (if (or (empty? list) (ormap empty? lists))
+                      base
+                      (apply func (apply list-foldr 
+                                         func 
+                                         base
+                                         (tail list)
+                                         (map tail lists))
+                             (head list)
+                             (map head lists)))]))
 
+;; similar to list foldl function
+(: list-foldl : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (List A) -> C)
+                     ((C A B ... B -> C) C (List A) (List B) ... B -> C))))
+(define list-foldl
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [list  : (List A)])
+                  (if (empty? list)
+                      base
+                      (list-foldl func (func base (head list)) (tail list)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [list  : (List A)] . [lists : (List B) ... B])
+                  (if (or (empty? list) (ormap empty? lists))
+                      base
+                      (apply list-foldl 
+                             func 
+                             (apply func base (head list) (map head lists))
+                             (tail list)
+                             (map tail lists)))]))
 
 ;; Convers the random access list to normal list
 (: ->list : (All (A) ((RAList A) -> (Listof A))))
@@ -247,20 +288,20 @@
 (: filter : (All (A) ((A -> Boolean) (List A) -> (List A))))
 (define (filter func ral)
   (if (empty? ral)
-    empty
-    (let ([head (head ral)]
-          [tail (tail ral)])
-      (if (func head)
-        (cons head (filter func tail))
-        (filter func tail)))))
+      empty
+      (let ([head (head ral)]
+            [tail (tail ral)])
+        (if (func head)
+            (cons head (filter func tail))
+            (filter func tail)))))
 
 ;; Similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (List A) -> (List A))))
 (define (remove func ral)
   (if (empty? ral)
-    empty
-    (let ([head (head ral)]
-          [tail (tail ral)])
-      (if (func head)
-        (remove func tail)
-        (cons head (remove func tail))))))
+      empty
+      (let ([head (head ral)]
+            [tail (tail ral)])
+        (if (func head)
+            (remove func tail)
+            (cons head (remove func tail))))))

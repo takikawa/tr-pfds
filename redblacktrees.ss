@@ -3,21 +3,23 @@
 (provide member? delete insert redblacktree
          redblacktree->list root delete-root empty? RedBlackTree
          (rename-out [rb-map map]) fold filter remove)
+
 (require scheme/match)
+
 (define-struct: Red ())
 (define-struct: Black ())
-(define-type-alias Color (U Red Black))
+(define-type Color (U Red Black))
 
 (define-struct: (A) RBNode ([color : Color]
                             [left : (Tree A)]
                             [elem : A]
                             [right : (Tree A)]))
 (define-struct: Mt ([color : Black]))
-(define-type-alias Tree (All (A) (U Mt (RBNode A))))
+(define-type (Tree A) (U Mt (RBNode A)))
 (define-struct: (A) RBTree ([comparer : (A A -> Boolean)]
                             [tree : (Tree A)]))
 
-(define-type-alias (RedBlackTree A) (RBTree A))
+(define-type (RedBlackTree A) (RBTree A))
 
 (define black (make-Black))
 (define red (make-Red))
@@ -55,8 +57,8 @@
 (: elem : (All (A) ((Tree A) -> A)))
 (define (elem tree)
   (if (Mt? tree)
-      (error 'root "given tree is empty")
-      (RBNode-elem tree)))
+    (error 'root "given tree is empty")
+    (RBNode-elem tree)))
 
 (: root : (All (A) ((RBTree A) -> A)))
 (define (root tree)
@@ -100,8 +102,8 @@
 (: color : (All (A) ((Tree A) -> Color)))
 (define (color tree)
   (if (Mt? tree)
-      black
-      (RBNode-color tree)))
+    black
+    (RBNode-color tree)))
 
 
 (: insert : (All (A) (A (RBTree A) -> (RBTree A))))
@@ -113,8 +115,8 @@
 (: ins : (All (A) (A (Tree A) (A A -> Boolean) -> (Tree A))))
 (define (ins elem tree func)
   (if (Mt? tree) 
-      (make-RBNode red empty elem empty)
-      (ins-helper elem tree func)))
+    (make-RBNode red empty elem empty)
+    (ins-helper elem tree func)))
 
 (: ins-helper : (All (A) (A (RBNode A) (A A -> Boolean) -> (Tree A))))
 (define (ins-helper elem tree func)
@@ -124,14 +126,14 @@
          [left (RBNode-left tree)]
          [right (RBNode-right tree)]
          [color (RBNode-color tree)])
-  (cond
-    [(and left-cmp rgt-cmp) tree]
-    [left-cmp 
-     (balance-helper 
-      (make-RBNode color (ins elem left func) nod-elem right))]
-    [else 
-     (balance-helper 
-      (make-RBNode color left nod-elem (ins elem right func)))])))
+    (cond
+      [(and left-cmp rgt-cmp) tree]
+      [left-cmp 
+       (balance-helper 
+        (make-RBNode color (ins elem left func) nod-elem right))]
+      [else 
+       (balance-helper 
+        (make-RBNode color left nod-elem (ins elem right func)))])))
 
 
 (: make-black : (All (A) ((Tree A) -> (Tree A))))
@@ -144,41 +146,41 @@
 (: delete-root : (All (A) ((RBTree A) -> (RBTree A))))
 (define (delete-root redblacktree)
   (if (empty? redblacktree)
-      (error 'delete-root "given tree is empty")
-      (delete (root redblacktree) redblacktree)))
+    (error 'delete-root "given tree is empty")
+    (delete (root redblacktree) redblacktree)))
 
 (: delete : (All (A) (A (RBTree A) -> (RBTree A))))
 (define (delete key redblacktree)
   (let ([func (RBTree-comparer redblacktree)]
         [tree (RBTree-tree redblacktree)])
     (make-RBTree func (delete-helper key tree func))))
-    
+
 (: delete-helper : (All (A) (A (Tree A) (A A -> Boolean) -> (Tree A))))
 (define (delete-helper key tre func)
   (if (Mt? tre)
-      (error 'delete "given key not found in the tree")
-      (del-help key tre func)))
+    (error 'delete "given key not found in the tree")
+    (del-help key tre func)))
 
 (: del-help : (All (A) (A (RBNode A) (A A -> Boolean) -> (Tree A))))
 (define (del-help key tre func)
   (: del-lft : (All (A) ((Tree A) A (Tree A) -> (Tree A))))
   (define (del-lft lft x rgt)
     (if (Black? (color lft))
-        (bal-lft (delete-helper key lft func) x rgt)
-        (make-RBNode red (delete-helper key lft func) x rgt)))
+      (bal-lft (delete-helper key lft func) x rgt)
+      (make-RBNode red (delete-helper key lft func) x rgt)))
   (: del-rgt : (All (A) ((Tree A) A (Tree A) -> (Tree A))))
   (define (del-rgt lft x rgt)
     (if (Black? (color rgt))
-        (bal-rgt lft x (delete-helper key rgt func))
-        (make-RBNode red lft x (delete-helper key rgt func))))
+      (bal-rgt lft x (delete-helper key rgt func))
+      (make-RBNode red lft x (delete-helper key rgt func))))
   (let ([root (RBNode-elem tre)]
         [left (RBNode-left tre)]
         [right (RBNode-right tre)])
     (cond
       [(func key root)
        (if (func root key) 
-           (append left right)
-           (del-lft left root right))]
+         (append left right)
+         (del-lft left root right))]
       [(func root key)
        (del-rgt left root right)]
       [else (append left right)])))
@@ -186,23 +188,23 @@
 (: make-red : (All (A) ((Tree A) -> (Tree A))))
 (define (make-red tre)
   (if (Mt? tre)
-      tre
-      (make-RBNode red 
-                   (RBNode-left tre) 
-                   (RBNode-elem tre) 
-                   (RBNode-right tre))))
+    tre
+    (make-RBNode red 
+                 (RBNode-left tre) 
+                 (RBNode-elem tre) 
+                 (RBNode-right tre))))
 
 (: left : (All (A) ((Tree A) -> (Tree A))))
 (define (left tree)
   (if (Mt? tree)
-      (error "Tree empty" 'left)
-      (RBNode-left tree)))
+    (error "Tree empty" 'left)
+    (RBNode-left tree)))
 
 (: right : (All (A) ((Tree A) -> (Tree A))))
 (define (right tree)
   (if (Mt? tree)
-      (error "Tree empty" 'right)
-      (RBNode-right tree)))
+    (error "Tree empty" 'right)
+    (RBNode-right tree)))
 
 (: bal-lft : (All (A) ((Tree A) A (Tree A) -> (Tree A))))
 (define (bal-lft lft x rgt)
@@ -247,7 +249,7 @@
                   (RBNode-elem tree) 
                   (RBNode-right tree))]
     [else (error "Invariaance violation" 'sub1)]))
-      
+
 (: append : (All (A) ((Tree A) (Tree A) -> (Tree A))))
 (define (append tree1 tree2)
   (let ([t1-color (color tree1)]
@@ -261,93 +263,132 @@
                                     (RBNode-elem tree2) (RBNode-right tree2))]
       [else (make-RBNode red (RBNode-left tree1) (RBNode-elem tree1)
                          (append (RBNode-right tree1) tree2))])))
-  
+
 (: appendRR : (All (A) ((RBNode A) (RBNode A) -> (Tree A))))
 (define (appendRR node1 node2)
   (let ([bc (append (RBNode-right node1) (RBNode-left node2))])
     (if (and (RBNode? bc) (Red? (color bc)))
-        (make-RBNode red 
-                     (make-RBNode red
-                                  (RBNode-left node1) 
-                                  (RBNode-elem node1) 
-                                  (RBNode-left bc))
-                     (RBNode-elem bc)
-                     (make-RBNode red 
-                                  (RBNode-right bc) 
-                                  (RBNode-elem node2) 
-                                  (RBNode-right node2)))
-        (make-RBNode red 
-                     (RBNode-left node1) 
-                     (RBNode-elem node1) 
-                     (make-RBNode red bc 
-                                  (RBNode-elem node2) 
-                                  (RBNode-right node2))))))
+      (make-RBNode red 
+                   (make-RBNode red
+                                (RBNode-left node1) 
+                                (RBNode-elem node1) 
+                                (RBNode-left bc))
+                   (RBNode-elem bc)
+                   (make-RBNode red 
+                                (RBNode-right bc) 
+                                (RBNode-elem node2) 
+                                (RBNode-right node2)))
+      (make-RBNode red 
+                   (RBNode-left node1) 
+                   (RBNode-elem node1) 
+                   (make-RBNode red bc 
+                                (RBNode-elem node2) 
+                                (RBNode-right node2))))))
 
 (: appendBB : (All (A) ((RBNode A) (RBNode A) -> (Tree A))))
 (define (appendBB node1 node2)
   (let ([bc (append (RBNode-right node1) (RBNode-left node2))])
     (if (and (RBNode? bc) (Red? (color bc)))
-        (make-RBNode red 
-                     (make-RBNode red 
-                                  (RBNode-left node1) 
-                                  (RBNode-elem node1) 
-                                  (RBNode-left bc))
-                     (RBNode-elem bc)
-                     (make-RBNode red 
-                                  (RBNode-right bc) 
-                                  (RBNode-elem node2) 
-                                  (RBNode-right node2)))
-        (bal-lft (RBNode-left node1) 
-                 (RBNode-elem node1) 
-                 (make-RBNode black bc 
-                              (RBNode-elem node2) 
-                              (RBNode-right node2))))))
+      (make-RBNode red 
+                   (make-RBNode red 
+                                (RBNode-left node1) 
+                                (RBNode-elem node1) 
+                                (RBNode-left bc))
+                   (RBNode-elem bc)
+                   (make-RBNode red 
+                                (RBNode-right bc) 
+                                (RBNode-elem node2) 
+                                (RBNode-right node2)))
+      (bal-lft (RBNode-left node1) 
+               (RBNode-elem node1) 
+               (make-RBNode black bc 
+                            (RBNode-elem node2) 
+                            (RBNode-right node2))))))
 
 (: redblacktree->list : (All (A) ((RBTree A) -> (Listof A))))
 (define (redblacktree->list redblacktree)
   (if (empty? redblacktree)
-      null
-      (let ([root (elem (RBTree-tree redblacktree))])
-        (cons root (redblacktree->list (delete root redblacktree))))))
+    null
+    (let ([root (elem (RBTree-tree redblacktree))])
+      (cons root (redblacktree->list (delete root redblacktree))))))
 
 (: redblacktree : (All (A) ((A A -> Boolean) A * -> (RBTree A))))
 (define (redblacktree func . lst)
   (foldl (inst insert A) ((inst make-RBTree A) func empty) lst))
 
 
-;; similar to list map function
+;; similar to list map function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
 (: rb-map : 
-   (All (A C B ...) ((C C -> Boolean) 
-                     (A B ... B -> C) 
-                     (RedBlackTree A) 
-                     (RedBlackTree B) ... B -> (RedBlackTree C))))
-(define (rb-map comp func fst . rst)
-  (: in-map : 
-     (All (A C B ...) ((RedBlackTree C) 
-                       (A B ... B -> C) 
-                       (RedBlackTree A) 
-                       (RedBlackTree B) ... B -> (RedBlackTree C))))
-  (define (in-map accum func fst . rst)
-    (if (or (empty? fst) (ormap empty? rst))
-        accum
-        (apply in-map
-               (insert (apply func (root fst) (map root rst)) accum)
-               func
-               (delete-root fst) 
-               (map delete-root rst))))
-  (apply in-map ((inst make-RBTree C) comp empty) func fst rst))
+   (All (A C B ...) 
+        (case-lambda 
+          ((C C -> Boolean) (A -> C) (RBTree A) -> (RBTree C))
+          ((C C -> Boolean)
+           (A B ... B -> C) (RBTree A) (RBTree B) ... B -> (RBTree C)))))
+(define rb-map
+  (pcase-lambda: (A C B ...)
+                 [([comp : (C C -> Boolean)]
+                   [func : (A -> C)]
+                   [heap : (RBTree A)])
+                  (map-single ((inst make-RBTree C) comp empty) func heap)]
+                 [([comp : (C C -> Boolean)]
+                   [func : (A B ... B -> C)]
+                   [heap : (RBTree A)] . [heaps : (RBTree B) ... B])
+                  (apply map-multiple
+                         ((inst make-RBTree C) comp empty)
+                         func heap heaps)]))
 
-;; similar to list fold functions
-(: fold : (All (A C B ...)
-               ((C A B ... B -> C) C (RedBlackTree A) (RedBlackTree B) ... B -> C)))
-(define (fold func base hep . heps)
-  (if (or (empty? hep) (ormap empty? heps))
-      base
-      (apply fold 
-             func 
-             (apply func base (root hep) (map root heps))
-             (delete-root hep)
-             (map delete-root heps))))
+
+(: map-single : (All (A C) ((RBTree C) (A -> C) (RBTree A) -> (RBTree C))))
+(define (map-single accum func heap)
+  (if (empty? heap)
+    accum
+    (map-single (insert (func (root heap)) accum)
+                func
+                (delete-root heap))))
+
+(: map-multiple : 
+   (All (A C B ...) 
+        ((RBTree C) (A B ... B -> C) (RBTree A) (RBTree B) ... B -> (RBTree C))))
+(define (map-multiple accum func heap . heaps)
+  (if (or (empty? heap) (ormap empty? heaps))
+    accum
+    (apply map-multiple
+           (insert (apply func
+                          (root heap)
+                          (map root heaps))
+                   accum)
+           func 
+           (delete-root heap)
+           (map delete-root heaps))))
+
+
+;; similar to list foldr or foldl
+(: fold : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (RBTree A) -> C)
+                     ((C A B ... B -> C) C (RBTree A) (RBTree B) ... B -> C))))
+(define fold
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [heap  : (RBTree A)])
+                  (if (empty? heap)
+                    base
+                    (fold func (func base (root heap))
+                          (delete-root heap)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [heap  : (RBTree A)] . [heaps : (RBTree B) ... B])
+                  (if (or (empty? heap) (ormap empty? heaps))
+                    base
+                    (apply fold 
+                           func 
+                           (apply func base (root heap)
+                                  (map root heaps))
+                           (delete-root heap)
+                           (map delete-root heaps)))]))
+
 
 ;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (RedBlackTree A) -> (RedBlackTree A))))
@@ -355,12 +396,12 @@
   (: inner : (All (A) ((A -> Boolean) (RedBlackTree A) (RedBlackTree A) -> (RedBlackTree A))))
   (define (inner func hep accum)
     (if (empty? hep)
-        accum
-        (let ([head (root hep)]
-              [tail (delete-root hep)])
-          (if (func head)
-              (inner func tail (insert head accum))
-              (inner func tail accum)))))
+      accum
+      (let ([head (root hep)]
+            [tail (delete-root hep)])
+        (if (func head)
+          (inner func tail (insert head accum))
+          (inner func tail accum)))))
   (inner func hep ((inst make-RBTree A) (RBTree-comparer hep) empty)))
 
 ;; similar to list remove function
@@ -369,10 +410,10 @@
   (: inner : (All (A) ((A -> Boolean) (RedBlackTree A) (RedBlackTree A) -> (RedBlackTree A))))
   (define (inner func hep accum)
     (if (empty? hep)
-        accum
-        (let ([head (root hep)]
-              [tail (delete-root hep)])
-          (if (func head)
-              (inner func tail accum)
-              (inner func tail (insert head accum))))))
+      accum
+      (let ([head (root hep)]
+            [tail (delete-root hep)])
+        (if (func head)
+          (inner func tail accum)
+          (inner func tail (insert head accum))))))
   (inner func hep ((inst make-RBTree A) (RBTree-comparer hep) empty)))
