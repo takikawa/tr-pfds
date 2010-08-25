@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../LeftistHeaps.ss")
+(require "../leftistheap.ss")
 (require typed/test-engine/scheme-tests)
 
 (define lst (build-list 100 (λ: ([x : Integer]) x)))
