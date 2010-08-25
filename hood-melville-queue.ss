@@ -6,7 +6,6 @@
 
 (require scheme/match)
 
-(define-struct: Idle ())
 (define-struct: (A) Reversing ([count : Integer]
                                [fst : (Listof A)]
                                [snd : (Listof A)]
@@ -18,15 +17,13 @@
 (define-struct: (A) Done ([fst : (Listof A)]))
 
 (define-type-alias (RotationState A) 
-  (U Idle (Reversing A) (Appending A) (Done A)))
+  (U Null (Reversing A) (Appending A) (Done A)))
 
 (define-struct: (A) Queue ([lenf : Integer]
                            [front : (Listof A)]
                            [state : (RotationState A)]
                            [lenr : Integer]
                            [rear : (Listof A)]))
-
-(define IDLE (make-Idle))
 
 (: exec : (All (A) ((RotationState A) -> (RotationState A))))
 (define (exec state)
@@ -57,7 +54,7 @@
 (define (exec2 lenf front state lenr rear)
   (let ([newstate (exec (exec state))])
     (match newstate
-      [(struct Done (newf)) (make-Queue lenf newf IDLE lenr rear)]
+      [(struct Done (newf)) (make-Queue lenf newf null lenr rear)]
       [else (make-Queue lenf front newstate lenr rear)])))
 
 
@@ -76,7 +73,7 @@
   (zero? (Queue-lenf que)))
 
 ;; An empty queue
-(define empty (make-Queue 0 null (make-Idle) 0 null))
+(define empty (make-Queue 0 null null 0 null))
 
 ;; Inserts an element into the queue
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))
@@ -108,33 +105,65 @@
                (Queue-rear que)))))
 
 ;; similar to list map function
-(: qmap : (All (A C B ...) 
-               ((A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C))))
-(define (qmap func que . ques)
-  (: in-map : (All (A C B ...) 
-                   ((Queue C) (A B ... B -> C) (Queue A) (Queue B) ... B -> 
-                              (Queue C))))
-  (define (in-map accum func que . ques)
-    (if (or (empty? que) (ormap empty? ques))
-        accum
-        (apply in-map 
-               (enqueue (apply func (head que) (map head ques)) accum)
-               func 
-               (tail que)
-               (map tail ques))))
-  (apply in-map empty func que ques))
+;; similar to list map function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: qmap : 
+   (All (A C B ...) 
+        (case-lambda 
+          ((A -> C) (Queue A) -> (Queue C))
+          ((A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C)))))
+(define qmap
+  (pcase-lambda: (A C B ...)
+                 [([func : (A -> C)]
+                   [deq  : (Queue A)])
+                  (map-single empty func deq)]
+                 [([func : (A B ... B -> C)]
+                   [deq  : (Queue A)] . [deqs : (Queue B) ... B])
+                  (apply map-multiple empty func deq deqs)]))
 
-;; similar to list fold functions
-(: fold : (All (A C B ...)
-               ((C A B ... B -> C) C (Queue A) (Queue B) ... B -> C)))
-(define (fold func base que . ques)
+
+(: map-single : (All (A C) ((Queue C) (A -> C) (Queue A) -> (Queue C))))
+(define (map-single accum func que)
+  (if (empty? que)
+      accum
+      (map-single (enqueue (func (head que)) accum) func (tail que))))
+
+(: map-multiple : 
+   (All (A C B ...) 
+        ((Queue C) (A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C))))
+(define (map-multiple accum func que . ques)
   (if (or (empty? que) (ormap empty? ques))
-        base
-        (apply fold 
-               func 
-               (apply func base (head que) (map head ques))
-               (tail que)
-               (map tail ques))))
+      accum
+      (apply map-multiple
+             (enqueue (apply func (head que) (map head ques)) accum)
+             func 
+             (tail que)
+             (map tail ques))))
+
+
+;; similar to list foldr or foldl
+(: fold : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (Queue A) -> C)
+                     ((C A B ... B -> C) C (Queue A) (Queue B) ... B -> C))))
+(define fold
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [que  : (Queue A)])
+                  (if (empty? que)
+                      base
+                      (fold func (func base (head que)) (tail que)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [que  : (Queue A)] . [ques : (Queue B) ... B])
+                  (if (or (empty? que) (ormap empty? ques))
+                      base
+                      (apply fold 
+                             func 
+                             (apply func base (head que) (map head ques))
+                             (tail que)
+                             (map tail ques)))]))
 
 ;; Queue constructor function
 (: queue : (All (A) (A * -> (Queue A))))

@@ -1,4 +1,4 @@
-#lang typed/scheme ;#:optimize
+#lang typed/scheme #:optimize
 
 (require "stream.ss")
 
@@ -16,8 +16,7 @@
 
 
 ;; Constants
-(define ZERO 0)
-(define empty (make-Queue empty-stream ZERO empty-stream ZERO))
+(define empty (make-Queue empty-stream 0 empty-stream 0))
 
 ;; Checks if the given queue is empty
 (: empty? : (All (A) ((Queue A) -> Boolean)))
@@ -33,7 +32,7 @@
       (make-Queue front lenf rear lenr)
       (make-Queue (stream-append front (stream-reverse rear))
                   (+ lenf lenr)
-                  empty-stream ZERO)))
+                  empty-stream 0)))
 
 ;; Pushes an element into the queue
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))
@@ -50,7 +49,7 @@
       (error 'head "given queue is empty")
       (stream-car (Queue-front que))))
 
-;; Dequeue operation. Removes the head and returns the rest of the queue
+;; Queueue operation. Removes the head and returns the rest of the queue
 (: tail : (All (A) ((Queue A) -> (Queue A))))
 (define (tail que)
   (if (empty? que)
@@ -60,34 +59,65 @@
                       (Queue-rear que)
                       (Queue-lenr que))))
 
-;; similar to list map function 
-(: qmap : (All (A C B ...) 
-               ((A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C))))
-(define (qmap func que . ques)
-  (: in-map : (All (A C B ...) 
-                   ((Queue C) (A B ... B -> C) (Queue A) (Queue B) ... B -> 
-                              (Queue C))))
-  (define (in-map accum func que . ques)
-    (if (or (empty? que) (ormap empty? ques))
-        accum
-        (apply in-map 
-               (enqueue (apply func (head que) (map head ques)) accum)
-               func 
-               (tail que)
-               (map tail ques))))
-  (apply in-map empty func que ques))
+;; similar to list map function. apply is expensive so using case-lambda
+;; in order to saperate the more common case
+(: qmap : 
+   (All (A C B ...) 
+        (case-lambda 
+          ((A -> C) (Queue A) -> (Queue C))
+          ((A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C)))))
+(define qmap
+  (pcase-lambda: (A C B ...)
+                 [([func : (A -> C)]
+                   [deq  : (Queue A)])
+                  (map-single empty func deq)]
+                 [([func : (A B ... B -> C)]
+                   [deq  : (Queue A)] . [deqs : (Queue B) ... B])
+                  (apply map-multiple empty func deq deqs)]))
+
+
+(: map-single : (All (A C) ((Queue C) (A -> C) (Queue A) -> (Queue C))))
+(define (map-single accum func que)
+  (if (empty? que)
+      accum
+      (map-single (enqueue (func (head que)) accum) func (tail que))))
+
+(: map-multiple : 
+   (All (A C B ...) 
+        ((Queue C) (A B ... B -> C) (Queue A) (Queue B) ... B -> (Queue C))))
+(define (map-multiple accum func que . ques)
+  (if (or (empty? que) (ormap empty? ques))
+      accum
+      (apply map-multiple
+             (enqueue (apply func (head que) (map head ques)) accum)
+             func 
+             (tail que)
+             (map tail ques))))
+
 
 ;; similar to list foldr or foldl
-(: fold : (All (A C B ...)
-               ((C A B ... B -> C) C (Queue A) (Queue B) ... B -> C)))
-(define (fold func base que . ques)
-  (if (or (empty? que) (ormap empty? ques))
-        base
-        (apply fold 
-               func 
-               (apply func base (head que) (map head ques))
-               (tail que)
-               (map tail ques))))
+(: fold : 
+   (All (A C B ...) 
+        (case-lambda ((C A -> C) C (Queue A) -> C)
+                     ((C A B ... B -> C) C (Queue A) (Queue B) ... B -> C))))
+(define fold
+  (pcase-lambda: (A C B ...) 
+                 [([func : (C A -> C)]
+                   [base : C]
+                   [que  : (Queue A)])
+                  (if (empty? que)
+                      base
+                      (fold func (func base (head que)) (tail que)))]
+                 [([func : (C A B ... B -> C)]
+                   [base : C]
+                   [que  : (Queue A)] . [ques : (Queue B) ... B])
+                  (if (or (empty? que) (ormap empty? ques))
+                      base
+                      (apply fold 
+                             func 
+                             (apply func base (head que) (map head ques))
+                             (tail que)
+                             (map tail ques)))]))
 
 ;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
