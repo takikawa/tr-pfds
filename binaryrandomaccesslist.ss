@@ -1,95 +1,93 @@
-#lang typed/scheme
+#lang typed/scheme #:optimize
+
 (require (prefix-in sh: scheme/base))
+
 (provide filter remove
          empty empty? list-length cons head tail 
          (rename-out [first* first] [rest* rest] [list-map map] 
                      [list-foldr foldr] [list-foldl foldl]) 
          list-ref list-set drop ->list list)
 
-(define-struct: (A) Leaf ([fst : A]))
-(define-struct: (A) Node ([fst : A]
-                          [lft : (Tree A)] 
-                          [rgt : (Tree A)]))
-(define-type-alias Tree (All (A) (U (Leaf A) (Node A))))
-(define-struct: (A) Root ([size : Integer]
-                          [fst  : (Tree A)]
-                          [rst  : (RAList A)]))
+(struct: (A) Leaf ([first : A]))
 
-(define-type-alias RAList (All (A) (U Null-RaList (Root A))))
-(define-type-alias List (All (A) (RAList A)))
+(struct: (A) Node ([first : A]
+                   [left : (Tree A)] 
+                   [right : (Tree A)]))
 
-(define empty-tree (make-Leaf null))
+(define-type (Tree A) (U (Leaf A) (Node A)))
 
-(define-struct: Null-RaList ())
+(struct: (A) Root ([size : Integer]
+                   [first  : (Tree A)]
+                   [rst  : (RAList A)]))
+
+(define-type (RAList A) (U Null (Root A)))
+(define-type (List A) (RAList A))
+
+(define empty-tree (Leaf null))
+
 
 ;; An empty list
-(define empty (make-Null-RaList))
-
-(define One 1)
-(define Zero 0)
+(define empty null)
 
 ;; Checks for empty list
 (: empty? : (All (A) ((RAList A) -> Boolean)))
 (define (empty? list)
-  (Null-RaList? list))
+  (null? list))
 
 ;; Returns the length of the list
 (: list-length : (All (A) ((RAList A) -> Integer)))
 (define (list-length list)
-  (if (Null-RaList? list)
-      0
-      (+ (Root-size list) (list-length (Root-rst list)))))
+  (if (null? list) 0 (+ (Root-size list) (list-length (Root-rst list)))))
 
 ;; Similar to list cons function
 (: cons : (All (A) (A (RAList A) -> (RAList A))))
 (define (cons elem list)
-  (if (Null-RaList? list) 
-      (make-Root One (make-Leaf elem) list)
+  (if (null? list) 
+      (Root 1 (Leaf elem) list)
       (let* ([rst (Root-rst list)]
              [lsize (list-length list)]
              [rst-size (list-length rst)])
         (if (eq? lsize rst-size)
-            (make-Root (+ One lsize rst-size)
-                       (make-Node elem (Root-fst list) (first rst))
-                       (rest rst))
-            (make-Root One (make-Leaf elem) list)))))
+            (Root (+ 1 lsize rst-size)
+                  (Node elem (Root-first list) (first rst))
+                  (rest rst))
+            (Root 1 (Leaf elem) list)))))
 
 ;; Helper for cons
 (: first : (All (A) ((RAList A) -> (Tree A))))
 (define (first list )
-  (if (Null-RaList? list)
+  (if (null? list)
       (error 'cons "given list is empty") ;; Should never come
-      (Root-fst list)))
+      (Root-first list)))
 
 ;; Helper for cons
 (: rest : (All (A) ((RAList A) -> (RAList A))))
 (define (rest list)
-  (if (Null-RaList? list)
+  (if (null? list)
       (error 'cons "given list is empty") ;; Should never come here
       (Root-rst list)))
 
 ;; Similar to list car function
 (: head : (All (A) ((RAList A) -> A)))
 (define (head list)
-  (if (Null-RaList? list) 
+  (if (null? list) 
       (error 'head "given list is empty")
-      (let ([fst (Root-fst list)])
-        (if (Leaf? fst) 
-            (Leaf-fst fst)
-            (Node-fst fst)))))
+      (let ([first (Root-first list)])
+        (if (Leaf? first) 
+            (Leaf-first first)
+            (Node-first first)))))
 
 ;; Similar to list cdr function
 (: tail : (All (A) ((RAList A) -> (RAList A))))
 (define (tail list)
-  (if (Null-RaList? list) 
+  (if (null? list) 
       (error 'tail "given list is empty")
-      (let ([fst (Root-fst list)]
+      (let ([first (Root-first list)]
             [rst (Root-rst list)]
             [size (arithmetic-shift (Root-size list) -1)])
-        (if (Leaf? fst) 
+        (if (Leaf? first) 
             rst 
-            (make-Root size (Node-lft fst) 
-                       (make-Root size (Node-rgt fst) rst))))))
+            (Root size (Node-left first) (Root size (Node-right first) rst))))))
 
 
 ;; Helpers for list-ref
@@ -97,7 +95,7 @@
 (define (tree-lookup size tre pos)
   (let ([pos-zero? (zero? pos)])
     (cond 
-      [(and (Leaf? tre) pos-zero?) (Leaf-fst tre)]
+      [(and (Leaf? tre) pos-zero?) (Leaf-first tre)]
       [(Node? tre) (tree-lookup-help size tre pos pos-zero?)]
       [else (error 'list-ref "given index out of bound")])))
 
@@ -105,9 +103,9 @@
 (define (tree-lookup-help size tre pos pos-zero?)
   (let ([newsize (arithmetic-shift size -1)])
     (cond
-      [pos-zero? (Node-fst tre)]
-      [(<= pos newsize) (tree-lookup newsize (Node-lft tre) (- pos 1))]
-      [else (tree-lookup newsize (Node-rgt tre) (- pos 1 newsize))])))
+      [pos-zero? (Node-first tre)]
+      [(<= pos newsize) (tree-lookup newsize (Node-left tre) (- pos 1))]
+      [else (tree-lookup newsize (Node-right tre) (- pos 1 newsize))])))
 
 ;; Helpers for list-set
 (: tree-update : (All (A) (Integer (Tree A) Integer A -> (Tree A))))
@@ -115,50 +113,50 @@
   (let ([newsize (arithmetic-shift size -1)]
         [pos-zero? (zero? pos)])
     (cond
-      [(and (Leaf? tre) pos-zero?) (make-Leaf elem)]
+      [(and (Leaf? tre) pos-zero?) (Leaf elem)]
       [(Node? tre) (tree-update-helper newsize tre pos elem pos-zero?)]
       [else (error 'list-set "given index out of bound")])))
 
 (: tree-update-helper : 
    (All (A) (Integer (Node A) Integer A Boolean -> (Tree A))))
 (define (tree-update-helper newsize tre pos elem pos-zero?)
-  (let ([left (Node-lft tre)]
-        [right (Node-rgt tre)]
-        [first (Node-fst tre)])
+  (let ([left (Node-left tre)]
+        [right (Node-right tre)]
+        [first (Node-first tre)])
     (cond
-      [(eq? pos 0) (make-Node elem left right)]
+      [(eq? pos 0) (Node elem left right)]
       [(<= pos newsize)
-       (make-Node first (tree-update newsize left (- pos 1) elem) right)]
-      [else (make-Node first left 
-                       (tree-update newsize right (- pos 1 newsize) elem))])))
+       (Node first (tree-update newsize left (- pos 1) elem) right)]
+      [else (Node first left 
+                  (tree-update newsize right (- pos 1 newsize) elem))])))
 
 ;; Similar to list list-ref function
 (: list-ref : (All (A) ((RAList A) Integer -> A)))
 (define (list-ref list pos)
-  (if (Null-RaList? list) 
+  (if (null? list) 
       (error 'list-ref "given index out of bound")
       (let ([size (Root-size list)])
         (if (< pos size) 
-            (tree-lookup size (Root-fst list) pos)
+            (tree-lookup size (Root-first list) pos)
             (list-ref (Root-rst list) (- pos size))))))
 
 ;; Similar to list list-set function
 (: list-set : (All (A) ((RAList A) Integer A -> (RAList A))))
 (define (list-set list pos elem)
-  (if (Null-RaList? list) 
+  (if (null? list) 
       (error 'list-set "given index out of bound")
       (let ([size (Root-size list)]
-            [fst (Root-fst list)]
+            [first (Root-first list)]
             [rst (Root-rst list)])
         (if (< pos size)
-            (make-Root size (tree-update size fst pos elem) rst)
-            (make-Root size fst (list-set rst (- pos size) elem))))))
+            (Root size (tree-update size first pos elem) rst)
+            (Root size first (list-set rst (- pos size) elem))))))
 
 ;; Helpers for drop
 (: tree-drop : (All (A) (Integer (Tree A) Integer (RAList A) -> (RAList A))))
 (define (tree-drop size tre pos list)
   (cond 
-    [(zero? pos) (make-Root size tre list)]
+    [(zero? pos) (Root size tre list)]
     [(and (Leaf? tre) (= pos 1)) list]
     [(Node? tre) (tree-drop-help size tre pos list)]
     [else (error 'drop "not enough elements to drop")]))
@@ -167,11 +165,11 @@
    (All (A) (Integer (Node A) Integer (RAList A) -> (RAList A))))
 (define (tree-drop-help size tre pos list)
   (let ([newsize (arithmetic-shift size -1)]
-        [left (Node-lft tre)]
-        [right (Node-rgt tre)])
+        [left (Node-left tre)]
+        [right (Node-right tre)])
     (if (<= pos newsize)
         (tree-drop newsize left (sub1 pos) 
-                   (make-Root newsize right list))
+                   (Root newsize right list))
         (tree-drop newsize right (- pos 1 newsize) list))))
 
 ;; Similar to list drop function
@@ -185,10 +183,10 @@
 (: drop-help : (All (A) ((Root A) Integer -> (RAList A))))
 (define (drop-help list pos)
   (let ([size (Root-size list)]
-        [fst (Root-fst list)]
+        [first (Root-first list)]
         [rst (Root-rst list)])
     (if (< pos size)
-        (tree-drop size fst pos rst)
+        (tree-drop size first pos rst)
         (drop (- pos size) rst))))
 
 ;; similar to list map function. apply is expensive so using case-lambda
@@ -204,8 +202,7 @@
                    [list  : (List A)])
                   (if (empty? list)
                       empty
-                      (cons (func (head list)) 
-                            (list-map func (tail list))))]
+                      (cons (func (head list)) (list-map func (tail list))))]
                  [([func : (A B ... B -> C)]
                    [list  : (List A)] . [lists : (List B) ... B])
                   (if (or (empty? list) (ormap empty? lists))
@@ -230,8 +227,7 @@
                    [list  : (List A)])
                   (if (empty? list)
                       base
-                      (func (list-foldr func base (tail list))
-                            (head list)))]
+                      (func (list-foldr func base (tail list)) (head list)))]
                  [([func : (C A B ... B -> C)]
                    [base : C]
                    [list  : (List A)] . [lists : (List B) ... B])

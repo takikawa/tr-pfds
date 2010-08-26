@@ -8,15 +8,14 @@
 
 ;; A Banker's Queue (Maintains length of front >= length of rear)
 
-(define-struct: (A) Queue
-  ([front : (Stream A)]
-   [lenf  : Integer]
-   [rear  : (Stream A)]
-   [lenr  : Integer]))
+(struct: (A) Queue ([front : (Stream A)]
+                    [lenf  : Integer]
+                    [rear  : (Stream A)]
+                    [lenr  : Integer]))
 
 
 ;; Constants
-(define empty (make-Queue empty-stream 0 empty-stream 0))
+(define empty (Queue empty-stream 0 empty-stream 0))
 
 ;; Checks if the given queue is empty
 (: empty? : (All (A) ((Queue A) -> Boolean)))
@@ -29,10 +28,10 @@
    (All (A) ((Stream A) Integer (Stream A) Integer -> (Queue A))))
 (define (internal-queue front lenf rear lenr)
   (if (>= lenf lenr)
-      (make-Queue front lenf rear lenr)
-      (make-Queue (stream-append front (stream-reverse rear))
-                  (+ lenf lenr)
-                  empty-stream 0)))
+      (Queue front lenf rear lenr)
+      (Queue (stream-append front (stream-reverse rear))
+             (+ lenf lenr)
+             empty-stream 0)))
 
 ;; Pushes an element into the queue
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))

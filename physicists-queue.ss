@@ -1,7 +1,5 @@
 #lang typed/scheme #:optimize
 
-(require scheme/promise)
-
 (provide filter remove Queue
          empty empty? enqueue head tail queue->list queue list->queue
          (rename-out [qmap map]) fold)
@@ -9,16 +7,14 @@
 ;; Physicists Queue
 ;; Maintains invariant lenr <= lenf
 ;; pref is empty only if lenf = 0
-(define-struct: (A) Queue ([preF  : (Listof A)]
-                           [front : (Promise (Listof A))]
-                           [lenf  : Integer]
-                           [rear  : (Listof A)]
-                           [lenr  : Integer]))
-
-;(define-type-alias (Queue A) (Queue A))
+(struct: (A) Queue ([preF  : (Listof A)]
+                    [front : (Promise (Listof A))]
+                    [lenf  : Integer]
+                    [rear  : (Listof A)]
+                    [lenr  : Integer]))
 
 ;; Empty Queue
-(define empty (make-Queue '() (delay '()) 0 '() 0))
+(define empty (Queue '() (delay '()) 0 '() 0))
 
 ;; Checks if the given Queue is empty
 (: empty? : (All (A) ((Queue A) -> Boolean)))
@@ -32,8 +28,8 @@
                         (Queue A))))
 (define (check-preF-inv pref front lenf rear lenr)
   (if (null? pref)
-      (make-Queue (force front) front lenf rear lenr)
-      (make-Queue pref front lenf rear lenr)))
+      (Queue (force front) front lenf rear lenr)
+      (Queue pref front lenf rear lenr)))
 
 
 ;; Maintains lenr <= lenf invariant

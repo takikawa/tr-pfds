@@ -5,18 +5,18 @@
          empty empty? enqueue head tail queue queue->list Queue
          (rename-out [qmap map]) fold)
 
-(require scheme/promise)
-(define-type-alias (Mid A) (pq:Queue (Promise (Listof A))))
-(define-struct: (A) IntQue ([F : (Listof A)]
-                            [M : (Mid A)]
-                            [LenFM : Integer]
-                            [R : (Listof A)]
-                            [LenR : Integer]))
+(define-type (Mid A) (pq:Queue (Promise (Listof A))))
+
+(struct: (A) IntQue ([F : (Listof A)]
+                     [M : (Mid A)]
+                     [LenFM : Integer]
+                     [R : (Listof A)]
+                     [LenR : Integer]))
 
 ;; An empty queue
 (define empty null)
 
-(define-type-alias (Queue A) (U Null (IntQue A)))
+(define-type (Queue A) (U Null (IntQue A)))
 
 ;; Checks for empty
 (: empty? : (All (A) ((Queue A) -> Boolean)))
@@ -28,16 +28,16 @@
                                          -> (Queue A))))
 (define (internal-queue f m lenfm r lenr)
   (if (<= lenr lenfm) 
-      (checkF (make-IntQue f m lenfm r lenr))
-      (checkF (make-IntQue f (pq:enqueue (delay (reverse r)) m) 
-                           (+ lenfm lenr)
-                           null 0))))
+      (checkF (IntQue f m lenfm r lenr))
+      (checkF (IntQue f (pq:enqueue (delay (reverse r)) m) 
+                      (+ lenfm lenr)
+                      null 0))))
 
 ;; Inserts an element into the queue
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))
 (define (enqueue elem bsq)
   (if (null? bsq)
-      (make-IntQue (cons elem null) pq:empty 1 null 0)
+      (IntQue (cons elem null) pq:empty 1 null 0)
       (internal-queue (IntQue-F bsq)
                       (IntQue-M bsq)
                       (IntQue-LenFM bsq)
@@ -70,11 +70,11 @@
     (if (null? front) 
         (if (pq:empty? mid) 
             empty
-            (make-IntQue (force (pq:head mid))
-                         (pq:tail mid)
-                         (IntQue-LenFM que)
-                         (IntQue-R que)
-                         (IntQue-LenR que)))
+            (IntQue (force (pq:head mid))
+                    (pq:tail mid)
+                    (IntQue-LenFM que)
+                    (IntQue-R que)
+                    (IntQue-LenR que)))
         que)))
 
 

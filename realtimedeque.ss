@@ -7,20 +7,19 @@
 
 (require "stream.ss")
 
-(define-struct: (A) Deque
-  ([front  : (Stream A)]
-   [lenf   : Integer]
-   [scdulF : (Stream A)]
-   [rear   : (Stream A)]
-   [lenr   : Integer]
-   [scdulR : (Stream A)]))
+(struct: (A) Deque
+         ([front  : (Stream A)]
+          [lenf   : Integer]
+          [scdulF : (Stream A)]
+          [rear   : (Stream A)]
+          [lenr   : Integer]
+          [scdulR : (Stream A)]))
 
-
-;(define-type-alias (Deque A) (Deque A))
+;; Invariant
 (define inv-c 2)
 
-(define empty (make-Deque empty-stream 0 empty-stream
-                          empty-stream 0 empty-stream))
+(define empty (Deque empty-stream 0 empty-stream
+                     empty-stream 0 empty-stream))
 
 ;; Check for empty dequeue
 (: empty? : (All (A) ((Deque A) -> Boolean)))
@@ -75,7 +74,7 @@
   (cond 
     [(> lenf (add1 (* lenr inv-c))) (maintainR fr lenf sf r lenr sr)]
     [(> lenr (add1 (* lenf inv-c))) (maintainF fr lenf sf r lenr sr)]
-    [else (make-Deque fr lenf sf r lenr sr)]))
+    [else (Deque fr lenf sf r lenr sr)]))
 
 
 ;; Maintains invariant lenf <= inv-c * lenr
@@ -87,7 +86,7 @@
          [new-lenr (- size new-lenf)]
          [newF (take new-lenf front)]
          [newR (rotate-drop rear new-lenf front)])
-    (make-Deque newF new-lenf newF newR new-lenr newR)))
+    (Deque newF new-lenf newF newR new-lenr newR)))
 
 
 ;; Maintains invariant lenr <= inv-c * lenf
@@ -99,7 +98,7 @@
          [new-lenf (- size new-lenr)]
          [newF (rotate-drop front new-lenr rear)]
          [newR (take new-lenr rear)])
-    (make-Deque newF new-lenf newF newR new-lenr newR)))
+    (Deque newF new-lenf newF newR new-lenr newR)))
 
 
 ;; Pushes an element into the Deque at the front end

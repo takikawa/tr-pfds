@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/scheme #:optimize
 
 (provide filter remove
          Queue queue enqueue head tail empty empty? queue->list
@@ -6,46 +6,47 @@
 
 (require scheme/match)
 
-(define-struct: (A) Reversing ([count : Integer]
-                               [fst : (Listof A)]
-                               [snd : (Listof A)]
-                               [trd : (Listof A)]
-                               [frt : (Listof A)]))
-(define-struct: (A) Appending ([count : Integer]
-                               [fst : (Listof A)]
-                               [snd : (Listof A)]))
-(define-struct: (A) Done ([fst : (Listof A)]))
+(struct: (A) Reversing ([count  : Integer]
+                        [first  : (Listof A)]
+                        [second : (Listof A)]
+                        [third  : (Listof A)]
+                        [fourth : (Listof A)]))
 
-(define-type-alias (RotationState A) 
-  (U Null (Reversing A) (Appending A) (Done A)))
+(struct: (A) Appending ([count  : Integer]
+                        [first  : (Listof A)]
+                        [second : (Listof A)]))
 
-(define-struct: (A) Queue ([lenf : Integer]
-                           [front : (Listof A)]
-                           [state : (RotationState A)]
-                           [lenr : Integer]
-                           [rear : (Listof A)]))
+(struct: (A) Done ([first : (Listof A)]))
+
+(define-type (RotationState A) (U Null (Reversing A) (Appending A) (Done A)))
+
+(struct: (A) Queue ([lenf : Integer]
+                    [front : (Listof A)]
+                    [state : (RotationState A)]
+                    [lenr : Integer]
+                    [rear : (Listof A)]))
 
 (: exec : (All (A) ((RotationState A) -> (RotationState A))))
 (define (exec state)
   (match state
-    [(struct Reversing (cnt (cons x fst) snd (cons y trd) frt)) 
-     (make-Reversing (add1 cnt) fst (cons x snd) trd (cons y frt))]
-    [(struct Reversing (cnt null snd (list y) frt)) 
-     (make-Appending cnt snd (cons y frt))]
-    [(struct Appending (0 fst snd)) (make-Done snd)]
-    [(struct Appending (cnt (cons x fst) snd)) 
-     (make-Appending (sub1 cnt) fst (cons x snd))]
+    [(struct Reversing (cnt (cons x first) second (cons y third) fourth)) 
+     (Reversing (add1 cnt) first (cons x second) third (cons y fourth))]
+    [(struct Reversing (cnt null second (list y) fourth)) 
+     (Appending cnt second (cons y fourth))]
+    [(struct Appending (0 first second)) (Done second)]
+    [(struct Appending (cnt (cons x first) second)) 
+     (Appending (sub1 cnt) first (cons x second))]
     [else state]))
 
 
 (: invalidate : (All (A) ((RotationState A) -> (RotationState A))))
 (define (invalidate state)
   (match state
-    [(struct Reversing (cnt fst snd trd frt)) 
-     (make-Reversing (sub1 cnt) fst snd trd frt)]
-    [(struct Appending (0 fst (cons x snd))) (make-Done snd)]
-    [(struct Appending (cnt fst snd)) 
-     (make-Appending (sub1 cnt) fst snd)]
+    [(struct Reversing (cnt first second third fourth)) 
+     (Reversing (sub1 cnt) first second third fourth)]
+    [(struct Appending (0 first (cons x second))) (Done second)]
+    [(struct Appending (cnt first second)) 
+     (Appending (sub1 cnt) first second)]
     [else state]))
 
 (: exec2 : 
@@ -54,8 +55,8 @@
 (define (exec2 lenf front state lenr rear)
   (let ([newstate (exec (exec state))])
     (match newstate
-      [(struct Done (newf)) (make-Queue lenf newf null lenr rear)]
-      [else (make-Queue lenf front newstate lenr rear)])))
+      [(struct Done (newf)) (Queue lenf newf null lenr rear)]
+      [else (Queue lenf front newstate lenr rear)])))
 
 
 (: check : 
@@ -65,7 +66,7 @@
   (if (<= lenr lenf)
       (exec2 lenf front state lenr rear)
       (exec2 (+ lenf lenr) front 
-             (make-Reversing 0 front null rear null) 0 null)))
+             (Reversing 0 front null rear null) 0 null)))
 
 ;; Check for empty queue
 (: empty? : (All (A) ((Queue A) -> Boolean)))
@@ -73,7 +74,7 @@
   (zero? (Queue-lenf que)))
 
 ;; An empty queue
-(define empty (make-Queue 0 null null 0 null))
+(define empty (Queue 0 null null 0 null))
 
 ;; Inserts an element into the queue
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))

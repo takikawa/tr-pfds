@@ -1,31 +1,29 @@
-#lang typed-scheme
+#lang typed/scheme #:optimize
 
 (provide (rename-out [heap-map map]) fold  filter remove
          heap merge insert find-min/max
          delete-min/max sorted-list empty?)
 
-(require scheme/promise
-         scheme/match)
+(require scheme/match)
 
-(define-struct: Mt ())
-(define-struct: (A) IntHeap ([elem : A]
-                             [heap : (PHeap A)]
-                             [lazy : (Promise (PHeap A))]))
+(struct: (A) IntHeap ([elem : A]
+                      [heap : (PHeap A)]
+                      [lazy : (Promise (PHeap A))]))
 
-(define-type-alias (PHeap A) (U Mt (IntHeap A)))
+(define-type (PHeap A) (U Null (IntHeap A)))
 
-(define-struct: (A) PairingHeap ([comparer : (A A -> Boolean)]
-                                 [heap : (PHeap A)]))
+(struct: (A) PairingHeap ([comparer : (A A -> Boolean)]
+                          [heap : (PHeap A)]))
 
-(define-type-alias (Heap A) (PairingHeap A))
+(define-type (Heap A) (PairingHeap A))
 
 ;; Checks for empty
 (: empty? : (All (A) ((PairingHeap A) -> Boolean)))
 (define (empty? pheap)
-  (Mt? (PairingHeap-heap pheap)))
+  (null? (PairingHeap-heap pheap)))
 
 ;; An empty heap
-(define empty (make-Mt))
+(define empty null)
 
 ;; Merges two given heaps
 (: merge : (All (A) ((PairingHeap A) (PairingHeap A) -> (PairingHeap A))))
@@ -33,14 +31,14 @@
   (let ([func (PairingHeap-comparer pheap1)]
         [heap1 (PairingHeap-heap pheap1)]
         [heap2 (PairingHeap-heap pheap2)])
-    (make-PairingHeap func (merge-help heap1 heap2 func))))
+    (PairingHeap func (merge-help heap1 heap2 func))))
 
 ;; Helper for merge
 (: merge-help : (All (A) ((PHeap A) (PHeap A) (A A -> Boolean) -> (PHeap A))))
 (define (merge-help pheap1 pheap2 func)
   (match (cons pheap1 pheap2)
-    [(cons (struct Mt ()) _) pheap2]
-    [(cons _ (struct Mt ())) pheap1]
+    [(cons '() _) pheap2]
+    [(cons _ '()) pheap1]
     [(cons (and h1 (struct IntHeap (x _ _))) (and h2 (struct IntHeap (y _ _)))) 
      (if (func x y)
          (link h1 h2 func)
@@ -49,26 +47,26 @@
 (: link : (All (A) ((IntHeap A) (IntHeap A) (A A -> Boolean) -> (PHeap A))))
 (define (link heap1 heap2 func)
   (match heap1
-    [(struct IntHeap (x (struct Mt ()) m)) (make-IntHeap x heap2 m)]
+    [(struct IntHeap (x '() m)) (IntHeap x heap2 m)]
     [(struct IntHeap (x b m)) 
-     (make-IntHeap x (make-Mt) (delay (merge-help (merge-help heap2 b func)
-                                                  (force m)
-                                                  func)))]))
+     (IntHeap x '() (delay (merge-help (merge-help heap2 b func)
+                                       (force m)
+                                       func)))]))
 
 ;; Inserts an element into the heap
 (: insert : (All (A) (A (PairingHeap A) -> (PairingHeap A))))
 (define (insert elem pheap)
   (let ([func (PairingHeap-comparer pheap)]
         [heap (PairingHeap-heap pheap)])
-    (make-PairingHeap func (merge-help (make-IntHeap elem (make-Mt)
-                                                     (delay (make-Mt)))
-                                       heap func))))
+    (PairingHeap func (merge-help (IntHeap elem '()
+                                           (delay '()))
+                                  heap func))))
 
 ;; Returns min or max element of the heap
 (: find-min/max : (All (A) ((PairingHeap A) -> A)))
 (define (find-min/max pheap)
   (let ([heap (PairingHeap-heap pheap)])
-    (if (Mt? heap)
+    (if (null? heap)
         (error 'find-min/max "given heap is empty")
         (IntHeap-elem heap))))
 
@@ -77,23 +75,23 @@
 (define (delete-min/max pheap)
   (let ([heap (PairingHeap-heap pheap)]
         [func (PairingHeap-comparer pheap)])
-    (if (Mt? heap)
+    (if (null? heap)
         (error 'delete-min/max "given heap is empty")
-        (make-PairingHeap func (merge-help (IntHeap-heap heap) 
-                                           (force (IntHeap-lazy heap)) 
-                                           func)))))
+        (PairingHeap func (merge-help (IntHeap-heap heap) 
+                                      (force (IntHeap-lazy heap)) 
+                                      func)))))
 
 ;; Heap constructor
 (: heap : (All (A) ((A A -> Boolean) A * -> (PairingHeap A))))
 (define (heap comparer . lst)
-  (let ([first ((inst make-PairingHeap A) comparer (make-Mt))])
+  (let ([first ((inst PairingHeap A) comparer '())])
     (foldl (inst insert A) first lst)))
 
 
 (: sorted-list : (All (A) ((PairingHeap A) -> (Listof A))))
 (define (sorted-list pheap)
   (let ([heap (PairingHeap-heap pheap)])
-    (if (Mt? heap)
+    (if (null? heap)
         null
         (cons (find-min/max pheap) (sorted-list (delete-min/max pheap))))))
 
@@ -110,7 +108,7 @@
           (if (func head)
               (inner func tail (insert head accum))
               (inner func tail accum)))))
-  (inner func hep ((inst make-PairingHeap A) (PairingHeap-comparer hep) empty)))
+  (inner func hep ((inst PairingHeap A) (PairingHeap-comparer hep) empty)))
 
 ;; Similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (PairingHeap A) -> (PairingHeap A))))
@@ -124,7 +122,7 @@
           (if (func head)
               (inner func tail accum)
               (inner func tail (insert head accum))))))
-  (inner func hep ((inst make-PairingHeap A) (PairingHeap-comparer hep) empty)))
+  (inner func hep ((inst PairingHeap A) (PairingHeap-comparer hep) empty)))
 
 ;; similar to list map function. apply is expensive so using case-lambda
 ;; in order to saperate the more common case
@@ -139,37 +137,37 @@
                  [([comp : (C C -> Boolean)]
                    [func : (A -> C)]
                    [heap : (Heap A)])
-                  (map-single ((inst make-PairingHeap C) comp empty) func heap)]
+                  (map-single ((inst PairingHeap C) comp empty) func heap)]
                  [([comp : (C C -> Boolean)]
                    [func : (A B ... B -> C)]
                    [heap : (Heap A)] . [heaps : (Heap B) ... B])
                   (apply map-multiple
-                         ((inst make-PairingHeap C) comp empty)
+                         ((inst PairingHeap C) comp empty)
                          func heap heaps)]))
 
 
 (: map-single : (All (A C) ((Heap C) (A -> C) (Heap A) -> (Heap C))))
 (define (map-single accum func heap)
   (if (empty? heap)
-    accum
-    (map-single (insert (func (find-min/max heap)) accum)
-                func
-                (delete-min/max heap))))
+      accum
+      (map-single (insert (func (find-min/max heap)) accum)
+                  func
+                  (delete-min/max heap))))
 
 (: map-multiple : 
    (All (A C B ...) 
         ((Heap C) (A B ... B -> C) (Heap A) (Heap B) ... B -> (Heap C))))
 (define (map-multiple accum func heap . heaps)
   (if (or (empty? heap) (ormap empty? heaps))
-    accum
-    (apply map-multiple
-           (insert (apply func
-                          (find-min/max heap)
-                          (map find-min/max heaps))
-                   accum)
-           func 
-           (delete-min/max heap)
-           (map delete-min/max heaps))))
+      accum
+      (apply map-multiple
+             (insert (apply func
+                            (find-min/max heap)
+                            (map find-min/max heaps))
+                     accum)
+             func 
+             (delete-min/max heap)
+             (map delete-min/max heaps))))
 
 
 ;; similar to list foldr or foldl
@@ -183,17 +181,17 @@
                    [base : C]
                    [heap  : (Heap A)])
                   (if (empty? heap)
-                    base
-                    (fold func (func base (find-min/max heap))
-                          (delete-min/max heap)))]
+                      base
+                      (fold func (func base (find-min/max heap))
+                            (delete-min/max heap)))]
                  [([func : (C A B ... B -> C)]
                    [base : C]
                    [heap  : (Heap A)] . [heaps : (Heap B) ... B])
                   (if (or (empty? heap) (ormap empty? heaps))
-                    base
-                    (apply fold 
-                           func 
-                           (apply func base (find-min/max heap)
-                                  (map find-min/max heaps))
-                           (delete-min/max heap)
-                           (map delete-min/max heaps)))]))
+                      base
+                      (apply fold 
+                             func 
+                             (apply func base (find-min/max heap)
+                                    (map find-min/max heaps))
+                             (delete-min/max heap)
+                             (map delete-min/max heaps)))]))

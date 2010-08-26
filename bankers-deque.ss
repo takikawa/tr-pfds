@@ -8,16 +8,15 @@
 
 ;; A Banker's Queue (Maintains length of front >= length of rear)
 
-(define-struct: (A) Deque
-  ([front : (Stream A)]
-   [lenf  : Integer]
-   [rear  : (Stream A)]
-   [lenr  : Integer]))
+(struct: (A) Deque ([front : (Stream A)]
+                    [lenf  : Integer]
+                    [rear  : (Stream A)]
+                    [lenr  : Integer]))
 
 (define inv-c 2)
 
 ;; Constants
-(define empty (make-Deque empty-stream 0 empty-stream 0))
+(define empty (Deque empty-stream 0 empty-stream 0))
 
 ;; Checks if the given deque is empty
 (: empty? : (All (A) ((Deque A) -> Boolean)))
@@ -34,7 +33,7 @@
   (cond 
     [(> lenf (add1 (* lenr inv-c))) (maintainF front lenf rear lenr)]
     [(> lenr (add1 (* lenf inv-c))) (maintainR front lenf rear lenr)]
-    [else (make-Deque front lenf rear lenr)]))
+    [else (Deque front lenf rear lenr)]))
 
 
 ;; Maintains invariant lenf <= inv-c * lenr
@@ -44,7 +43,7 @@
          [new-lenr (- (+ lenf lenr) new-lenf)]
          [newF (take new-lenf front)]
          [newR (stream-append rear (stream-reverse (drop new-lenf front)))])
-    (make-Deque newF new-lenf newR new-lenr)))
+    (Deque newF new-lenf newR new-lenr)))
 
 
 ;; Maintains invariant lenr <= inv-c * lenf
@@ -54,7 +53,7 @@
          [new-lenr (- (+ lenf lenr) new-lenf)]
          [newR (take (ann new-lenr Integer) rear)]
          [newF (stream-append front (stream-reverse (drop new-lenr rear)))])
-    (make-Deque newF new-lenf newR new-lenr)))
+    (Deque newF new-lenf newR new-lenr)))
 
 
 ;; Pushes an element into the Deque at the front end

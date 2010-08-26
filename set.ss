@@ -6,21 +6,21 @@
 
 (require scheme/match)
 
-(define-struct: Mt ())
-(define-struct: (A) Tree ([lset : (USet A)]
-                          [elem : A]
-                          [rset : (USet A)]))
+;(define-struct: Mt ())
+(struct: (A) Tree ([lset : (USet A)]
+                   [elem : A]
+                   [rset : (USet A)]))
 
-(define-type-alias (USet A) (U Mt (Tree A)))
+(define-type (USet A) (U Null (Tree A)))
 
-(define-struct: (A) Set ([comparer : (A A -> Boolean)]
-                         [set : (USet A)]))
+(struct: (A) Set ([comparer : (A A -> Boolean)]
+                  [set : (USet A)]))
 
-(define empty (make-Mt))
+(define empty null)
 
 (: empty? : (All (A) ((Set A) -> Boolean)))
 (define (empty? uset)
-  (Mt? (Set-set uset)))
+  (null? (Set-set uset)))
 
 
 (: member? : (All (A) (A (Set A) -> Boolean)))
@@ -28,7 +28,7 @@
   (let ([func (Set-comparer uset)]
         [set (Set-set uset)])
     (match set
-      [(struct Mt ()) #f]
+      ['() #f]
       [(struct Tree (l e r)) (member-help l r e key func)])))
 
 
@@ -40,37 +40,38 @@
     (cond
       [(and fst snd) #t]
       [(and (not fst) (not snd)) #t]
-      [fst (member? key (make-Set f left))]
-      [else (member? key (make-Set f rgt))])))
+      [fst (member? key (Set f left))]
+      [else (member? key (Set f rgt))])))
 
 
 (: ins : (All (A) (A (USet A) (A A -> Boolean) -> (USet A))))
 (define (ins elem set func)
   (match set
-    [(struct Mt ()) (make-Tree empty elem empty)]
-    [(struct Tree (a y b)) (let ([lt (func elem y)]
-                                 [gt (func y elem)]) 
-                             (cond 
-                               [(or (and gt lt) (and (not gt) (not lt))) set]
-                               [lt (make-Tree (ins elem a func) y b)]
-                               [else (make-Tree a y (ins elem b func))]))]))
+    ['() (Tree empty elem empty)]
+    [(struct Tree (a y b)) 
+     (let ([lt (func elem y)]
+           [gt (func y elem)]) 
+       (cond 
+         [(or (and gt lt) (and (not gt) (not lt))) set]
+         [lt (Tree (ins elem a func) y b)]
+         [else (Tree a y (ins elem b func))]))]))
 
 (: insert : (All (A) (A (Set A) -> (Set A))))
 (define (insert elem uset)
   (let ([func (Set-comparer uset)]
         [set (Set-set uset)])
-    (make-Set func (ins elem set func))))
+    (Set func (ins elem set func))))
 
 (: set : (All (A) ((A A -> Boolean) A * -> (Set A))))
 (define (set func . lst)
-  (foldl (inst insert A) ((inst make-Set A) func empty) lst))
+  (foldl (inst insert A) ((inst Set A) func empty) lst))
 
 (: helper : (All (A) ((USet A) (Listof A) -> (Listof A))))
 (define (helper set accum)
-  (if (Mt? set)
-    accum
-    (helper (Tree-lset set) 
-            (cons (Tree-elem set) (helper (Tree-rset set) accum)))))
+  (if (null? set)
+      accum
+      (helper (Tree-lset set) 
+              (cons (Tree-elem set) (helper (Tree-rset set) accum)))))
 
 (: set->list : (All (A) ((Set A) -> (Listof A))))
 (define (set->list set)
@@ -79,19 +80,19 @@
 
 (: union-helper : (All (A) ((USet A) (USet A) (A A -> Boolean) -> (USet A))))
 (define (union-helper set accum comp)
-  (if (Mt? set)
-    accum
-    (union-helper (Tree-lset set) 
-                  (ins (Tree-elem set) 
-                       (union-helper (Tree-rset set) accum comp)
-                       comp)
-                  comp)))
+  (if (null? set)
+      accum
+      (union-helper (Tree-lset set) 
+                    (ins (Tree-elem set) 
+                         (union-helper (Tree-rset set) accum comp)
+                         comp)
+                    comp)))
 
 (: union : (All (A) ((Set A) (Set A) -> (Set A))))
 (define (union set1 set2)
   (let ([comp (Set-comparer set1)])
-    (make-Set comp 
-              (union-helper (Set-set set2) (Set-set set1) comp))))
+    (Set comp 
+         (union-helper (Set-set set2) (Set-set set1) comp))))
 
 
 (: intersection : (All (A) ((Set A) (Set A) -> (Set A))))
@@ -99,15 +100,15 @@
   (let ([comp (Set-comparer set1)])
     (: helper : (All (A) ((Set A) (USet A) (USet A) -> (USet A))))
     (define (helper set uset accum)
-      (if (Mt? uset)
-        accum
-        (let ([elem (Tree-elem uset)]
-              [lset (Tree-lset uset)]
-              [rset (Tree-rset uset)])
-          (if (member? elem set)
-            (helper set rset (helper set lset (ins elem accum comp)))
-            (helper set rset (helper set lset accum))))))
-    (make-Set comp (helper set1 (Set-set set2) (make-Mt))))) 
+      (if (null? uset)
+          accum
+          (let ([elem (Tree-elem uset)]
+                [lset (Tree-lset uset)]
+                [rset (Tree-rset uset)])
+            (if (member? elem set)
+                (helper set rset (helper set lset (ins elem accum comp)))
+                (helper set rset (helper set lset accum))))))
+    (Set comp (helper set1 (Set-set set2) null)))) 
 
 
 (: difference : (All (A) ((Set A) (Set A) -> (Set A))))
@@ -115,15 +116,15 @@
   (let ([comp (Set-comparer set1)])
     (: helper : (All (A) ((Set A) (USet A) (USet A) -> (USet A))))
     (define (helper set uset accum)
-      (if (Mt? uset)
-        accum
-        (let ([elem (Tree-elem uset)]
-              [lset (Tree-lset uset)]
-              [rset (Tree-rset uset)])
-          (if (member? elem set)
-            (helper set rset (helper set lset accum))
-            (helper set rset (helper set lset (ins elem accum comp)))))))
-    (make-Set comp (helper set2 (Set-set set1) (make-Mt)))))
+      (if (null? uset)
+          accum
+          (let ([elem (Tree-elem uset)]
+                [lset (Tree-lset uset)]
+                [rset (Tree-rset uset)])
+            (if (member? elem set)
+                (helper set rset (helper set lset accum))
+                (helper set rset (helper set lset (ins elem accum comp)))))))
+    (Set comp (helper set2 (Set-set set1) null))))
 
 
 (: subset? : (All (A) ((Set A) (Set A) -> Boolean)))
@@ -131,7 +132,7 @@
   (let ([comp (Set-comparer set1)])
     (: helper : (All (A) ((Set A) (USet A) -> Boolean)))
     (define (helper set uset)
-      (or (Mt? uset)
+      (or (null? uset)
           (let ([elem (Tree-elem uset)]
                 [lset (Tree-lset uset)]
                 [rset (Tree-rset uset)])
@@ -142,21 +143,21 @@
 ;; 3 functions are redundent. But because of TR I wrote them
 (: lset : (All (A) ((USet A) -> (USet A))))
 (define (lset uset)
-  (if (Mt? uset)
-    (error "Internal error")
-    (Tree-lset uset)))
+  (if (null? uset)
+      (error "Internal error")
+      (Tree-lset uset)))
 
 (: rset : (All (A) ((USet A) -> (USet A))))
 (define (rset uset)
-  (if (Mt? uset)
-    (error "Internal error")
-    (Tree-rset uset)))
+  (if (null? uset)
+      (error "Internal error")
+      (Tree-rset uset)))
 
 (: elem : (All (A) ((USet A) -> A)))
 (define (elem uset)
-  (if (Mt? uset)
-    (error "Internal error")
-    (Tree-elem uset)))
+  (if (null? uset)
+      (error "Internal error")
+      (Tree-elem uset)))
 
 
 ;; similar to list map function
@@ -172,11 +173,11 @@
      (All (A C B ...) ((A B ... B -> C) (USet A) (USet B) ... B -> (USet C))))
   (define (in-map func fst . rst)
     (if (and (Tree? fst) (andmap Tree? rst))
-      (make-Tree (apply in-map func (Tree-lset fst) (map lset rst))
-                 (apply func (Tree-elem fst) (map elem rst))
-                 (apply in-map func (Tree-rset fst) (map rset rst)))
-      empty))
-  (make-Set comp (apply in-map func (Set-set fst) (map Set-set rst))))
+        (Tree (apply in-map func (Tree-lset fst) (map lset rst))
+              (apply func (Tree-elem fst) (map elem rst))
+              (apply in-map func (Tree-rset fst) (map rset rst)))
+        empty))
+  (Set comp (apply in-map func (Set-set fst) (map Set-set rst))))
 
 
 
@@ -186,15 +187,15 @@
   (let ([comp (Set-comparer set)])
     (: helper : (All (A) ((USet A) (USet A) -> (USet A))))
     (define (helper uset accum)
-      (if (Mt? uset)
-        accum
-        (let ([elem (Tree-elem uset)]
-              [lset (Tree-lset uset)]
-              [rset (Tree-rset uset)])
-          (if (pred elem)
-            (helper rset (helper lset (ins elem accum comp)))
-            (helper rset (helper lset accum))))))
-    (make-Set comp (helper (Set-set set) (make-Mt)))))
+      (if (null? uset)
+          accum
+          (let ([elem (Tree-elem uset)]
+                [lset (Tree-lset uset)]
+                [rset (Tree-rset uset)])
+            (if (pred elem)
+                (helper rset (helper lset (ins elem accum comp)))
+                (helper rset (helper lset accum))))))
+    (Set comp (helper (Set-set set) null))))
 
 ;;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Set A) -> (Set A))))
@@ -202,12 +203,12 @@
   (let ([comp (Set-comparer set)])
     (: helper : (All (A) ((USet A) (USet A) -> (USet A))))
     (define (helper uset accum)
-      (if (Mt? uset)
-        accum
-        (let ([elem (Tree-elem uset)]
-              [lset (Tree-lset uset)]
-              [rset (Tree-rset uset)])
-          (if (pred elem)
-            (helper rset (helper lset accum))
-            (helper rset (helper lset (ins elem accum comp)))))))
-    (make-Set comp (helper (Set-set set) (make-Mt)))))
+      (if (null? uset)
+          accum
+          (let ([elem (Tree-elem uset)]
+                [lset (Tree-lset uset)]
+                [rset (Tree-rset uset)])
+            (if (pred elem)
+                (helper rset (helper lset accum))
+                (helper rset (helper lset (ins elem accum comp)))))))
+    (Set comp (helper (Set-set set) null))))

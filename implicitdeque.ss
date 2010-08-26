@@ -1,30 +1,36 @@
-#lang typed-scheme
+#lang typed/scheme #:optimize
 
 (provide filter remove
          empty empty? head tail last init deque->rev-list
          enqueue-front enqueue deque->list deque
          foldr (rename-out [deque-map map] [dqfoldl foldl]))
 
-(require scheme/promise scheme/match)
+(require scheme/match)
 
-(define-struct: Zero ())
-(define-struct: (A) One ([elem : A]))
-(define-struct: (A) Two ([fst : A] 
-                         [snd : A]))
-(define-struct: (A) Three ([fst : A] 
-                           [snd : A]
-                           [trd : A]))
-(define-type-alias D (All (A) (U Zero (One A) (Two A) (Three A))))
-(define-type-alias D1 (All (A) (U Zero (One A) (Two A))))
-(define-struct: (A) Shallow ([elem : (D A)]))
-(define-struct: (A) Deep ([F : (D A)]
-                          [M : (Promise (Pair (Deque A) (Deque A)))]
-                          [R : (D A)]))
+(struct: Zero ())
+(struct: (A) One ([elem : A]))
 
-(define-type-alias Deque (All (A) (U (Shallow A) (Deep A))))
+(struct: (A) Two ([first  : A] 
+                  [second : A]))
+
+(struct: (A) Three ([first  : A] 
+                    [second : A]
+                    [third  : A]))
+
+(define-type (D A)  (U Zero (One A) (Two A) (Three A)))
+
+(define-type (D1 A) (U Zero (One A) (Two A)))
+
+(struct: (A) Shallow ([elem : (D A)]))
+
+(struct: (A) Deep ([F : (D A)]
+                   [M : (Promise (Pair (Deque A) (Deque A)))]
+                   [R : (D A)]))
+
+(define-type (Deque A) (U (Shallow A) (Deep A)))
 
 ;; An empty deque
-(define empty (make-Shallow (make-Zero)))
+(define empty (Shallow (Zero)))
 
 ;; Check for empty deque
 (: empty? : (All (A) ((Deque A) -> Boolean)))
@@ -35,45 +41,45 @@
 (: enqueue-front : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue-front elem que)
   (match que    
-    [(struct Shallow ((struct Zero ()))) (make-Shallow (make-One elem))]
-    [(struct Shallow ((struct One (a)))) (make-Shallow (make-Two elem a))]
+    [(struct Shallow ((struct Zero ()))) (Shallow (One elem))]
+    [(struct Shallow ((struct One (a)))) (Shallow (Two elem a))]
     [(struct Shallow ((struct Two (a b)))) 
-     (make-Shallow (make-Three elem a b))]
+     (Shallow (Three elem a b))]
     [(struct Shallow ((struct Three (f s t))))
-     (make-Deep (make-Two elem f) (delay (cons empty empty)) (make-Two s t))]
-    [(struct Deep ((struct Zero ()) m r)) (make-Deep (make-One elem) m r)]
-    [(struct Deep ((struct One (a)) m r)) (make-Deep (make-Two elem a) m r)]
+     (Deep (Two elem f) (delay (cons empty empty)) (Two s t))]
+    [(struct Deep ((struct Zero ()) m r)) (Deep (One elem) m r)]
+    [(struct Deep ((struct One (a)) m r)) (Deep (Two elem a) m r)]
     [(struct Deep ((struct Two (a b)) m r)) 
-     (make-Deep (make-Three elem a b) m r)]
+     (Deep (Three elem a b) m r)]
     [(struct Deep ((struct Three (f s t)) m r)) 
      (let* ([forced-mid (force m)]
-            [fst (car forced-mid)]
-            [snd (cdr forced-mid)])
-       (make-Deep (make-Two elem f) 
-                  (delay (cons (enqueue-front s fst) (enqueue-front t snd)))
-                  r))]))
+            [first (car forced-mid)]
+            [second (cdr forced-mid)])
+       (Deep (Two elem f) 
+             (delay (cons (enqueue-front s first) (enqueue-front t second)))
+             r))]))
 
 ;; Inserts into the rear of the queue
 (: enqueue : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue elem que)
   (match que    
-    [(struct Shallow ((struct Zero ()))) (make-Shallow (make-One elem))]
-    [(struct Shallow ((struct One (a)))) (make-Shallow (make-Two a elem))]
+    [(struct Shallow ((struct Zero ()))) (Shallow (One elem))]
+    [(struct Shallow ((struct One (a)))) (Shallow (Two a elem))]
     [(struct Shallow ((struct Two (a b)))) 
-     (make-Shallow (make-Three a b elem))]
+     (Shallow (Three a b elem))]
     [(struct Shallow ((struct Three (f s t))))
-     (make-Deep (make-Two f s) (delay (cons empty empty)) (make-Two t elem))]
-    [(struct Deep (f m (struct Zero ()))) (make-Deep f m (make-One elem))]
-    [(struct Deep (f m (struct One (a)))) (make-Deep f m (make-Two a elem))]
+     (Deep (Two f s) (delay (cons empty empty)) (Two t elem))]
+    [(struct Deep (f m (struct Zero ()))) (Deep f m (One elem))]
+    [(struct Deep (f m (struct One (a)))) (Deep f m (Two a elem))]
     [(struct Deep (f m (struct Two (a b)))) 
-     (make-Deep f m (make-Three a b elem))]
+     (Deep f m (Three a b elem))]
     [(struct Deep (fi m (struct Three (f s t)))) 
      (let* ([forced-mid (force m)]
-            [fst (car forced-mid)]
-            [snd (cdr forced-mid)])
-       (make-Deep fi
-                  (delay (cons (enqueue f fst) (enqueue s snd)))
-                  (make-Two t elem)))]))
+            [first (car forced-mid)]
+            [second (cdr forced-mid)])
+       (Deep fi
+             (delay (cons (enqueue f first) (enqueue s second)))
+             (Two t elem)))]))
 
 ;; Returns the first element of the deque
 (: head : (All (A) ((Deque A) -> A)))
@@ -106,47 +112,47 @@
 (define (tail que)
   (match que    
     [(struct Shallow ((struct Zero ()))) (error 'tail "given deque is empty")]
-    [(struct Shallow ((struct One (_)))) (make-Shallow (make-Zero))]
-    [(struct Shallow ((struct Two (_ s)))) (make-Shallow (make-One s))]
-    [(struct Shallow ((struct Three (_ s t)))) (make-Shallow (make-Two s t))]
+    [(struct Shallow ((struct One (_)))) (Shallow (Zero))]
+    [(struct Shallow ((struct Two (_ s)))) (Shallow (One s))]
+    [(struct Shallow ((struct Three (_ s t)))) (Shallow (Two s t))]
     [(struct Deep ((struct Zero ()) m r)) (error 'tail "given deque is empty")]
     [(struct Deep ((struct One (_)) mid r)) 
      (let ([m (force mid)])
        (if (empty? (car m))
-           (make-Shallow r)
+           (Shallow r)
            (let* ([carm (car m)]
                   [cdrm (cdr m)]
-                  [fst (head carm)]
-                  [snd (head cdrm)])
-             (make-Deep (make-Two fst snd) 
-                        (delay (cons (tail carm) (tail cdrm))) r))))]
-    [(struct Deep ((struct Two (_ s)) m r)) (make-Deep (make-One s) m r)]
+                  [first (head carm)]
+                  [second (head cdrm)])
+             (Deep (Two first second) 
+                   (delay (cons (tail carm) (tail cdrm))) r))))]
+    [(struct Deep ((struct Two (_ s)) m r)) (Deep (One s) m r)]
     [(struct Deep ((struct Three (_ s t)) m r)) 
-     (make-Deep (make-Two s t) m r)]))
+     (Deep (Two s t) m r)]))
 
 ;; Returns a deque without the last element
 (: init : (All (A) ((Deque A) -> (Deque A))))
 (define (init que)
   (match que
     [(struct Shallow ((struct Zero ()))) (error 'init "given deque is empty")]
-    [(struct Shallow ((struct One (f)))) (make-Shallow (make-Zero))]
+    [(struct Shallow ((struct One (f)))) (Shallow (Zero))]
     [(struct Shallow ((struct Two (f _)))) 
-     (make-Shallow (make-One f))]
-    [(struct Shallow ((struct Three (f s _)))) (make-Shallow (make-Two f s))]
+     (Shallow (One f))]
+    [(struct Shallow ((struct Three (f s _)))) (Shallow (Two f s))]
     [(struct Deep (f m (struct Zero ()))) (error 'init "given deque is empty")]
     [(struct Deep (f mid (struct One (a))))
      (let* ([m (force mid)]
             [carm (car m)])
        (if (empty? carm)
-           (make-Shallow f)
+           (Shallow f)
            (let* ([cdrm (cdr m)]
-                  [fst (last carm)]
-                  [snd (last cdrm)])
-             (make-Deep f (delay (cons (init carm) (init cdrm))) 
-                        (make-Two fst snd)))))]
-    [(struct Deep (fi m (struct Two (f _)))) (make-Deep fi m (make-One f))]
+                  [first (last carm)]
+                  [second (last cdrm)])
+             (Deep f (delay (cons (init carm) (init cdrm))) 
+                   (Two first second)))))]
+    [(struct Deep (fi m (struct Two (f _)))) (Deep fi m (One f))]
     [(struct Deep (fi m (struct Three (f s t)))) 
-     (make-Deep fi m (make-Two f s))]))
+     (Deep fi m (Two f s))]))
 
 ;; similar to list map function. apply is expensive so using case-lambda
 ;; in order to saperate the more common case

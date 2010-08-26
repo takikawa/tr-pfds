@@ -46,21 +46,20 @@
 (check-expect (sorted-list (insert -10 (heap less-than? 1 20 -3 -4)))
               (list -10 -4 -3 1 20))
 
-(check-expect (sorted-list (insert 0 (heap less-than? 1 2 -3 -4)))
-              (list -4 -3 0 1 2))
+(check-expect (sorted-list (insert 5 (heap less-than? 1 2 -3 -4)))
+              (list -4 -3 1 2 5))
 
-(check-expect (sorted-list (merge (heap less-than? 2 3 0 -10)
+(check-expect (sorted-list (merge (heap less-than? 2 3 -10)
                                   (heap less-than? 1 -2 -3 -4)))
-              (list -10 -4 -3 -2 0 1 2 3))
+              (list -10 -4 -3 -2 1 2 3))
 
-(check-expect (sorted-list (merge (delete-min/max (heap less-than? -1))
+(check-expect (sorted-list (merge (delete-min/max (heap less-than? -1 5))
                                   (heap less-than? 1 -2 -3 -4)))
-              (list -4 -3 -2 1))
+              (list -4 -3 -2 1 5))
 
 (check-expect (sorted-list (merge (heap less-than? 1 -2 -3 -4)
-                                  (delete-min/max 
-                                   (heap less-than? -1))))
-              (list -4 -3 -2 1))
+                                  (delete-min/max (heap less-than? -1 5))))
+              (list -4 -3 -2 1 5))
 
 (define int-list (build-list 100 (λ: ([x : Integer]) x)))
 

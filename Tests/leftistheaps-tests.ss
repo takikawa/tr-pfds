@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/scheme
 (require "../leftistheap.ss")
 (require typed/test-engine/scheme-tests)
 

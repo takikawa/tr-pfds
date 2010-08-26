@@ -6,13 +6,13 @@
 
 (require "stream.ss")
 
-(define-struct: (A) Queue ([front : (Stream A)]
-                           [rear  : (Listof A)]
-                           [scdul : (Stream A)]))
+(struct: (A) Queue ([front : (Stream A)]
+                    [rear  : (Listof A)]
+                    [scdul : (Stream A)]))
 
 
 ;; An empty queue
-(define empty (make-Queue empty-stream null empty-stream))
+(define empty (Queue empty-stream null empty-stream))
 
 ;; Function to check for empty queue
 (: empty? : (All (A) ((Queue A) -> Boolean)))
@@ -34,8 +34,8 @@
 (define (internal-queue front rear schdl)
   (if (empty-stream? schdl)
       (let ([newf (rotate front rear schdl)])
-        (make-Queue newf null newf))
-      (make-Queue front rear (stream-cdr schdl))))
+        (Queue newf null newf))
+      (Queue front rear (stream-cdr schdl))))
 
 
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))

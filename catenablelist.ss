@@ -10,8 +10,8 @@
 
 (require (prefix-in rtq: "bootstrapedqueue.ss"))
 
-(define-struct: (A) List ([elem : A]
-                          [ques : (rtq:Queue (Promise (List A)))]))
+(struct: (A) List ([elem : A]
+                   [ques : (rtq:Queue (Promise (List A)))]))
 
 (define-type (CatenableList A) (U (List A) Null))
 
@@ -26,7 +26,7 @@
 
 (: link : (All (A) ((List A) (Promise (List A)) -> (List A))))
 (define (link lst cat)
-  (make-List (List-elem lst) (rtq:enqueue cat (List-ques lst))))
+  (List (List-elem lst) (rtq:enqueue cat (List-ques lst))))
 
 (: link-all : (All (A) ((rtq:Queue (Promise (List A))) -> (List A))))
 (define (link-all rtq)
@@ -55,12 +55,12 @@
 ;; Similar to list cons function
 (: kons : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (kons elem cat)
-  (append (make-List elem rtq:empty) cat))
+  (append (List elem rtq:empty) cat))
 
 ;; Inserts an element at the rear end of the list
 (: kons-rear : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (kons-rear elem cat)
-  (append cat (make-List elem rtq:empty)))
+  (append cat (List elem rtq:empty)))
 
 ;; Similar to list car function
 (: head : (All (A) ((CatenableList A) -> A)))
@@ -114,7 +114,7 @@
 (: map-multiple : 
    (All (A C B ...) 
         ((CatenableList C) (A B ... B -> C)
-         (CatenableList A) (CatenableList B) ... B -> (CatenableList C))))
+                           (CatenableList A) (CatenableList B) ... B -> (CatenableList C))))
 (define (map-multiple accum func list . lists)
   (if (or (empty? list) (ormap empty? lists))
       accum
@@ -159,7 +159,7 @@
    (All (A C B ...) 
         (case-lambda ((C A -> C) C (CatenableList A) -> C)
                      ((C A B ... B -> C) C
-                      (CatenableList A) (CatenableList B) ... B -> C))))
+                                         (CatenableList A) (CatenableList B) ... B -> C))))
 (define list-foldl
   (pcase-lambda: (A C B ...) 
                  [([func : (C A -> C)]
@@ -201,7 +201,7 @@
 (define (remove func list)
   (: inner :
      (All (A) ((A -> Boolean) (CatenableList A)
-               (CatenableList A) -> (CatenableList A))))
+                              (CatenableList A) -> (CatenableList A))))
   (define (inner func list accum)
     (if (empty? list)
         accum
