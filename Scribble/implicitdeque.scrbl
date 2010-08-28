@@ -1,13 +1,14 @@
 #lang scribble/manual
-@(defmodule "../implicitdeque.ss")
-@(require (for-label "../implicitdeque.ss")
+@(require unstable/scribble)
+@defmodule/this-package[implicitdeque]
+@(require (for-label (planet krhari/pfds:1:0/implicitdeque))
           "helper.rkt")
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../implicitdeque.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "implicitdeque.ss"))
 
 @title{Implicit Deque}
 
@@ -21,6 +22,8 @@ laziness and technique called Recursive Slow-Down developed by
 @italic{Persistant Lists with Catenation via Recursive Slow-Down}.
 
 @;section{Implicit Deque Construction and Operations}
+
+@defform[(Deque A)]{Implicit double ended queue of type @racket[A].}
 
 @defproc[(deque [a A] ...) (Deque A)]{
 Function @scheme[deque] creates a Implicit Deque with the given inputs. 

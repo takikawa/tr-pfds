@@ -1,19 +1,20 @@
 #lang scribble/manual
-@(defmodule "../set.ss")
-@(require (for-label "../set.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[set]
+@(require (for-label (planet krhari/pfds:1:0/set)))
 @(require "helper.rkt")
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../set.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "set.ss"))
 
 @title{Sets}
 
 An simple implementation of sets based on binary trees.
 
 
-@;section{Sets Construction and Operations}
+@defform[(Set A)]{A set of type @racket[A].}
 
 @defproc[(set [comp (A A -> Boolean)] [a A] ...) (Set A)]{
 Function 

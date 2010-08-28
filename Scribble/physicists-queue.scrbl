@@ -1,16 +1,17 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../physicists-queue.ss")
-@(require (for-label "../physicists-queue.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[physicists-queue]
+@(require (for-label (planet krhari/pfds:1:0/physicists-queue)))
 
 @;@(require "stream.ss")AP270301PF0Z945U
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../physicists-queue.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "physicists-queue.ss"))
 
-@title{Physicist's Queue}
+@title[#:tag "phy-que"]{Physicist's Queue}
 
 A Queue is nothing but a FIFO data structure. A Physicist's queue ia a
 Amortized queues obtained by Physicist's method. Provides a amortized
@@ -19,6 +20,8 @@ and @scheme[enqueue] operations. Physicists's Queue uses lazy evaluation
 and memoization to get this amortized running time.
 
 @;section{Physicist's Queue Construction and Operations}
+@defform[(Queue A)]{A physicist's queue of type @racket[A].}
+
 
 @defproc[(queue [a A] ...) (Queue A)]{
 Function @scheme[queue] creates a Physicist's Queue with the given inputs.

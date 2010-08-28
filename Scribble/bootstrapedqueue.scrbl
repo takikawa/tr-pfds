@@ -1,13 +1,14 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../bootstrapedqueue.ss")
-@(require (for-label "../bootstrapedqueue.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[bootstrapedqueue]
+@(require (for-label (planet krhari/pfds:1:0/bootstrapedqueue)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../bootstrapedqueue.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "bootstrapedqueue.ss"))
 
 @title{Bootstraped Queue}
 
@@ -15,13 +16,14 @@ Bootstrapped Queue use a structural bootstrapping technique called
 @italic{Structural Decomposition}. The data structure gives a worst 
 case running time of @bold{@italic{O(1)}} for the operation 
 @scheme[head] and @bold{@italic{O(log*(n))}} for 
-@scheme[tail] and @scheme[enqueue]. Internally uses @secref["rtq"].
+@scheme[tail] and @scheme[enqueue]. Internally uses @secref["phy-que"].
 
 @;section{Bootstraped Queue Construction and Operations}
+@defform[(Queue A)]{A bootstrapped queue of type @racket[A].}
 
 @defproc[(queue [a A] ...) (Queue A)]{
 Function @scheme[queue] creates a Bootstraped Queue with the 
-given inputs.  
+given inputs.
 @examples[#:eval evaluate
 
 (queue 1 2 3 4 5 6)

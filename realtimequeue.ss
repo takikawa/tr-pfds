@@ -1,4 +1,4 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
 (provide filter remove
          queue queue->list empty empty? (rename-out [qmap map]) fold

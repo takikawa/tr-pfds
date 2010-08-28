@@ -3,7 +3,7 @@
 @title{Queues}
 Following queue structures implement and provide the functions 
 empty?, enqueue, head, tail, queue and queue->list. All the queue 
-structures are polymorphic and have the type (Queue A).
+structures are polymorphic.
 
 @local-table-of-contents[]
 @include-section{queue.scrbl}

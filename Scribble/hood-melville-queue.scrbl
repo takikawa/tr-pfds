@@ -1,11 +1,12 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../hood-melville-queue.ss")
-@(require (for-label "../hood-melville-queue.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[hood-melville-queue]
+@(require (for-label (planet krhari/pfds:1:0/hood-melville-queue)))
 @(require scribble/eval)
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../hood-melville-queue.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "hood-melville-queue.ss"))
 @title{Hood-Melville Queue}
 
 Similar to Real-Time Queues in many ways. But the implementation is
@@ -15,6 +16,8 @@ running time of @bold{@italic{O(1)}} for the operations
 @scheme[head], @scheme[tail] and @scheme[enqueue].
 
 @;section{Hood-Melville Construction and Operations}
+
+@defform[(Queue A)]{A Hood-Melville queue of type @racket[A].}
 
 @defproc[(queue [a A] ...) (Queue A)]{
 Function @scheme[queue] creates a Hood-Melville with the 

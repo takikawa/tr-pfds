@@ -1,4 +1,4 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
 (provide (rename-out [heap-map map]) fold  filter remove
          heap merge insert find-min/max

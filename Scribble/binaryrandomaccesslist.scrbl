@@ -1,12 +1,14 @@
 #lang scribble/manual
-@(defmodule "../binaryrandomaccesslist.ss")
-@(require (for-label "../binaryrandomaccesslist.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[binaryrandomaccesslist]
+@(require (for-label (planet krhari/pfds:1:0/binaryrandomaccesslist))
+          "helper.rkt")
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../binaryrandomaccesslist.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "binaryrandomaccesslist.ss"))
 
 @title[#:tag "bral"]{Binary Random Access List}
 
@@ -17,7 +19,7 @@ case running time of @bold{@italic{O(log(n))}} for the operations
 @scheme[cons], @scheme[first], @scheme[rest], @scheme[list-ref] and
 @scheme[list-set].
 
-@;section{Binary Random Access List Constructor and Operations}
+@defform[(List A)]{A binary random access list of type @racket[A].}
 
 @defproc[(list [a A] ...) (List A)]{
 Function @scheme[list] creates a Binary Random Access List with the given 
@@ -149,12 +151,95 @@ elements in the list.
 @defproc[(list-length [ral (List A)]) Integer]{
 Function @scheme[list-length] takes a list and gives the number of 
 elements in in the given list. 
-  
+
 @examples[#:eval evaluate
 
 (list-length (list 1 2 3 4 5 6))
 
 (list-length empty)
+]}
+
+@defproc[(reverse [list (List A)]) (List A)]{
+Function @scheme[reverse] takes a list and returns a reversed list. 
+
+@examples[#:eval evaluate
+
+(->list (reverse (list 1 2 3 4 5 6)))
+]}
+
+
+@defproc[(map [func (A B ... B -> C)] 
+              [lst1 (List A)]
+              [lst2 (List B)] ...) (List A)]{
+Function @scheme[map] is similar to @|racket-map| for lists.
+@examples[#:eval evaluate
+
+(->list (map add1 (list 1 2 3 4 5 6)))
+
+(->list (map * (list 1 2 3 4 5 6) (list 1 2 3 4 5 6)))
+]
+
+In the above example, @scheme[(map add1 (list 1 2 3 4 5 6))] adds 1 to
+each element of the given list and returns @scheme[(list 2 3 4 5 6 7)].
+@scheme[(map * (list 1 2 3 4 5 6) (list 1 2 3 4 5 6))] multiplies
+corresponding elements in the two lists
+and returns the list @scheme[(list 1 4 9 16 25 36)].}
+
+
+@defproc[(foldl [func (C A B ... B -> C)]
+                 [init C]
+                 [lst1 (List A)]
+                 [lst2 (List B)] ...) C]{
+Function @scheme[foldl] is similar to @|racket-foldl|.
+@margin-note{@scheme[foldl] currently does not produce correct results when the 
+             given function is non-commutative.}
+
+@examples[#:eval evaluate
+
+(foldl + 0 (list 1 2 3 4 5 6))
+
+(foldl * 1 (list 1 2 3 4 5 6) (list 1 2 3 4 5 6))
+]}
+
+
+@defproc[(foldr [func (C A B ... B -> C)] 
+                 [init C] 
+                 [lst1 (List A)] 
+                 [lst2 (List B)] ...) C]{
+Function @scheme[foldr] is similar to @|racket-foldr|. 
+@margin-note{@scheme[foldr] currently does not produce correct results when the 
+             given function is non-commutative.}
+
+@examples[#:eval evaluate
+
+(foldr + 0 (list 1 2 3 4 5 6))
+
+(foldr * 1 (list 1 2 3 4 5 6) (list 1 2 3 4 5 6))
+]}
+
+@defproc[(filter [pred (A -> Boolean)] [lst (List A)]) (List A)]{
+Function @scheme[filter] is similar to @|racket-filter|. 
+@examples[#:eval evaluate
+
+(define lst (list 1 2 3 4 5 6))
+
+(->list (filter (λ:([x : Integer]) (> x 5)) lst))
+
+(->list (filter (λ:([x : Integer]) (< x 5)) lst))
+
+(->list (filter (λ:([x : Integer]) (<= x 4)) lst))
+]}
+
+@defproc[(remove [pred (A -> Boolean)] [lst (List A)]) (List A)]{
+Function @scheme[remove] is similar to @|racket-filter|
+but @scheme[remove] removes the elements which match the predicate.
+@examples[#:eval evaluate
+
+(->list (remove (λ:([x : Integer]) (> x 5)) (list 1 2 3 4 5 6)))
+
+(->list (remove (λ:([x : Integer]) (< x 5)) (list 1 2 3 4 5 6)))
+
+(->list (remove (λ:([x : Integer]) (<= x 4)) (list 1 2 3 4 5 6)))
 ]}
 
 @(close-eval evaluate)

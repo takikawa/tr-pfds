@@ -1,20 +1,21 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../lazypairingheap.ss")
-@(require (for-label "../lazypairingheap.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[lazypairingheap]
+@(require (for-label (planet krhari/pfds:1:0/lazypairingheap)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../lazypairingheap.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "lazypairingheap.ss"))
 
 @title{Lazy Pairing Heap}
 
 Lazy Pairing Heap is very similar to Pairing Heap. The only difference between
 the two is, as the name suggests, Lazy Pairing Heap is lazy in nature.
 
-@;section{Lazy Pairing Heap Construction and Operations}
+@defform[(Heap A)]{A lazy pairing heap of type @racket[A].}
 
 @defproc[(heap [comp (A A -> Boolean)] [a A] ...) (Heap A)]{
 Function @scheme[heap] creates a Lazy Pairing Heap with the given 

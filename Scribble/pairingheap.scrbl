@@ -1,13 +1,14 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../pairingheap.ss")
-@(require (for-label "../pairingheap.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[pairingheap]
+@(require (for-label (planet krhari/pfds:1:0/pairingheap)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../pairingheap.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "pairingheap.ss"))
 
 @title{Pairing Heap}
 
@@ -18,7 +19,7 @@ worst case running time of @bold{@italic{O(1)}} for the operations
 And @scheme[delete-min/max] has a amortized
 running time of @bold{@italic{O(log(n))}}.
 
-@;section{Pairing Heap Construction and Operations}
+@defform[(Heap A)]{A pairing heap of type @racket[A].}
 
 @defproc[(heap [comp (A A -> Boolean)] [a A] ...) (Heap A)]{
 Function @scheme[heap] creates a Pairing Heap with the given 

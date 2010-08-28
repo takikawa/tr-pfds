@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/racket
 
 (provide (rename-out [heap-map map]) fold  filter remove
          empty? insert merge find-min/max delete-min/max 

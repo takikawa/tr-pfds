@@ -1,12 +1,13 @@
 #lang scribble/manual
-@(defmodule "../redblacktrees.ss")
-@(require (for-label "../redblacktrees.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[redblacktrees]
+@(require (for-label (planet krhari/pfds:1:0/redblacktrees)))
 @(require "helper.rkt")
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../redblacktrees.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "redblacktrees.ss"))
 
 @title{Red-Black Trees}
 
@@ -21,7 +22,7 @@ and @scheme[delete] have worst case running
 time of @bold{@italic{O(log(n))}}
 
 
-@;section{Red-Black Trees Construction and Operations}
+@defform[(RedBlackTree A)]{A red-black tree of type @racket[A].}
 
 @defproc[(redblacktree [comp (A A -> Boolean)] [a A] ...) (RedBlackTree A)]{
 Function @scheme[redblacktree] creates a Red-Black Tree with the

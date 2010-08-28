@@ -1,13 +1,15 @@
 #lang scribble/manual
-@(defmodule "../bankers-deque.ss")
-@(require (for-label "../bankers-deque.ss")
-          "helper.rkt")
+@(require unstable/scribble)
+@defmodule/this-package[bankers-deque]
+@(require (for-label (planet krhari/pfds:1:0/bankers-deque)))
+@;(require (for-label "bankers-deque.ss"))
+@(require "helper.rkt")
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../bankers-deque.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "bankers-deque.ss"))
 
 @title{Bankers Deque}
 
@@ -18,7 +20,8 @@ developed using Bankers method. Provides amortized running time of
 @scheme[enqueue-front] and @scheme[enqueue].
 Uses lazy evaluation and memoization to achieve the amortized running time.
 
-@;section{Bankers Deque Construction and Operations}
+
+@defform[(Deque A)]{A banker's deque of type @racket[A].}
 
 @defproc[(deque [a A] ...) (Deque A)]{
 Function @scheme[deque] creates a Bankers Deque with the given inputs. 

@@ -1,12 +1,13 @@
 #lang scribble/manual
-@(defmodule "../bankers-queue.ss")
-@(require (for-label "../bankers-queue.ss")
-          "helper.rkt")
+@(require unstable/scribble)
+@defmodule/this-package[bankers-queue]
+@(require (for-label (planet krhari/pfds:1:0/bankers-queue))
+          (planet krhari/pfds:1:0/helper))
 @(require scribble/eval)
 @(provide (for-label (all-from-out)))
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../bankers-queue.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "bankers-queue.ss"))
 
 @title{Banker's Queue}
 
@@ -19,7 +20,7 @@ uses the techniques, lazy evaluation and memoization. Banker's Queue
 internally uses Streams for lazy evaluation. For Streams, see 
 @secref["streams"]
 
-@;section{Banker's Queue Construction and Operations}
+@defform[(Queue A)]{A banker's queue of type @racket[A].}
 
 @defproc[(queue [a A] ...) (Queue A)]{
 Function @scheme[queue] creates a Banker's Queue with the given inputs.

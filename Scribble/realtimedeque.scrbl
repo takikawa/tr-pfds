@@ -1,13 +1,14 @@
 #lang scribble/manual
-@(defmodule "../realtimedeque.ss")
-@(require (for-label "../realtimedeque.ss")
+@(require unstable/scribble)
+@defmodule/this-package[realtimedeque]
+@(require (for-label (planet krhari/pfds:1:0/realtimedeque))
           "helper.rkt")
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../realtimedeque.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "realtimedeque.ss"))
 
 @title{Real-Time Deque}
 
@@ -18,7 +19,8 @@ case running time of @bold{@italic{O(1)}} for the operations
 @scheme[head], @scheme[tail], @scheme[last], @scheme[init],
 @scheme[enqueue-front] and @scheme[enqueue].
 
-@;section{Real-Time Deque Construction and Operations}
+@defform[(Deque A)]{Real-time double ended queue of type @racket[A].}
+
 
 @defproc[(deque [a A] ...) (Deque A)]{
 Function @scheme[deque] creates a Real-Time Deque with the given inputs. 

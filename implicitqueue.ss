@@ -1,8 +1,8 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
 (provide filter remove
          empty empty? enqueue head tail queue->list queue
-         (rename-out [qmap map]) fold)
+         (rename-out [qmap map]) fold Queue)
 (require scheme/match)
 
 (struct: Zero ())

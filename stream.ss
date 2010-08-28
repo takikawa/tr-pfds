@@ -1,4 +1,4 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
 (require scheme/promise)
 

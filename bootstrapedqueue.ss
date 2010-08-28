@@ -1,7 +1,7 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
 (require (prefix-in pq: "physicists-queue.ss"))
-(provide filter remove
+(provide filter remove Queue
          empty empty? enqueue head tail queue queue->list Queue
          (rename-out [qmap map]) fold)
 

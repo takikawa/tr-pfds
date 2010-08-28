@@ -1,13 +1,14 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../binomialheap.ss")
-@(require (for-label "../binomialheap.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[binomialheap]
+@(require (for-label (planet krhari/pfds:1:0/binomialheap)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../binomialheap.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "binomialheap.ss"))
 
 @title{Binomial Heap}
 
@@ -21,7 +22,7 @@ Provides worst case running time of @bold{@italic{O(log(n))}} for the
 operations @scheme[insert], @scheme[find-min/max], @scheme[delete-min/max]
 and @scheme[merge].
 
-@;section{Binomial Heap Construction and Operations}
+@defform[(Heap A)]{A binomial heap of type @racket[A].}
 
 @defproc[(heap [comp (A A -> Boolean)] [a A] ...) (Heap A)]{
 Function @scheme[heap] creates a Binomial Heap with the given 

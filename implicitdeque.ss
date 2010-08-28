@@ -1,6 +1,6 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
-(provide filter remove
+(provide filter remove Deque
          empty empty? head tail last init deque->rev-list
          enqueue-front enqueue deque->list deque
          foldr (rename-out [deque-map map] [dqfoldl foldl]))

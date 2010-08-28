@@ -1,13 +1,13 @@
 #lang scribble/manual
 
-@(require (for-label typed-scheme))
+@;(require (for-label typed/racket))
 @;(provide (for-label all-defined-out))
 
-@title[#:tag "top"]{@bold{Functional Data Structures} in Typed Scheme}
+@title[#:tag "top"]{@bold{Functional Data Structures} in Typed Racket}
 All the data structures below, are the works of 
 @italic{Chris Okasaki, Phil Bagwell} and those that are discussed
 in the book @italic{Purely Functional Data Structures} by Chris Okasaki.
-And the data structures have been entirely implemented in Typed Scheme.
+And the data structures have been entirely implemented in Typed Racket.
 @author[@link["http://www.ccs.neu.edu/home/krhari"]{Hari Prashanth K R}]
 
 @local-table-of-contents[]

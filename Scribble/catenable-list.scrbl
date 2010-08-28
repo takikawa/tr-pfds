@@ -1,24 +1,25 @@
 #lang scribble/manual
-@(defmodule "../catenablelist.ss")
-@(require (for-label "../catenablelist.ss")
+@(require unstable/scribble)
+@defmodule/this-package[catenablelist]
+@(require (for-label (planet krhari/pfds:1:0/catenablelist))
           "helper.rkt")
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../catenablelist.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "catenablelist.ss"))
 
 @title{Catenable List}
 
 Catenable Lists are nothing but lists with efficient catenation. They use 
 a data-structucal bootstrapping technique called 
-@italic{Structucal Abstraction}. The data structure internally use 
-Real Time Queues to realize an amortized running time of @bold{@italic{O(1)}}
+@italic{Structucal Abstraction}. The data structure internally uses
+@secref["phy-que"] to realize an amortized running time of @bold{@italic{O(1)}}
 for the operations @scheme[first], @scheme[rest], @scheme[cons] and
 @scheme[cons-to-end].
 
-@;section{Catenable List Constructor and Operations}
+@defform[(CatenableList A)]{A catenable list of type @racket[A].}
 
 @defproc[(list [a A] ...) (CatenableList A)]{
 Function list creates a catenable list with the given inputs.
@@ -119,6 +120,13 @@ of elements which are in the same order as in the catenable list.
 (->list empty)
 ]}
 
+@defproc[(reverse [cal (List A)]) (List A)]{
+Function @scheme[reverse] takes a vlist and returns a reversed vlist. 
+
+@examples[#:eval evaluate
+
+(->list (reverse (list 1 2 3 4 5 6)))
+]}
 
 @defproc[(map [func (A B ... B -> C)]
               [clst1 (CatenableList A)]

@@ -1,13 +1,14 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../realtimequeue.ss")
-@(require (for-label "../realtimequeue.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[realtimequeue]
+@(require (for-label (planet krhari/pfds:1:0/realtimequeue)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../realtimequeue.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "realtimequeue.ss"))
 
 @title[#:tag "rtq"]{Real-Time Queue}
 
@@ -16,7 +17,7 @@ a technique called @italic{Scheduling}. The data structure gives a worst
 case running time of @bold{@italic{O(1)}} for the operations 
 @scheme[head], @scheme[tail] and @scheme[enqueue]. 
 
-@;section{Real-Time Queue Construction and Operations}
+@defform[(Queue A)]{A real-time queue of type @racket[A].}
 
 @defproc[(queue [a A] ...) (Queue A)]{
 Function @scheme[queue] creates a Real-Time Queue with the 

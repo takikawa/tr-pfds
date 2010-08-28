@@ -1,13 +1,14 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../implicitqueue.ss")
-@(require (for-label "../implicitqueue.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[implicitqueue]
+@(require (for-label (planet krhari/pfds:1:0/implicitqueue)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../implicitqueue.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "implicitqueue.ss"))
 
 @title{Implicit Queue}
 
@@ -21,6 +22,8 @@ laziness and technique called Recursive Slow-Down developed by
 @italic{Persistant Lists with Catenation via Recursive Slow-Down}.
 
 @;section{Implicit Queue Construction and Operations}
+
+@defform[(Queue A)]{A implicit queue of type @racket[A].}
 
 @defproc[(queue [a A] ...) (Queue A)]{
 Function @scheme[queue] creates a Implicit Queue with the 

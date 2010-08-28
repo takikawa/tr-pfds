@@ -1,6 +1,6 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
-(provide clist empty? head tail
+(provide clist empty? head tail reverse
          CatenableList append empty filter remove
          (rename-out [clist->list ->list]
                      [clist list] [kons cons]
@@ -8,7 +8,7 @@
                      [kons-rear cons-to-end] [list-map map]
                      [list-foldl foldl] [list-foldr foldr]))
 
-(require (prefix-in rtq: "bootstrapedqueue.ss"))
+(require (prefix-in rtq: "physicists-queue.ss"))
 
 (struct: (A) List ([elem : A]
                    [ques : (rtq:Queue (Promise (List A)))]))
@@ -223,3 +223,15 @@
   (if (null? cat)
       null
       (cons (head cat) (clist->list (tail cat)))))
+
+;; Similar to list reverse function
+(: reverse : (All (A) ((CatenableList A) -> (CatenableList A))))
+(define (reverse ral)
+  (: local-reverse : (All (A) ((CatenableList A) (CatenableList A)
+                               ->
+                               (CatenableList A))))
+  (define (local-reverse ral accum)
+    (if (empty? ral)
+        accum
+        (local-reverse (tail ral) (kons (head ral) accum))))
+  (local-reverse ral empty))

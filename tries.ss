@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/racket
 
 (provide lookup bind trie insert Trie tries)
 

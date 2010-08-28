@@ -1,13 +1,14 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../LeftistHeaps.ss")
-@(require (for-label "../LeftistHeaps.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[leftistheap]
+@(require (for-label (planet krhari/pfds:1:0/leftistheap)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../LeftistHeaps.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "leftistheap.ss"))
 
 @title{Leftist Heap}
 
@@ -23,7 +24,7 @@ operations @scheme[insert], @scheme[delete-min/max] and @scheme[merge]
 and a worst case running
 time of @bold{@italic{O(1)}} for @scheme[find-min/max].
 
-@;section{Leftist Heap Construction and Operations}
+@defform[(Heap A)]{A leftist heap of type @racket[A].}
 
 @defproc[(heap [comp (A A -> Boolean)] [a A] ...) (Heap A)]{
 Function @scheme[heap] creates a Leftist Heap with the given 

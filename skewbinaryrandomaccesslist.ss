@@ -1,4 +1,4 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 (require (prefix-in sh: scheme/base))
 (provide filter remove
          list ->list empty? cons empty head tail
@@ -268,7 +268,7 @@
         (cons head (filter func tail))
         (filter func tail)))))
 
-;; Similar to list remove function
+;; Similar to list filter function
 (: remove : (All (A) ((A -> Boolean) (List A) -> (List A))))
 (define (remove func ral)
   (if (empty? ral)
@@ -278,3 +278,13 @@
       (if (func head)
         (remove func tail)
         (cons head (remove func tail))))))
+
+;; Similar to list reverse function
+(: reverse : (All (A) ((List A) -> (List A))))
+(define (reverse ral)
+  (: local-reverse : (All (A) ((List A) (List A) -> (List A))))
+  (define (local-reverse ral accum)
+    (if (empty? ral)
+        accum
+        (local-reverse (tail ral) (cons (head ral) accum))))
+  (local-reverse ral empty))

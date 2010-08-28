@@ -1,7 +1,8 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
-(provide vlist->list empty empty? first rest last list-ref)
+(provide empty empty? first rest last list-ref)
 (provide (rename-out
+          [vlist->list ->list]
           [vlist list]
           [vcons cons]
           [list-length length]
@@ -9,7 +10,8 @@
           [list-map map]
           [list-foldr foldr]
           [list-foldl foldl]
-          [vfilter filter]))
+          [vfilter filter]
+          [vremove remove]))
 
 (require (prefix-in ra: "skewbinaryrandomaccesslist.ss"))
 (define-struct: (A) Base ([prevbase : (Block A)]
@@ -155,7 +157,7 @@
                     empty
                     (vcons (func (first list)) (list-map func (rest list))))]
                  [([func : (A B ... B -> C)]
-                   [list  : (List A)] . [lists : (List B) ... B])
+                   [list : (List A)] . [lists : (List B) ... B])
                   (if (or (empty? list) (ormap empty? lists))
                     empty
                     (vcons (apply func (first list) (map first lists))
@@ -219,3 +221,14 @@
       (if (func firsts)
         (vcons firsts rests)
         rests))))
+
+;; Similar to list filter function
+(: vremove : (All (A) ((A -> Boolean) (List A) -> (List A))))
+(define (vremove func lst)
+  (if (empty? lst)
+      empty
+      (let ([firsts (first lst)]
+            [rests (vremove func (rest lst))])
+        (if (func firsts)
+            rests
+            (vcons firsts rests)))))

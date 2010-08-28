@@ -1,4 +1,4 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
 (provide filter remove
          Queue queue enqueue head tail empty empty? queue->list

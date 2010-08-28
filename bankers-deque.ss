@@ -1,8 +1,8 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
 (require "stream.ss")
 
-(provide filter remove
+(provide filter remove Deque
          empty? empty enqueue-front head tail deque enqueue last init
          deque->list foldr (rename-out [deque-map map] [dqfoldl foldl]))
 

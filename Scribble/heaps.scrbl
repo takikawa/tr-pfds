@@ -3,7 +3,7 @@
 @title{Heaps}
 Following heap structures implement and provide the functions 
 empty?, insert, find-min/max, delete-min/max, merge and sorted-list.
-All the heaps are polymorphic and have the type (Heap A).
+All the heaps are polymorphic.
 
 @local-table-of-contents[]
 @include-section{binomialheap.scrbl}

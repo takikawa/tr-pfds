@@ -1,13 +1,14 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../bootstrapedheap.ss")
-@(require (for-label "../bootstrapedheap.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[bootstrapedheap]
+@(require (for-label (planet krhari/pfds:1:0/bootstrapedheap)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../bootstrapedheap.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "bootstrapedheap.ss"))
 
 @title{Bootstrapped Heap}
 
@@ -17,10 +18,10 @@ to get a worst case running time of @bold{@italic{O(1)}} for the
 operations @scheme[insert], @scheme[find-min/max] and @scheme[merge]
 and worst case running time of
 @bold{@italic{O(log(n))}} for @scheme[delete-min/max] operation. This 
-implementation abstracts over Skew Binomila Heaps. For Skew Binomila Heaps,
-see @secref["skewbh"]
+implementation abstracts over Skew Binomial Heaps. For Skew Binomial Heaps,
+see @secref["skewbh"].
 
-@;section{Bootstrapped Heap Construction and Operations}
+@defform[(Heap A)]{A bootstrapped heap of type @racket[A].}
 
 @defproc[(heap [comp (A A -> Boolean)] [a A] ...) (Heap A)]{
 Function @scheme[heap] creates a Bootstrapped Heap with the

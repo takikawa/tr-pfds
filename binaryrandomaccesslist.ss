@@ -1,8 +1,8 @@
-#lang typed/scheme #:optimize
+#lang typed/racket #:optimize
 
 (require (prefix-in sh: scheme/base))
 
-(provide filter remove
+(provide filter remove List reverse
          empty empty? list-length cons head tail 
          (rename-out [first* first] [rest* rest] [list-map map] 
                      [list-foldr foldr] [list-foldl foldl]) 
@@ -301,3 +301,13 @@
         (if (func head)
             (remove func tail)
             (cons head (remove func tail))))))
+
+;; Similar to list reverse function
+(: reverse : (All (A) ((List A) -> (List A))))
+(define (reverse ral)
+  (: local-reverse : (All (A) ((List A) (List A) -> (List A))))
+  (define (local-reverse ral accum)
+    (if (empty? ral)
+        accum
+        (local-reverse (tail ral) (cons (head ral) accum))))
+  (local-reverse ral empty))
