@@ -1,13 +1,14 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../skewbinomialheap.ss")
-@(require (for-label "../skewbinomialheap.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[skewbinomialheap]
+@(require (for-label (planet krhari/pfds:1:0/skewbinomialheap)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../skewbinomialheap.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "skewbinomialheap.ss"))
 
 @title[#:tag "skewbh"]{Skew Binomial Heap}
 
@@ -19,7 +20,7 @@ worst case running time of @bold{@italic{O(log(n))}} for the operations
 And worst case running time of 
 @bold{@italic{O(1)}} for the @scheme[insert] operation.
 
-@;section{Skew Binomial Heap Construction and Operations}
+@defform[(Heap A)]{A skew binomial heap of type @racket[A].}
 
 @defproc[(heap [comp (A A -> Boolean)] [a A] ...) (Heap A)]{
 Function @scheme[heap] creates a Skew Binomial Heap with the given 
@@ -172,6 +173,54 @@ Function @scheme[remove] is similar to @|racket-filter| but @scheme[remove] remo
 
 (sorted-list (remove (λ: ([x : Integer]) (<= x 5))
                     (heap < 1 2 3 4 5 6)))
+]}
+
+@defproc[(andmap [func (A B ... B -> Boolean)]
+                 [heap1 (Heap A)]
+                 [heap2 (Heap B)] ...) Boolean]{
+Function @scheme[andmap] is similar to @|racket-andmap|.
+
+@examples[#:eval evaluate
+
+(andmap even? (heap < 1 2 3 4 5 6))
+
+(andmap odd? (heap < 1 2 3 4 5 6))
+
+(andmap positive? (heap < 1 2 3 4 5 6))
+
+(andmap negative? (heap < -1 -2))
+]}
+
+
+@defproc[(ormap [func (A B ... B -> Boolean)]
+                [heap1 (Heap A)]
+                [heap2 (Heap B)] ...) Boolean]{
+Function @scheme[ormap] is similar to @|racket-ormap|.
+
+@examples[#:eval evaluate
+
+(ormap even? (heap < 1 2 3 4 5 6))
+
+(ormap odd? (heap < 1 2 3 4 5 6))
+
+(ormap positive? (heap < -1 -2 3 4 -5 6))
+
+(ormap negative? (heap < 1 -2))
+]}
+
+@defproc[(build-heap [size Natural]
+                     [func (Natural -> A)]
+                     [comp (A A -> Boolean)])
+                     (Heap A)]{
+Function @scheme[build-heap] is similar to @|racket-build-list| but this
+function takes an extra comparison function.
+
+@examples[#:eval evaluate
+
+(sorted-list (build-heap 5 (λ:([x : Integer]) (add1 x)) <))
+
+(sorted-list (build-heap 5 (λ:([x : Integer]) (* x x)) <))
+
 ]}
 
 @(close-eval evaluate)

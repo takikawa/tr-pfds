@@ -1,9 +1,10 @@
 #lang typed/racket
 
-(provide filter remove
+(provide filter remove last+init build-deque head+tail
          empty empty? enqueue enqueue-front init 
          last head tail deque deque->list Deque
-         foldr (rename-out [deque-map map] [dqfoldl foldl]))
+         foldr (rename-out [deque-map map] [dqfoldl foldl]
+                           [deque-andmap andmap] [deque-ormap ormap]))
 
 (require "stream.ss")
 
@@ -125,7 +126,7 @@
 ;; Retrieves the last element of the queue
 (: last : (All (A) ((Deque A) -> A)))
 (define (last rtdq)
-  (if (empty? rtdq) 
+  (if (zero? (+ (Deque-lenf rtdq) (Deque-lenr rtdq)))
       (error 'last "given deque is empty")
       (let ([front (Deque-front rtdq)])
         (if (empty-stream? front) 
@@ -136,7 +137,7 @@
 ;; Retrieves the head element of the queue
 (: head : (All (A) ((Deque A) -> A)))
 (define (head rtdq)
-  (if (empty? rtdq)
+  (if (zero? (+ (Deque-lenf rtdq) (Deque-lenr rtdq)))
       (error 'head "given deque is empty")
       (let ([rear (Deque-rear rtdq)])
         (if (empty-stream? rear) 
@@ -146,32 +147,36 @@
 ;; Removes the head and returns the rest of the queue
 (: init : (All (A) ((Deque A) -> (Deque A))))
 (define (init rtdq)
-  (if (empty? rtdq) 
-      (error 'init "given deque is empty")
-      (let ([front (Deque-front rtdq)])
-        (if (empty-stream? front) 
-            empty
-            (internal-Deque (stream-cdr front) 
-                            (sub1 (Deque-lenf rtdq))
-                            (exec-two (Deque-scdulF rtdq))
-                            (Deque-rear rtdq)
-                            (Deque-lenr rtdq)
-                            (exec-two (Deque-scdulR rtdq)))))))
-
+  (let ([lenf (Deque-lenf rtdq)]
+        [lenr (Deque-lenr rtdq)])
+    (if (zero? (+ lenf lenr))
+        (error 'init "given deque is empty")
+        (let ([front (Deque-front rtdq)])
+          (if (empty-stream? front) 
+              empty
+              (internal-Deque (stream-cdr front) 
+                              (sub1 lenf)
+                              (exec-two (Deque-scdulF rtdq))
+                              (Deque-rear rtdq)
+                              lenr
+                              (exec-two (Deque-scdulR rtdq))))))))
+  
 ;; Removes the last and returns the Deque without the last
 (: tail : (All (A) ((Deque A) -> (Deque A))))
 (define (tail rtdq)
-  (if (empty? rtdq) 
-      (error 'tail "given deque is empty")
-      (let ([rear (Deque-rear rtdq)])
-        (if (empty-stream? rear)
-            empty
-            (internal-Deque (Deque-front rtdq)
-                            (Deque-lenf rtdq)
-                            (exec-two (Deque-scdulF rtdq))
-                            (stream-cdr rear)
-                            (sub1 (Deque-lenr rtdq))
-                            (exec-two (Deque-scdulR rtdq)))))))
+  (let ([lenf (Deque-lenf rtdq)]
+        [lenr (Deque-lenr rtdq)])
+    (if (zero? (+ lenf lenr))
+        (error 'tail "given deque is empty")
+        (let ([rear (Deque-rear rtdq)])
+          (if (empty-stream? rear)
+              empty
+              (internal-Deque (Deque-front rtdq)
+                              lenf
+                              (exec-two (Deque-scdulF rtdq))
+                              (stream-cdr rear)
+                              (sub1 lenr)
+                              (exec-two (Deque-scdulR rtdq))))))))
 
 ;; similar to list map function. apply is expensive so using case-lambda
 ;; in order to saperate the more common case
@@ -301,3 +306,87 @@
               (inner func tail accum)
               (inner func tail (enqueue head accum))))))
   (inner func que empty))
+
+;; Similar to build-list
+(: build-deque : (All (A) (Natural (Natural -> A) -> (Deque A))))
+(define (build-deque size func)
+  (let: loop : (Deque A) ([n : Natural size])
+        (if (zero? n)
+            empty
+            (let ([nsub1 (sub1 n)])
+              (enqueue (func nsub1) (loop nsub1))))))
+
+
+(: head+tail : (All (A) (Deque A) -> (Pair A (Deque A))))
+(define (head+tail rtdq)
+  (let ([lenf (Deque-lenf rtdq)]
+        [lenr (Deque-lenr rtdq)])
+    (if (zero? (+ lenf lenr))
+        (error 'head+tail "given deque is empty")
+        (let ([rear (Deque-rear rtdq)])
+          (if (empty-stream? rear)
+              (cons (stream-car (Deque-front rtdq)) empty)
+              (cons (stream-car rear)
+                    (internal-Deque (Deque-front rtdq)
+                                    lenf
+                                    (exec-two (Deque-scdulF rtdq))
+                                    (stream-cdr rear)
+                                    (sub1 lenr)
+                                    (exec-two (Deque-scdulR rtdq))))))))) 
+
+
+(: last+init : (All (A) (Deque A) -> (Pair A (Deque A))))
+(define (last+init rtdq)
+  (let ([lenf (Deque-lenf rtdq)]
+        [lenr (Deque-lenr rtdq)])
+    (if (zero? (+ lenf lenr))
+        (error 'last+init "given deque is empty")
+        (let ([front (Deque-front rtdq)])
+          (if (empty-stream? front)
+              (cons (stream-car (Deque-rear rtdq)) empty)
+              (cons (stream-car front)
+                    (internal-Deque (stream-cdr front) 
+                                    (sub1 lenf)
+                                    (exec-two (Deque-scdulF rtdq))
+                                    (Deque-rear rtdq)
+                                    lenr
+                                    (exec-two (Deque-scdulR rtdq)))))))))
+
+
+;; similar to list andmap function
+(: deque-andmap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (Deque A) -> Boolean)
+                     ((A B ... B -> Boolean) (Deque A) (Deque B) ... B -> Boolean))))
+(define deque-andmap
+  (pcase-lambda: (A B ... ) 
+                 [([func  : (A -> Boolean)]
+                   [queue : (Deque A)])
+                  (or (empty? queue)
+                      (and (func (head queue))
+                           (deque-andmap func (tail queue))))]
+                 [([func  : (A B ... B -> Boolean)]
+                   [queue : (Deque A)] . [queues : (Deque B) ... B])
+                  (or (empty? queue) (ormap empty? queues)
+                      (and (apply func (head queue) (map head queues))
+                           (apply deque-andmap func (tail queue) 
+                                  (map tail queues))))]))
+
+;; Similar to ormap
+(: deque-ormap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (Deque A) -> Boolean)
+                     ((A B ... B -> Boolean) (Deque A) (Deque B) ... B -> Boolean))))
+(define deque-ormap
+  (pcase-lambda: (A B ... ) 
+                 [([func  : (A -> Boolean)]
+                   [queue : (Deque A)])
+                  (and (not (empty? queue))
+                       (or (func (head queue))
+                           (deque-ormap func (tail queue))))]
+                 [([func  : (A B ... B -> Boolean)]
+                   [queue : (Deque A)] . [queues : (Deque B) ... B])
+                  (and (not (or (empty? queue) (ormap empty? queues)))
+                       (or (apply func (head queue) (map head queues))
+                           (apply deque-ormap func (tail queue) 
+                                  (map tail queues))))]))

@@ -1,13 +1,14 @@
 #lang scribble/manual
-@(defmodule "../vlist.ss")
-@(require (for-label "../vlist.ss")
+@(require unstable/scribble)
+@defmodule/this-package[vlist]
+@(require (for-label (planet krhari/pfds:1:0/vlist))
           "helper.rkt")
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../vlist.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "vlist.ss"))
 
 @title{VList}
 
@@ -18,7 +19,9 @@ operations. Indexing and length operations have a running time of
 @bold{@italic{O(N)}} in lists. The data structure has been described in the 
 paper @italic{Fast Functional Lists, Hash-Lists, vlists and
               Variable Length Arrays} by  Phil Bagwell.
-VLists implementation internally uses @secref["bral"].
+VLists implementation internally uses @secref["sbral"].
+
+@defform[(List A)]{A vlist type @racket[A].}
 
 @defproc[(list [a A] ...) (List A)]{
 Function @scheme[list] creates a vlist with the given inputs. 
@@ -115,13 +118,13 @@ the given vlist.
 ]}
 
 
-@defproc[(vlist->list [vlst (List A)]) (Listof A)]{
-Function @scheme[vlist->list] takes a vlist and returns a normal
+@defproc[(->list [vlst (List A)]) (Listof A)]{
+Function @scheme[->list] takes a vlist and returns a normal
 scheme list. 
 @examples[#:eval evaluate
 
-(vlist->list (list 1 2 3 4 5 6))
-(vlist->list empty)
+(->list (list 1 2 3 4 5 6))
+(->list empty)
 ]}
 
 
@@ -130,11 +133,8 @@ Function @scheme[reverse] takes a vlist and returns a reversed vlist.
 
 @examples[#:eval evaluate
 
-(vlist->list (reverse (list 1 2 3 4 5 6)))
-]
-
-In the above example, @scheme[(reverse (list 1 2 3 4 5 6))], returns the 
-reversed vlist @scheme[(list 6 5 4 3 2 1)].}
+(->list (reverse (list 1 2 3 4 5 6)))
+]}
 
 
 @defproc[(map [func (A B ... B -> C)] 
@@ -143,9 +143,9 @@ reversed vlist @scheme[(list 6 5 4 3 2 1)].}
 Function @scheme[map] is similar to @|racket-map| for lists.
 @examples[#:eval evaluate
 
-(vlist->list (map add1 (list 1 2 3 4 5 6)))
+(->list (map add1 (list 1 2 3 4 5 6)))
 
-(vlist->list (map * (list 1 2 3 4 5 6) (list 1 2 3 4 5 6)))
+(->list (map * (list 1 2 3 4 5 6) (list 1 2 3 4 5 6)))
 ]
 
 In the above example, @scheme[(map add1 (list 1 2 3 4 5 6))] adds 1 to
@@ -156,9 +156,9 @@ and returns the vlist @scheme[(list 1 4 9 16 25 36)].}
 
 
 @defproc[(foldl [func (C A B ... B -> C)]
-                 [init C]
-                 [vlst1 (List A)]
-                 [vlst2 (List B)] ...) C]{
+                [init C]
+                [vlst1 (List A)]
+                [vlst2 (List B)] ...) C]{
 Function @scheme[foldl] is similar to @|racket-foldl|.
 @margin-note{@scheme[foldl] currently does not produce correct results when the 
              given function is non-commutative.}
@@ -172,9 +172,9 @@ Function @scheme[foldl] is similar to @|racket-foldl|.
 
 
 @defproc[(foldr [func (C A B ... B -> C)] 
-                 [init C] 
-                 [vlst1 (List A)] 
-                 [vlst2 (List B)] ...) C]{
+                [init C] 
+                [vlst1 (List A)] 
+                [vlst2 (List B)] ...) C]{
 Function @scheme[foldr] is similar to @|racket-foldr|. 
 @margin-note{@scheme[foldr] currently does not produce correct results when the 
              given function is non-commutative.}
@@ -186,17 +186,147 @@ Function @scheme[foldr] is similar to @|racket-foldr|.
 (foldr * 1 (list 1 2 3 4 5 6) (list 1 2 3 4 5 6))
 ]}
 
+
+@defproc[(andmap [func (A B ... B -> Boolean)]
+                 [lst1 (List A)]
+                 [lst2 (List B)] ...) Boolean]{
+Function @scheme[andmap] is similar to @|racket-andmap|.
+
+@examples[#:eval evaluate
+
+(andmap even? (list 1 2 3 4 5 6))
+
+(andmap odd? (list 1 2 3 4 5 6))
+
+(andmap positive? (list 1 2 3 4 5 6))
+
+(andmap negative? (list -1 -2))
+]}
+
+
+@defproc[(ormap [func (A B ... B -> Boolean)]
+                [lst1 (List A)]
+                [lst2 (List B)] ...) Boolean]{
+Function @scheme[ormap] is similar to @|racket-ormap|.
+
+@examples[#:eval evaluate
+
+(ormap even? (list 1 2 3 4 5 6))
+
+(ormap odd? (list 1 2 3 4 5 6))
+
+(ormap positive? (list -1 -2 3 4 -5 6))
+
+(ormap negative? (list 1 -2))
+]}
+
+@defproc[(build-list [size Natural]
+                     [func (Natural -> A)])
+                     (List A)]{
+Function @scheme[build-list] is similar to @|racket-build-list|.
+@examples[#:eval evaluate
+
+(->list (build-list 5 (λ:([x : Integer]) (add1 x))))
+
+(->list (build-list 5 (λ:([x : Integer]) (* x x))))
+
+]}
+
+@defproc[(make-list [size Natural]
+                    [func A])
+                    (List A)]{
+Function @scheme[make-list] is similar to @|racket-make-list|.
+@examples[#:eval evaluate
+
+(->list (make-list 5 10))
+
+(->list (make-list 5 'sym))
+
+]}
+
 @defproc[(filter [func (A -> Boolean)] [vlst (List A)]) (List A)]{
 Function @scheme[filter] is similar to @|racket-filter|. 
 @examples[#:eval evaluate
 
 (define vlst (list 1 2 3 4 5 6))
 
-(vlist->list (filter (λ:([x : Integer]) (> x 5)) vlst))
+(->list (filter (λ:([x : Integer]) (> x 5)) vlst))
 
-(vlist->list (filter (λ:([x : Integer]) (< x 5)) vlst))
+(->list (filter (λ:([x : Integer]) (< x 5)) vlst))
 
-(vlist->list (filter (λ:([x : Integer]) (<= x 4)) vlst))
+(->list (filter (λ:([x : Integer]) (<= x 4)) vlst))
+]}
+
+@defproc[(second [lst (List A)]) A]{
+Function @scheme[second] returns the second element of the list.
+
+@examples[#:eval evaluate
+
+(second (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(third [lst (List A)]) A]{
+Function @scheme[third] returns the third element of the list.
+
+@examples[#:eval evaluate
+
+(third (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(fourth [lst (List A)]) A]{
+Function @scheme[fourth] returns the fourth element of the list.
+
+@examples[#:eval evaluate
+
+(fourth (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(fifth [lst (List A)]) A]{
+Function @scheme[fifth] returns the fifth element of the list.
+
+@examples[#:eval evaluate
+
+(fifth (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(sixth [lst (List A)]) A]{
+Function @scheme[sixth] returns the sixth element of the list.
+
+@examples[#:eval evaluate
+
+(sixth (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(seventh [lst (List A)]) A]{
+Function @scheme[seventh] returns the seventh element of the list.
+
+@examples[#:eval evaluate
+
+(seventh (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(eighth [lst (List A)]) A]{
+Function @scheme[eighth] returns the eighth element of the list.
+
+@examples[#:eval evaluate
+
+(eighth (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(ninth [lst (List A)]) A]{
+Function @scheme[ninth] returns the ninth element of the list.
+
+@examples[#:eval evaluate
+
+(ninth (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(tenth [lst (List A)]) A]{
+Function @scheme[tenth] returns the tenth element of the list.
+
+@examples[#:eval evaluate
+
+(tenth (list 1 2 3 4 5 6 7 8 9 10 11))
 ]}
 
 @(close-eval evaluate)

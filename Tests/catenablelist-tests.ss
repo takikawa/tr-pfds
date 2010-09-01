@@ -1,6 +1,6 @@
-#lang typed-scheme
+#lang typed/scheme
 (require (prefix-in sh: scheme/base))
-(require (rename-in "../catenablelist.ss"))
+(require (rename-in "../catenablelist1.ss"))
 (require typed/test-engine/scheme-tests)
 
 (check-expect (first (list 1 2 3 4 5 6 7)) 1)
@@ -45,8 +45,11 @@
 
 (check-expect (->list (cons 0 empty)) (sh:list 0))
 
-(define lst (build-list 100 (λ (x) x)))
-
+(define lst (sh:build-list 100 (λ: ([x : Integer]) x)))
+(define lst1 (sh:build-list 100 (λ: ([x : Integer]) (+ x 100))))
 (check-expect (->list (apply list lst)) lst)
+
+(check-expect (->list (append (apply list lst) (apply list lst1))) 
+              (sh:append lst lst1))
 
 (test)

@@ -1,20 +1,27 @@
 #lang typed/racket #:optimize
 (require (prefix-in sh: scheme/base))
-(provide filter remove
+(provide filter remove reverse
          list ->list empty? cons empty head tail
          (rename-out [first* first] [rest* rest] [list-map map] 
-                     [list-foldr foldr] [list-foldl foldl]) 
-         list-ref list-set drop list-length List)
+                     [list-foldr foldr] [list-foldl foldl]
+                     [list-ormap ormap] [list-andmap andmap]
+                     [list-second second] [list-third third] 
+                     [list-fourth fourth] [list-fifth fifth] 
+                     [list-sixth sixth] [list-seventh seventh] 
+                     [list-eighth eighth] [list-ninth ninth] 
+                     [list-tenth tenth] [list-last last]
+                     [list-length length]) build-list make-list
+         list-ref list-set drop List)
 
-(define-struct: (A) Leaf ([fst : A]))
-(define-struct: (A) Node ([fst : A]
-                          [lft : (Tree A)] 
-                          [rgt : (Tree A)]))
-(define-type-alias Tree (All (A) (U (Leaf A) (Node A))))
-(define-struct: (A) Root ([weight : Integer]
-                          [fst  : (Tree A)]))
+(struct: (A) Leaf ([fst : A]))
+(struct: (A) Node ([fst : A]
+                   [lft : (Tree A)] 
+                   [rgt : (Tree A)]))
+(define-type (Tree A) (U (Leaf A) (Node A)))
+(struct: (A) Root ([weight : Integer]
+                   [fst  : (Tree A)]))
 
-(define-type-alias List (All (A) (Listof (Root A))))
+(define-type (List A) (Listof (Root A)))
 
 ;; An empty list
 (define empty null)
@@ -33,16 +40,16 @@
 (: cons  : (All (A) (A (List A) -> (List A))))
 (define (cons  elem sralist)
   (if (or (null? sralist) (null? (cdr sralist)))
-      (sh:cons (make-Root 1 (make-Leaf elem)) sralist)
+      (sh:cons (Root 1 (Leaf elem)) sralist)
       (let ([wgt1 (getWeight (car sralist))]
             [wgt2 (getWeight (car (cdr sralist)))])
         (if (eq? wgt1 wgt2)
-            (sh:cons (make-Root (+ 1 wgt1 wgt2) 
-                             (make-Node elem 
-                                        (Root-fst (car sralist)) 
-                                        (Root-fst (car (cdr sralist)))))
-                  (cdr (cdr sralist)))
-            (sh:cons (make-Root 1 (make-Leaf elem)) sralist)))))
+            (sh:cons (Root (+ 1 wgt1 wgt2) 
+                           (Node elem 
+                                 (Root-fst (car sralist)) 
+                                 (Root-fst (car (cdr sralist)))))
+                     (cdr (cdr sralist)))
+            (sh:cons (Root 1 (Leaf elem)) sralist)))))
 
 ;; Similar to list car function
 (: head : (All (A) ((List A) -> A)))
@@ -63,8 +70,8 @@
              [wgt (arithmetic-shift (getWeight (car sralist)) -1)])
         (if (Leaf? fst) 
             (cdr sralist) 
-            (list* (make-Root wgt (Node-lft fst))
-                   (make-Root wgt (Node-rgt fst))
+            (list* (Root wgt (Node-lft fst))
+                   (Root wgt (Node-rgt fst))
                    (cdr sralist))))))
 
 ;; Helper for list-ref
@@ -92,7 +99,7 @@
   (let ([new-wgt (arithmetic-shift wgt -1)]
         [pos0? (zero? pos)])
     (cond
-      [(and (Leaf? tre) pos0?) (make-Leaf elem)]
+      [(and (Leaf? tre) pos0?) (Leaf elem)]
       [(Node? tre) (tu-help new-wgt tre pos pos0? elem)]
       [else (error 'list-set "given index out of bounds")])))
 
@@ -103,12 +110,12 @@
         [rgt (Node-rgt tre)]
         [fst (Node-fst tre)])
     (cond
-      [pos0? (make-Node elem lft rgt)]
-      [(<= pos new-wgt) (make-Node fst 
-                                   (tree-update new-wgt lft (sub1 pos) elem)
-                                   rgt)]
-      [else (make-Node fst lft (tree-update new-wgt rgt 
-                                            (- pos 1 new-wgt) elem))])))
+      [pos0? (Node elem lft rgt)]
+      [(<= pos new-wgt) (Node fst 
+                              (tree-update new-wgt lft (sub1 pos) elem)
+                              rgt)]
+      [else (Node fst lft (tree-update new-wgt rgt 
+                                       (- pos 1 new-wgt) elem))])))
 
 ;; Similar to list list-ref function
 (: list-ref : (All (A) ((List A) Integer -> A)))
@@ -125,10 +132,10 @@
   (cond
     [(null? sralist) (error 'list-set "given index out of bounds")]
     [(< pos (getWeight (car sralist)))
-     (sh:cons (make-Root (getWeight (car sralist)) 
-                         (tree-update (getWeight (car sralist))
-                                      (Root-fst (car sralist)) pos elem)) 
-           (cdr sralist))]
+     (sh:cons (Root (getWeight (car sralist)) 
+                    (tree-update (getWeight (car sralist))
+                                 (Root-fst (car sralist)) pos elem)) 
+              (cdr sralist))]
     [else (sh:cons (car sralist)
                    (list-set (cdr sralist)
                              (- pos (getWeight (car sralist)))
@@ -139,12 +146,12 @@
 (define (tree-drop size tre pos ralist)
   (let ([newsize (arithmetic-shift size -1)])
     (cond 
-      [(zero? pos) (sh:cons (make-Root size tre) ralist)]
+      [(zero? pos) (sh:cons (Root size tre) ralist)]
       [(and (Leaf? tre) (= pos 1)) ralist]
       [(and (Node? tre) (<= pos newsize)) 
        (tree-drop newsize 
                   (Node-lft tre) (- pos 1) 
-                  (sh:cons (make-Root newsize (Node-rgt tre)) ralist))]
+                  (sh:cons (Root newsize (Node-rgt tre)) ralist))]
       [(and (Node? tre) (> pos newsize)) 
        (tree-drop newsize 
                   (Node-rgt tre) (- pos 1 newsize) 
@@ -163,9 +170,9 @@
 (define (drop-helper root rest pos)
   (let ([size (Root-weight root)]
         [tree (Root-fst root)])
-  (if (< pos size)
-      (tree-drop size tree pos rest)
-      (drop (- pos size) rest))))
+    (if (< pos size)
+        (tree-drop size tree pos rest)
+        (drop (- pos size) rest))))
 
 ;; Similar to list length function
 (: list-length : (All (A) ((List A) -> Integer)))
@@ -261,23 +268,23 @@
 (: filter : (All (A) ((A -> Boolean) (List A) -> (List A))))
 (define (filter func ral)
   (if (empty? ral)
-    empty
-    (let ([head (head ral)]
-          [tail (tail ral)])
-      (if (func head)
-        (cons head (filter func tail))
-        (filter func tail)))))
+      empty
+      (let ([head (head ral)]
+            [tail (tail ral)])
+        (if (func head)
+            (cons head (filter func tail))
+            (filter func tail)))))
 
 ;; Similar to list filter function
 (: remove : (All (A) ((A -> Boolean) (List A) -> (List A))))
 (define (remove func ral)
   (if (empty? ral)
-    empty
-    (let ([head (head ral)]
-          [tail (tail ral)])
-      (if (func head)
-        (remove func tail)
-        (cons head (remove func tail))))))
+      empty
+      (let ([head (head ral)]
+            [tail (tail ral)])
+        (if (func head)
+            (remove func tail)
+            (cons head (remove func tail))))))
 
 ;; Similar to list reverse function
 (: reverse : (All (A) ((List A) -> (List A))))
@@ -288,3 +295,91 @@
         accum
         (local-reverse (tail ral) (cons (head ral) accum))))
   (local-reverse ral empty))
+
+;; Similar to build-list function of racket list
+(: build-list : (All (A) (Natural (Natural -> A) -> (List A))))
+(define (build-list size func)
+  (let: loop : (List A) ([n : Natural size] [accum : (List A) empty])
+        (if (zero? n)
+            accum 
+            (loop (sub1 n) (cons (func (sub1 n)) accum)))))
+
+;; Similar to make-list function of racket list
+(: make-list : (All (A) (Natural A -> (List A))))
+(define (make-list size elem)
+  (let: loop : (List A) ([n : Natural size] [accum : (List A) empty])
+        (if (zero? n)
+            accum 
+            (loop (sub1 n) (cons elem accum)))))
+
+
+;; similar to list andmap function
+(: list-andmap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (List A) -> Boolean)
+                     ((A B ... B -> Boolean) (List A) (List B) ... B -> Boolean))))
+(define list-andmap
+  (pcase-lambda: (A B ... ) 
+                 [([func : (A -> Boolean)]
+                   [list  : (List A)])
+                  (or (empty? list)
+                      (and (func (head list))
+                           (list-andmap func (tail list))))]
+                 [([func : (A B ... B -> Boolean)]
+                   [list  : (List A)] . [lists : (List B) ... B])
+                  (or (empty? list) (ormap empty? lists)
+                      (and (apply func (head list) (map head lists))
+                           (apply list-andmap func (tail list) 
+                                  (map tail lists))))]))
+
+
+;; similar to list ormap function
+(: list-ormap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (List A) -> Boolean)
+                     ((A B ... B -> Boolean) (List A) (List B) ... B -> Boolean))))
+(define list-ormap
+  (pcase-lambda: (A B ... ) 
+                 [([func : (A -> Boolean)]
+                   [list  : (List A)])
+                  (and (not (empty? list))
+                       (or (func (head list))
+                           (list-ormap func (tail list))))]
+                 [([func : (A B ... B -> Boolean)]
+                   [list  : (List A)] . [lists : (List B) ... B])
+                  (and (not (or (empty? list) (ormap empty? lists)))
+                       (or (apply func (head list) (map head lists))
+                           (apply list-ormap func (tail list) 
+                                  (map tail lists))))]))
+
+
+
+(: list-second : (All (A) (List A) -> A))
+(define (list-second ls) (list-ref ls 1))
+
+(: list-third : (All (A) (List A) -> A))
+(define (list-third ls) (list-ref ls 2))
+
+(: list-fourth : (All (A) (List A) -> A))
+(define (list-fourth ls) (list-ref ls 3))
+
+(: list-fifth : (All (A) (List A) -> A))
+(define (list-fifth ls) (list-ref ls 4))
+
+(: list-sixth : (All (A) (List A) -> A))
+(define (list-sixth ls) (list-ref ls 5))
+
+(: list-seventh : (All (A) (List A) -> A))
+(define (list-seventh ls) (list-ref ls 6))
+
+(: list-eighth : (All (A) (List A) -> A))
+(define (list-eighth ls) (list-ref ls 7))
+
+(: list-ninth : (All (A) (List A) -> A))
+(define (list-ninth ls) (list-ref ls 8))
+
+(: list-tenth : (All (A) (List A) -> A))
+(define (list-tenth ls) (list-ref ls 9))
+
+(: list-last : (All (A) (List A) -> A))
+(define (list-last ls) (list-ref ls (sub1 (list-length ls))))

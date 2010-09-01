@@ -6,7 +6,14 @@
          empty empty? list-length cons head tail 
          (rename-out [first* first] [rest* rest] [list-map map] 
                      [list-foldr foldr] [list-foldl foldl]) 
-         list-ref list-set drop ->list list)
+         list-ref list-set drop ->list list
+         (rename-out [list-ormap ormap] [list-andmap andmap]
+                     [list-second second] [list-third third] 
+                     [list-fourth fourth] [list-fifth fifth] 
+                     [list-sixth sixth] [list-seventh seventh] 
+                     [list-eighth eighth] [list-ninth ninth] 
+                     [list-tenth tenth] [list-last last]
+                     [list-length length]) build-list make-list)
 
 (struct: (A) Leaf ([first : A]))
 
@@ -311,3 +318,92 @@
         accum
         (local-reverse (tail ral) (cons (head ral) accum))))
   (local-reverse ral empty))
+
+
+;; Similar to build-list function of racket list
+(: build-list : (All (A) (Natural (Natural -> A) -> (List A))))
+(define (build-list size func)
+  (let: loop : (List A) ([n : Natural size] [accum : (List A) empty])
+        (if (zero? n)
+            accum 
+            (loop (sub1 n) (cons (func (sub1 n)) accum)))))
+
+;; Similar to make-list function of racket list
+(: make-list : (All (A) (Natural A -> (List A))))
+(define (make-list size elem)
+  (let: loop : (List A) ([n : Natural size] [accum : (List A) empty])
+        (if (zero? n)
+            accum 
+            (loop (sub1 n) (cons elem accum)))))
+
+
+;; similar to list andmap function
+(: list-andmap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (List A) -> Boolean)
+                     ((A B ... B -> Boolean) (List A) (List B) ... B -> Boolean))))
+(define list-andmap
+  (pcase-lambda: (A B ... ) 
+                 [([func : (A -> Boolean)]
+                   [list  : (List A)])
+                  (or (empty? list)
+                      (and (func (head list))
+                           (list-andmap func (tail list))))]
+                 [([func : (A B ... B -> Boolean)]
+                   [list  : (List A)] . [lists : (List B) ... B])
+                  (or (empty? list) (ormap empty? lists)
+                      (and (apply func (head list) (map head lists))
+                           (apply list-andmap func (tail list) 
+                                  (map tail lists))))]))
+
+
+;; similar to list ormap function
+(: list-ormap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (List A) -> Boolean)
+                     ((A B ... B -> Boolean) (List A) (List B) ... B -> Boolean))))
+(define list-ormap
+  (pcase-lambda: (A B ... ) 
+                 [([func : (A -> Boolean)]
+                   [list  : (List A)])
+                  (and (not (empty? list))
+                       (or (func (head list))
+                           (list-ormap func (tail list))))]
+                 [([func : (A B ... B -> Boolean)]
+                   [list  : (List A)] . [lists : (List B) ... B])
+                  (and (not (or (empty? list) (ormap empty? lists)))
+                       (or (apply func (head list) (map head lists))
+                           (apply list-ormap func (tail list) 
+                                  (map tail lists))))]))
+
+
+
+(: list-second : (All (A) (List A) -> A))
+(define (list-second ls) (list-ref ls 1))
+
+(: list-third : (All (A) (List A) -> A))
+(define (list-third ls) (list-ref ls 2))
+
+(: list-fourth : (All (A) (List A) -> A))
+(define (list-fourth ls) (list-ref ls 3))
+
+(: list-fifth : (All (A) (List A) -> A))
+(define (list-fifth ls) (list-ref ls 4))
+
+(: list-sixth : (All (A) (List A) -> A))
+(define (list-sixth ls) (list-ref ls 5))
+
+(: list-seventh : (All (A) (List A) -> A))
+(define (list-seventh ls) (list-ref ls 6))
+
+(: list-eighth : (All (A) (List A) -> A))
+(define (list-eighth ls) (list-ref ls 7))
+
+(: list-ninth : (All (A) (List A) -> A))
+(define (list-ninth ls) (list-ref ls 8))
+
+(: list-tenth : (All (A) (List A) -> A))
+(define (list-tenth ls) (list-ref ls 9))
+
+(: list-last : (All (A) (List A) -> A))
+(define (list-last ls) (list-ref ls (sub1 (list-length ls))))

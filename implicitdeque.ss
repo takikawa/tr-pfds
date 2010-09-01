@@ -1,9 +1,10 @@
 #lang typed/racket #:optimize
 
-(provide filter remove Deque
+(provide filter remove Deque head+tail last+init build-deque
          empty empty? head tail last init deque->rev-list
          enqueue-front enqueue deque->list deque
-         foldr (rename-out [deque-map map] [dqfoldl foldl]))
+         foldr (rename-out [deque-map map] [dqfoldl foldl]
+                           [deque-andmap andmap] [deque-ormap ormap]))
 
 (require scheme/match)
 
@@ -283,3 +284,66 @@
               (inner func tail accum)
               (inner func tail (enqueue head accum))))))
   (inner func que empty))
+
+
+;; Similar to build-list
+(: build-deque : (All (A) (Natural (Natural -> A) -> (Deque A))))
+(define (build-deque size func)
+  (let: loop : (Deque A) ([n : Natural size])
+        (if (zero? n)
+            empty
+            (let ([nsub1 (sub1 n)])
+              (enqueue (func nsub1) (loop nsub1))))))
+
+
+(: head+tail : (All (A) (Deque A) -> (Pair A (Deque A))))
+(define (head+tail deq)
+  (if (empty? deq)
+      (error 'head+tail "given deque is empty")
+      (cons (head deq) (tail deq))))
+
+
+(: last+init : (All (A) (Deque A) -> (Pair A (Deque A))))
+(define (last+init deq)
+  (if (empty? deq)
+      (error 'last+init "given deque is empty")
+      (cons (last deq) (init deq))))
+
+
+;; similar to list andmap function
+(: deque-andmap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (Deque A) -> Boolean)
+                     ((A B ... B -> Boolean) (Deque A) (Deque B) ... B -> Boolean))))
+(define deque-andmap
+  (pcase-lambda: (A B ... ) 
+                 [([func  : (A -> Boolean)]
+                   [queue : (Deque A)])
+                  (or (empty? queue)
+                      (and (func (head queue))
+                           (deque-andmap func (tail queue))))]
+                 [([func  : (A B ... B -> Boolean)]
+                   [queue : (Deque A)] . [queues : (Deque B) ... B])
+                  (or (empty? queue) (ormap empty? queues)
+                      (and (apply func (head queue) (map head queues))
+                           (apply deque-andmap func (tail queue) 
+                                  (map tail queues))))]))
+
+;; Similar to ormap
+(: deque-ormap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (Deque A) -> Boolean)
+                     ((A B ... B -> Boolean) (Deque A) (Deque B) ... B -> Boolean))))
+(define deque-ormap
+  (pcase-lambda: (A B ... ) 
+                 [([func  : (A -> Boolean)]
+                   [queue : (Deque A)])
+                  (and (not (empty? queue))
+                       (or (func (head queue))
+                           (deque-ormap func (tail queue))))]
+                 [([func  : (A B ... B -> Boolean)]
+                   [queue : (Deque A)] . [queues : (Deque B) ... B])
+                  (and (not (or (empty? queue) (ormap empty? queues)))
+                       (or (apply func (head queue) (map head queues))
+                           (apply deque-ormap func (tail queue) 
+                                  (map tail queues))))]))

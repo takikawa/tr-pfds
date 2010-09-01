@@ -1,8 +1,10 @@
 #lang typed/racket #:optimize
 
-(provide filter remove
+(provide filter remove head+tail build-queue
          Queue queue enqueue head tail empty empty? queue->list
-         (rename-out [qmap map]) fold)
+         (rename-out [qmap map]
+                     [queue-andmap andmap] 
+                     [queue-ormap ormap]) fold)
 
 (require scheme/match)
 
@@ -205,3 +207,62 @@
               (inner func tail accum)
               (inner func tail (enqueue head accum))))))
   (inner func que empty))
+
+(: head+tail : (All (A) ((Queue A) -> (Pair A (Queue A)))))
+(define (head+tail que)
+  (let ([fr (Queue-front que)])
+    (if (null? fr)
+        (error 'head+tail "given queue is empty")
+        (cons (car fr)
+              (check (sub1 (Queue-lenf que))
+                     (cdr fr)
+                     (invalidate (Queue-state que))
+                     (Queue-lenr que)
+                     (Queue-rear que))))))
+
+;; Similar to build-list function
+(: build-queue : (All (A) (Natural (Natural -> A) -> (Queue A))))
+(define (build-queue size func)
+  (let: loop : (Queue A) ([n : Natural size])
+        (if (zero? n)
+            empty
+            (let ([nsub1 (sub1 n)])
+              (enqueue (func nsub1) (loop nsub1))))))
+
+;; similar to list andmap function
+(: queue-andmap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (Queue A) -> Boolean)
+                     ((A B ... B -> Boolean) (Queue A) (Queue B) ... B -> Boolean))))
+(define queue-andmap
+  (pcase-lambda: (A B ... ) 
+                 [([func  : (A -> Boolean)]
+                   [queue : (Queue A)])
+                  (or (empty? queue)
+                      (and (func (head queue))
+                           (queue-andmap func (tail queue))))]
+                 [([func  : (A B ... B -> Boolean)]
+                   [queue : (Queue A)] . [queues : (Queue B) ... B])
+                  (or (empty? queue) (ormap empty? queues)
+                      (and (apply func (head queue) (map head queues))
+                           (apply queue-andmap func (tail queue) 
+                                  (map tail queues))))]))
+
+;; Similar to ormap
+(: queue-ormap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (Queue A) -> Boolean)
+                     ((A B ... B -> Boolean) (Queue A) (Queue B) ... B -> Boolean))))
+(define queue-ormap
+  (pcase-lambda: (A B ... ) 
+                 [([func  : (A -> Boolean)]
+                   [queue : (Queue A)])
+                  (and (not (empty? queue))
+                       (or (func (head queue))
+                           (queue-ormap func (tail queue))))]
+                 [([func  : (A B ... B -> Boolean)]
+                   [queue : (Queue A)] . [queues : (Queue B) ... B])
+                  (and (not (or (empty? queue) (ormap empty? queues)))
+                       (or (apply func (head queue) (map head queues))
+                           (apply queue-ormap func (tail queue) 
+                                  (map tail queues))))]))

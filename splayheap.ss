@@ -1,8 +1,10 @@
 #lang typed/racket #:optimize
 
-(provide (rename-out [heap-map map]) fold  filter remove
+(provide (rename-out [heap-map map]
+                     [heap-ormap ormap] [heap-andmap andmap]) 
+         fold  filter remove
          empty empty? insert merge find-min/max 
-         delete-min/max sorted-list heap Heap)
+         delete-min/max sorted-list heap Heap build-heap)
 
 (require scheme/match)
 
@@ -236,3 +238,54 @@
                                   (map find-min/max heaps))
                            (delete-min/max heap)
                            (map delete-min/max heaps)))]))
+
+;; Similar to build-list
+(: build-heap : (All (A) (Natural (Natural -> A) (A A -> Boolean) -> (Heap A))))
+(define (build-heap size func comparer)
+  (let: loop : (Heap A) ([n : Natural size])
+        (if (zero? n)
+            ((inst Heap A) comparer empty)
+            (let ([nsub1 (sub1 n)])
+              (insert (func nsub1) (loop nsub1))))))
+
+;; similar to list andmap function
+(: heap-andmap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (Heap A) -> Boolean)
+                     ((A B ... B -> Boolean) (Heap A) (Heap B) ... B 
+                                             -> Boolean))))
+(define heap-andmap
+  (pcase-lambda: (A B ... ) 
+                 [([func  : (A -> Boolean)]
+                   [deque : (Heap A)])
+                  (or (empty? deque)
+                      (and (func (find-min/max deque))
+                           (heap-andmap func (delete-min/max deque))))]
+                 [([func  : (A B ... B -> Boolean)]
+                   [deque : (Heap A)] . [deques : (Heap B) ... B])
+                  (or (empty? deque) (ormap empty? deques)
+                      (and (apply func (find-min/max deque) 
+                                  (map find-min/max deques))
+                           (apply heap-andmap func (delete-min/max deque) 
+                                  (map delete-min/max deques))))]))
+
+;; Similar to ormap
+(: heap-ormap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (Heap A) -> Boolean)
+                     ((A B ... B -> Boolean) (Heap A) (Heap B) ... B 
+                                             -> Boolean))))
+(define heap-ormap
+  (pcase-lambda: (A B ... ) 
+                 [([func  : (A -> Boolean)]
+                   [deque : (Heap A)])
+                  (and (not (empty? deque))
+                       (or (func (find-min/max deque))
+                           (heap-ormap func (delete-min/max deque))))]
+                 [([func  : (A B ... B -> Boolean)]
+                   [deque : (Heap A)] . [deques : (Heap B) ... B])
+                  (and (not (or (empty? deque) (ormap empty? deques)))
+                       (or (apply func (find-min/max deque) 
+                                  (map find-min/max deques))
+                           (apply heap-ormap func (delete-min/max deque) 
+                                  (map delete-min/max deques))))]))

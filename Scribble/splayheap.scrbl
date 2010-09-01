@@ -1,13 +1,14 @@
 #lang scribble/manual
 @(require "helper.rkt")
-@(defmodule "../splayheap.ss")
-@(require (for-label "../splayheap.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[splayheap]
+@(require (for-label (planet krhari/pfds:1:0/splayheap)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../splayheap.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "splayheap.ss"))
 
 @title{Splay Heap}
 
@@ -22,7 +23,7 @@ be easily shown that the amortized running time of is
 @scheme[insert], @scheme[find-min/max], @scheme[delete-min/max]
 and @scheme[merge].
 
-@;section{Splay Heap Construction and Operations}
+@defform[(Heap A)]{A splay heap of type @racket[A].}
 
 @defproc[(heap [comp (A A -> Boolean)] [a A] ...) (Heap A)]{
 Function @scheme[heap] creates a Splay Heap with the given 
@@ -173,6 +174,54 @@ Function @scheme[remove] is similar to @|racket-filter| but @scheme[remove] remo
 
 (sorted-list (remove (λ: ([x : Integer]) (<= x 5))
                     (heap < 1 2 3 4 5 6)))
+]}
+
+@defproc[(andmap [func (A B ... B -> Boolean)]
+                 [heap1 (Heap A)]
+                 [heap2 (Heap B)] ...) Boolean]{
+Function @scheme[andmap] is similar to @|racket-andmap|.
+
+@examples[#:eval evaluate
+
+(andmap even? (heap < 1 2 3 4 5 6))
+
+(andmap odd? (heap < 1 2 3 4 5 6))
+
+(andmap positive? (heap < 1 2 3 4 5 6))
+
+(andmap negative? (heap < -1 -2))
+]}
+
+
+@defproc[(ormap [func (A B ... B -> Boolean)]
+                [heap1 (Heap A)]
+                [heap2 (Heap B)] ...) Boolean]{
+Function @scheme[ormap] is similar to @|racket-ormap|.
+
+@examples[#:eval evaluate
+
+(ormap even? (heap < 1 2 3 4 5 6))
+
+(ormap odd? (heap < 1 2 3 4 5 6))
+
+(ormap positive? (heap < -1 -2 3 4 -5 6))
+
+(ormap negative? (heap < 1 -2))
+]}
+
+@defproc[(build-heap [size Natural]
+                     [func (Natural -> A)]
+                     [comp (A A -> Boolean)])
+                     (Heap A)]{
+Function @scheme[build-heap] is similar to @|racket-build-list| but this
+function takes an extra comparison function.
+
+@examples[#:eval evaluate
+
+(sorted-list (build-heap 5 (λ:([x : Integer]) (add1 x)) <))
+
+(sorted-list (build-heap 5 (λ:([x : Integer]) (* x x)) <))
+
 ]}
 
 @(close-eval evaluate)

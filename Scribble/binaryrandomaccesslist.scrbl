@@ -148,15 +148,15 @@ elements in the list.
 }
 
 
-@defproc[(list-length [ral (List A)]) Integer]{
-Function @scheme[list-length] takes a list and gives the number of 
+@defproc[(length [ral (List A)]) Integer]{
+Function @scheme[length] takes a list and gives the number of 
 elements in in the given list. 
 
 @examples[#:eval evaluate
 
-(list-length (list 1 2 3 4 5 6))
+(length (list 1 2 3 4 5 6))
 
-(list-length empty)
+(length empty)
 ]}
 
 @defproc[(reverse [list (List A)]) (List A)]{
@@ -217,6 +217,64 @@ Function @scheme[foldr] is similar to @|racket-foldr|.
 (foldr * 1 (list 1 2 3 4 5 6) (list 1 2 3 4 5 6))
 ]}
 
+
+@defproc[(andmap [func (A B ... B -> Boolean)]
+                 [lst1 (List A)]
+                 [lst2 (List B)] ...) Boolean]{
+Function @scheme[andmap] is similar to @|racket-andmap|.
+
+@examples[#:eval evaluate
+
+(andmap even? (list 1 2 3 4 5 6))
+
+(andmap odd? (list 1 2 3 4 5 6))
+
+(andmap positive? (list 1 2 3 4 5 6))
+
+(andmap negative? (list -1 -2))
+]}
+
+
+@defproc[(ormap [func (A B ... B -> Boolean)]
+                [lst1 (List A)]
+                [lst2 (List B)] ...) Boolean]{
+Function @scheme[ormap] is similar to @|racket-ormap|.
+
+@examples[#:eval evaluate
+
+(ormap even? (list 1 2 3 4 5 6))
+
+(ormap odd? (list 1 2 3 4 5 6))
+
+(ormap positive? (list -1 -2 3 4 -5 6))
+
+(ormap negative? (list 1 -2))
+]}
+
+@defproc[(build-list [size Natural]
+                     [func (Natural -> A)])
+                     (List A)]{
+Function @scheme[build-list] is similar to @|racket-build-list|.
+@examples[#:eval evaluate
+
+(->list (build-list 5 (λ:([x : Integer]) (add1 x))))
+
+(->list (build-list 5 (λ:([x : Integer]) (* x x))))
+
+]}
+
+@defproc[(make-list [size Natural]
+                    [func A])
+                    (List A)]{
+Function @scheme[make-list] is similar to @|racket-make-list|.
+@examples[#:eval evaluate
+
+(->list (make-list 5 10))
+
+(->list (make-list 5 'sym))
+
+]}
+
 @defproc[(filter [pred (A -> Boolean)] [lst (List A)]) (List A)]{
 Function @scheme[filter] is similar to @|racket-filter|. 
 @examples[#:eval evaluate
@@ -240,6 +298,87 @@ but @scheme[remove] removes the elements which match the predicate.
 (->list (remove (λ:([x : Integer]) (< x 5)) (list 1 2 3 4 5 6)))
 
 (->list (remove (λ:([x : Integer]) (<= x 4)) (list 1 2 3 4 5 6)))
+]}
+
+@defproc[(second [lst (List A)]) A]{
+Function @scheme[second] returns the second element of the list.
+
+@examples[#:eval evaluate
+
+(second (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(third [lst (List A)]) A]{
+Function @scheme[third] returns the third element of the list.
+
+@examples[#:eval evaluate
+
+(third (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(fourth [lst (List A)]) A]{
+Function @scheme[fourth] returns the fourth element of the list.
+
+@examples[#:eval evaluate
+
+(fourth (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(fifth [lst (List A)]) A]{
+Function @scheme[fifth] returns the fifth element of the list.
+
+@examples[#:eval evaluate
+
+(fifth (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(sixth [lst (List A)]) A]{
+Function @scheme[sixth] returns the sixth element of the list.
+
+@examples[#:eval evaluate
+
+(sixth (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(seventh [lst (List A)]) A]{
+Function @scheme[seventh] returns the seventh element of the list.
+
+@examples[#:eval evaluate
+
+(seventh (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(eighth [lst (List A)]) A]{
+Function @scheme[eighth] returns the eighth element of the list.
+
+@examples[#:eval evaluate
+
+(eighth (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(ninth [lst (List A)]) A]{
+Function @scheme[ninth] returns the ninth element of the list.
+
+@examples[#:eval evaluate
+
+(ninth (list 1 2 3 4 5 6 7 8 9 10))
+]}
+
+@defproc[(tenth [lst (List A)]) A]{
+Function @scheme[tenth] returns the tenth element of the list.
+
+@examples[#:eval evaluate
+
+(tenth (list 1 2 3 4 5 6 7 8 9 10 11))
+]}
+
+@defproc[(last [lst (List A)]) A]{
+Function @scheme[last] returns the last element of the list.
+
+@examples[#:eval evaluate
+
+(last (list 1 2 3 4 5 6 7 8 9 10 11))
+(last (list 1 2 3 4 5))
 ]}
 
 @(close-eval evaluate)

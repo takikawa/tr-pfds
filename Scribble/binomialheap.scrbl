@@ -165,7 +165,8 @@ Function @scheme[filter] is similar to @|racket-filter|.
 ]}
 
 @defproc[(remove [func (A -> Boolean)] [hep (Heap A)]) (Heap A)]{
-Function @scheme[remove] is similar to @|racket-filter| but @scheme[remove] removes the elements which match the predicate. 
+Function @scheme[remove] is similar to @|racket-filter| but
+@scheme[remove] removes the elements which match the predicate.
 @examples[#:eval evaluate
 
 (sorted-list (remove (λ: ([x : Integer]) (> x 5))
@@ -176,6 +177,54 @@ Function @scheme[remove] is similar to @|racket-filter| but @scheme[remove] remo
 
 (sorted-list (remove (λ: ([x : Integer]) (<= x 5))
                     (heap < 1 2 3 4 5 6)))
+]}
+
+@defproc[(andmap [func (A B ... B -> Boolean)]
+                 [heap1 (Heap A)]
+                 [heap2 (Heap B)] ...) Boolean]{
+Function @scheme[andmap] is similar to @|racket-andmap|.
+
+@examples[#:eval evaluate
+
+(andmap even? (heap < 1 2 3 4 5 6))
+
+(andmap odd? (heap < 1 2 3 4 5 6))
+
+(andmap positive? (heap < 1 2 3 4 5 6))
+
+(andmap negative? (heap < -1 -2))
+]}
+
+
+@defproc[(ormap [func (A B ... B -> Boolean)]
+                [heap1 (Heap A)]
+                [heap2 (Heap B)] ...) Boolean]{
+Function @scheme[ormap] is similar to @|racket-ormap|.
+
+@examples[#:eval evaluate
+
+(ormap even? (heap < 1 2 3 4 5 6))
+
+(ormap odd? (heap < 1 2 3 4 5 6))
+
+(ormap positive? (heap < -1 -2 3 4 -5 6))
+
+(ormap negative? (heap < 1 -2))
+]}
+
+@defproc[(build-heap [size Natural]
+                     [func (Natural -> A)]
+                     [comp (A A -> Boolean)])
+                     (Heap A)]{
+Function @scheme[build-heap] is similar to @|racket-build-list| but this
+function takes an extra comparison function.
+
+@examples[#:eval evaluate
+
+(sorted-list (build-heap 5 (λ:([x : Integer]) (add1 x)) <))
+
+(sorted-list (build-heap 5 (λ:([x : Integer]) (* x x)) <))
+
 ]}
 
 @(close-eval evaluate)

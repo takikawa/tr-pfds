@@ -2,16 +2,16 @@
 
 (provide clist empty? head tail reverse
          CatenableList append empty filter remove
-         (rename-out [clist->list ->list]
-                     [clist list] [kons cons]
-                     [head first] [tail rest]
-                     [kons-rear cons-to-end] [list-map map]
-                     [list-foldl foldl] [list-foldr foldr]))
+         (rename-out [clist->list ->list] [clist list] [kons cons]
+                     [head first] [tail rest] [kons-rear cons-to-end] 
+                     [list-map map] [list-foldl foldl] [list-foldr foldr] 
+                     [list-ormap ormap] [list-andmap andmap]) 
+         build-list make-list)
 
-(require (prefix-in rtq: "physicists-queue.ss"))
+(require (prefix-in bsq: "bootstrapedqueue.ss"))
 
 (struct: (A) List ([elem : A]
-                   [ques : (rtq:Queue (Promise (List A)))]))
+                   [ques : (bsq:Queue (Promise (List A)))]))
 
 (define-type (CatenableList A) (U (List A) Null))
 
@@ -26,13 +26,13 @@
 
 (: link : (All (A) ((List A) (Promise (List A)) -> (List A))))
 (define (link lst cat)
-  (List (List-elem lst) (rtq:enqueue cat (List-ques lst))))
+  (List (List-elem lst) (bsq:enqueue cat (List-ques lst))))
 
-(: link-all : (All (A) ((rtq:Queue (Promise (List A))) -> (List A))))
+(: link-all : (All (A) ((bsq:Queue (Promise (List A))) -> (List A))))
 (define (link-all rtq)
-  (let ([hd (force (rtq:head rtq))]
-        [tl (rtq:tail rtq)])
-    (if (rtq:empty? tl)
+  (let ([hd (force (bsq:head rtq))]
+        [tl (bsq:tail rtq)])
+    (if (bsq:empty? tl)
         hd
         (link hd (delay (link-all tl))))))
 
@@ -55,12 +55,12 @@
 ;; Similar to list cons function
 (: kons : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (kons elem cat)
-  (append (List elem rtq:empty) cat))
+  (append (List elem bsq:empty) cat))
 
 ;; Inserts an element at the rear end of the list
 (: kons-rear : (All (A) (A (CatenableList A) -> (CatenableList A))))
 (define (kons-rear elem cat)
-  (append cat (List elem rtq:empty)))
+  (append cat (List elem bsq:empty)))
 
 ;; Similar to list car function
 (: head : (All (A) ((CatenableList A) -> A)))
@@ -79,7 +79,7 @@
 (: tail-helper : (All (A) ((List A) -> (CatenableList A))))
 (define (tail-helper cat)
   (let ([ques (List-ques cat)])
-    (if (rtq:empty? ques) 
+    (if (bsq:empty? ques) 
         empty
         (link-all ques))))
 
@@ -228,10 +228,76 @@
 (: reverse : (All (A) ((CatenableList A) -> (CatenableList A))))
 (define (reverse ral)
   (: local-reverse : (All (A) ((CatenableList A) (CatenableList A)
-                               ->
-                               (CatenableList A))))
+                                                 ->
+                                                 (CatenableList A))))
   (define (local-reverse ral accum)
     (if (empty? ral)
         accum
         (local-reverse (tail ral) (kons (head ral) accum))))
   (local-reverse ral empty))
+
+
+
+;; Similar to build-list function of racket list
+(: build-list : (All (A) (Natural (Natural -> A) -> (CatenableList A))))
+(define (build-list size func)
+  (let: loop : (CatenableList A) ([n : Natural size] [accum : (CatenableList A) empty])
+        (if (zero? n)
+            accum 
+            (loop (sub1 n) (kons (func (sub1 n)) accum)))))
+
+;; Similar to make-list function of racket list
+(: make-list : (All (A) (Natural A -> (CatenableList A))))
+(define (make-list size elem)
+  (let: loop : (CatenableList A) ([n : Natural size] [accum : (CatenableList A) empty])
+        (if (zero? n)
+            accum 
+            (loop (sub1 n) (kons elem accum)))))
+
+
+;; similar to list andmap function
+(: list-andmap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (CatenableList A) -> Boolean)
+                     ((A B ... B -> Boolean) (CatenableList A) 
+                                             (CatenableList B) ... B 
+                                             -> Boolean))))
+(define list-andmap
+  (pcase-lambda: (A B ... ) 
+                 [([func : (A -> Boolean)]
+                   [list  : (CatenableList A)])
+                  (or (empty? list)
+                      (and (func (head list))
+                           (list-andmap func (tail list))))]
+                 [([func : (A B ... B -> Boolean)]
+                   [list  : (CatenableList A)] 
+                   . 
+                   [lists : (CatenableList B) ... B])
+                  (or (empty? list) (ormap empty? lists)
+                      (and (apply func (head list) (map head lists))
+                           (apply list-andmap func (tail list) 
+                                  (map tail lists))))]))
+
+
+;; similar to list ormap function
+(: list-ormap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (CatenableList A) -> Boolean)
+                     ((A B ... B -> Boolean) (CatenableList A) 
+                                             (CatenableList B) ... B 
+                                             -> Boolean))))
+(define list-ormap
+  (pcase-lambda: (A B ... ) 
+                 [([func : (A -> Boolean)]
+                   [list  : (CatenableList A)])
+                  (and (not (empty? list))
+                       (or (func (head list))
+                           (list-ormap func (tail list))))]
+                 [([func : (A B ... B -> Boolean)]
+                   [list  : (CatenableList A)] 
+                   . 
+                   [lists : (CatenableList B) ... B])
+                  (and (not (or (empty? list) (ormap empty? lists)))
+                       (or (apply func (head list) (map head lists))
+                           (apply list-ormap func (tail list) 
+                                  (map tail lists))))]))

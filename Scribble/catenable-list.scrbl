@@ -15,7 +15,7 @@
 Catenable Lists are nothing but lists with efficient catenation. They use 
 a data-structucal bootstrapping technique called 
 @italic{Structucal Abstraction}. The data structure internally uses
-@secref["phy-que"] to realize an amortized running time of @bold{@italic{O(1)}}
+@secref["boot-que"] to realize an amortized running time of @bold{@italic{O(1)}}
 for the operations @scheme[first], @scheme[rest], @scheme[cons] and
 @scheme[cons-to-end].
 
@@ -167,6 +167,64 @@ Function @scheme[foldr] is similar to @|racket-foldr|
 (foldr + 0 (list 1 2 3 4 5 6))
 
 (foldr * 1 (list 1 2 3 4 5 6) (list 1 2 3 4 5 6))
+]}
+
+
+@defproc[(andmap [func (A B ... B -> Boolean)]
+                 [lst1 (CatenableList A)]
+                 [lst2 (CatenableList B)] ...) Boolean]{
+Function @scheme[andmap] is similar to @|racket-andmap|.
+
+@examples[#:eval evaluate
+
+(andmap even? (list 1 2 3 4 5 6))
+
+(andmap odd? (list 1 2 3 4 5 6))
+
+(andmap positive? (list 1 2 3 4 5 6))
+
+(andmap negative? (list -1 -2))
+]}
+
+
+@defproc[(ormap [func (A B ... B -> Boolean)]
+                [lst1 (CatenableList A)]
+                [lst2 (CatenableList B)] ...) Boolean]{
+Function @scheme[ormap] is similar to @|racket-ormap|.
+
+@examples[#:eval evaluate
+
+(ormap even? (list 1 2 3 4 5 6))
+
+(ormap odd? (list 1 2 3 4 5 6))
+
+(ormap positive? (list -1 -2 3 4 -5 6))
+
+(ormap negative? (list 1 -2))
+]}
+
+@defproc[(build-list [size Natural]
+                     [func (Natural -> A)])
+                     (CatenableList A)]{
+Function @scheme[build-list] is similar to @|racket-build-list|.
+@examples[#:eval evaluate
+
+(->list (build-list 5 (λ:([x : Integer]) (add1 x))))
+
+(->list (build-list 5 (λ:([x : Integer]) (* x x))))
+
+]}
+
+@defproc[(make-list [size Natural]
+                    [func A])
+                    (CatenableList A)]{
+Function @scheme[make-list] is similar to @|racket-make-list|.
+@examples[#:eval evaluate
+
+(->list (make-list 5 10))
+
+(->list (make-list 5 'sym))
+
 ]}
 
 @defproc[(filter [func (A -> Boolean)] [que (CatenableList A)]) (CatenableList A)]{

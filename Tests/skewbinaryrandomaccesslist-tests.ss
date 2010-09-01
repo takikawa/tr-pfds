@@ -56,12 +56,12 @@
 (check-error (drop -1 null)
              "drop: not enough elements to drop")
 
-(define lst (build-list 100 (λ(x) x)))
+(define lst (build-list 100 (λ: ([x : Integer]) x)))
 (check-expect (->list (apply list lst)) lst)
 
-(check-expect (list-length (list 1 2 3)) 3)
-(check-expect (list-length (list 1 2 3 10 12)) 5)
-(check-expect (list-length null) 0)
+(check-expect (length (list 1 2 3)) 3)
+(check-expect (length (list 1 2 3 10 12)) 5)
+(check-expect (length null) 0)
 
 (check-expect (->list (map + (list 1 2 3 4 5) (list 1 2 3 4 5)))
               (sh:list 2 4 6 8 10))

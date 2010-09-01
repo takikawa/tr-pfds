@@ -1,11 +1,12 @@
 #lang scribble/manual
-@(defmodule "../tries.ss")
-@(require (for-label "../tries.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[tries]
+@(require (for-label (planet krhari/pfds:1:0/tries)))
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../tries.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "tries.ss"))
 
 @title{Tries}
 
@@ -21,8 +22,8 @@ asymptotic running times than hash tables. This data structure is very
 useful when used for an aggregate type like strings.
 
 
-
-@;section{Red-Black Trees Construction and Operations}
+@defform[(Trie K V)]{A trie with keys of type @racket[K] and values of type
+@racket[V].}
 
 @defproc[(tries [values (Listof V)] [keys (Listof (Listof K))]) (Trie K V)]{
 Function 

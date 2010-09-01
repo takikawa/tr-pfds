@@ -128,7 +128,8 @@ Function @scheme[filter] is similar to @|racket-filter|.
 ]}
 
 @defproc[(remove [func (A -> Boolean)] [que (Queue A)]) (Queue A)]{
-Function @scheme[remove] is similar to @|racket-filter| but @scheme[remove] removes the elements which match the predicate. 
+Function @scheme[remove] is similar to @|racket-filter| but
+@scheme[remove] removes the elements which match the predicate.
 @examples[#:eval evaluate
 
 (queue->list (remove (λ: ([x : Integer]) (> x 5))
@@ -139,6 +140,65 @@ Function @scheme[remove] is similar to @|racket-filter| but @scheme[remove] remo
 
 (queue->list (remove (λ: ([x : Integer]) (<= x 5))
                      (queue 1 2 3 4 5 6)))
+]}
+
+@defproc[(andmap [func (A B ... B -> Boolean)]
+                 [que1 (Queue A)]
+                 [que2 (Queue B)] ...) Boolean]{
+Function @scheme[andmap] is similar to @|racket-andmap|.
+
+@examples[#:eval evaluate
+
+(andmap even? (queue 1 2 3 4 5 6))
+
+(andmap odd? (queue 1 2 3 4 5 6))
+
+(andmap positive? (queue 1 2 3 4 5 6))
+
+(andmap negative? (queue -1 -2))
+]}
+
+
+@defproc[(ormap [func (A B ... B -> Boolean)]
+                [que1 (Queue A)]
+                [que2 (Queue B)] ...) Boolean]{
+Function @scheme[ormap] is similar to @|racket-ormap|.
+
+@examples[#:eval evaluate
+
+(ormap even? (queue 1 2 3 4 5 6))
+
+(ormap odd? (queue 1 2 3 4 5 6))
+
+(ormap positive? (queue -1 -2 3 4 -5 6))
+
+(ormap negative? (queue 1 -2))
+]}
+
+@defproc[(build-queue [size Natural]
+                      [func (Natural -> A)])
+                      (Queue A)]{
+Function @scheme[build-queue] is similar to @|racket-build-list|.
+@examples[#:eval evaluate
+
+(queue->list (build-queue 5 (λ:([x : Integer]) (add1 x))))
+
+(queue->list (build-queue 5 (λ:([x : Integer]) (* x x))))
+
+]}
+
+@defproc[(head+tail [que (Queue A)])
+                    (Pair A (Queue A))]{
+Function @scheme[head+tail] returns a pair containing the head and the tail of
+the given queue.
+@examples[#:eval evaluate
+
+(head+tail (queue 1 2 3 4 5))
+
+(head+tail (build-queue 5 (λ:([x : Integer]) (* x x))))
+
+(head+tail empty)
+
 ]}
 
 @(close-eval evaluate)

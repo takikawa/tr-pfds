@@ -2,9 +2,11 @@
 
 (require "stream.ss")
 
-(provide filter remove
+(provide filter remove head+tail build-queue
          Queue empty empty? enqueue head tail queue queue->list
-         (rename-out [qmap map]) fold)
+         (rename-out [qmap map] 
+                     [queue-andmap andmap] 
+                     [queue-ormap ormap]) fold)
 
 ;; A Banker's Queue (Maintains length of front >= length of rear)
 
@@ -44,19 +46,20 @@
 ;; Retrieves the head element of the queue
 (: head : (All (A) ((Queue A) -> A)))
 (define (head que)
-  (if (empty? que)
+  (if (zero? (Queue-lenf que))
       (error 'head "given queue is empty")
       (stream-car (Queue-front que))))
 
 ;; Queueue operation. Removes the head and returns the rest of the queue
 (: tail : (All (A) ((Queue A) -> (Queue A))))
 (define (tail que)
-  (if (empty? que)
-      (error 'tail "given queue is empty")
-      (internal-queue (stream-cdr (Queue-front que))
-                      (sub1 (Queue-lenf que))
-                      (Queue-rear que)
-                      (Queue-lenr que))))
+  (let ([lenf (Queue-lenf que)])
+    (if (zero? lenf)
+        (error 'tail "given queue is empty")
+        (internal-queue (stream-cdr (Queue-front que))
+                        (sub1 lenf)
+                        (Queue-rear que)
+                        (Queue-lenr que)))))
 
 ;; similar to list map function. apply is expensive so using case-lambda
 ;; in order to saperate the more common case
@@ -156,3 +159,64 @@
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
   (foldl (inst enqueue A) empty lst))
+
+;; Similar to build-list function
+(: build-queue : (All (A) (Natural (Natural -> A) -> (Queue A))))
+(define (build-queue size func)
+  (let: loop : (Queue A) ([n : Natural size])
+        (if (zero? n)
+            empty
+            (let ([nsub1 (sub1 n)])
+              (enqueue (func nsub1) (loop nsub1))))))
+
+;; Returns pair of the first element of the queue and the rest 
+;; of the queue
+(: head+tail : (All (A) ((Queue A) -> (Pair A (Queue A)))))
+(define (head+tail que)
+  (let ([lenf (Queue-lenf que)])
+    (if (zero? lenf)
+        (error 'head+tail "given queue is empty")
+        (let ([front (Queue-front que)])
+          (cons (stream-car front) 
+                (internal-queue (stream-cdr front)
+                                (sub1 lenf)
+                                (Queue-rear que)
+                                (Queue-lenr que)))))))
+
+;; similar to list andmap function
+(: queue-andmap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (Queue A) -> Boolean)
+                     ((A B ... B -> Boolean) (Queue A) (Queue B) ... B -> Boolean))))
+(define queue-andmap
+  (pcase-lambda: (A B ... ) 
+                 [([func  : (A -> Boolean)]
+                   [queue : (Queue A)])
+                  (or (empty? queue)
+                      (and (func (head queue))
+                           (queue-andmap func (tail queue))))]
+                 [([func  : (A B ... B -> Boolean)]
+                   [queue : (Queue A)] . [queues : (Queue B) ... B])
+                  (or (empty? queue) (ormap empty? queues)
+                      (and (apply func (head queue) (map head queues))
+                           (apply queue-andmap func (tail queue) 
+                                  (map tail queues))))]))
+
+;; Similar to ormap
+(: queue-ormap : 
+   (All (A B ...) 
+        (case-lambda ((A -> Boolean) (Queue A) -> Boolean)
+                     ((A B ... B -> Boolean) (Queue A) (Queue B) ... B -> Boolean))))
+(define queue-ormap
+  (pcase-lambda: (A B ... ) 
+                 [([func  : (A -> Boolean)]
+                   [queue : (Queue A)])
+                  (and (not (empty? queue))
+                       (or (func (head queue))
+                           (queue-ormap func (tail queue))))]
+                 [([func  : (A B ... B -> Boolean)]
+                   [queue : (Queue A)] . [queues : (Queue B) ... B])
+                  (and (not (or (empty? queue) (ormap empty? queues)))
+                       (or (apply func (head queue) (map head queues))
+                           (apply queue-ormap func (tail queue) 
+                                  (map tail queues))))]))

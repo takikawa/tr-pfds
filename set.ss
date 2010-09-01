@@ -2,7 +2,7 @@
 
 (provide set (rename-out [set-map map]) difference union filter
          remove empty? member? insert set->list subset? intersection
-         subset?)
+         subset? Set)
 
 (require scheme/match)
 

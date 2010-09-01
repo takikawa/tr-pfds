@@ -1,12 +1,13 @@
 #lang scribble/manual
-@(defmodule "../stream.ss")
-@(require (for-label "../stream.ss"))
+@(require unstable/scribble)
+@defmodule/this-package[stream]
+@(require (for-label (planet krhari/pfds:1:0/stream)))
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
-@(evaluate '(require typed/scheme))
-@(evaluate '(require "../stream.ss"))
+@(evaluate '(require typed/racket))
+@(evaluate '(require "stream.ss"))
 
 @title[#:tag "streams"]{Streams}
 
@@ -18,7 +19,7 @@ have been used in some of the below mentioned data structures. Since
 each suspention comes with a little overhead, Streams should be used
 only when there is a good enough reason to do so.
 
-@;section{Stream Constructor and Operations}
+@defform[(Stream A)]{A stream of type @racket[A].}
 
 @defproc[(stream [a A] ...) (Stream A)]{
 Function stream creates a Stream with the given inputs. 

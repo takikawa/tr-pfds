@@ -198,4 +198,77 @@ Function @scheme[remove] is similar to @|racket-filter| but @scheme[remove] remo
                      (deque 1 2 3 4 5 6)))
 ]}
 
+@defproc[(andmap [func (A B ... B -> Boolean)]
+                 [deq1 (Deque A)]
+                 [deq2 (Deque B)] ...) Boolean]{
+Function @scheme[andmap] is similar to @|racket-andmap|.
+
+@examples[#:eval evaluate
+
+(andmap even? (deque 1 2 3 4 5 6))
+
+(andmap odd? (deque 1 2 3 4 5 6))
+
+(andmap positive? (deque 1 2 3 4 5 6))
+
+(andmap negative? (deque -1 -2))
+]}
+
+
+@defproc[(ormap [func (A B ... B -> Boolean)]
+                [deq1 (Deque A)]
+                [deq2 (Deque B)] ...) Boolean]{
+Function @scheme[ormap] is similar to @|racket-ormap|.
+
+@examples[#:eval evaluate
+
+(ormap even? (deque 1 2 3 4 5 6))
+
+(ormap odd? (deque 1 2 3 4 5 6))
+
+(ormap positive? (deque -1 -2 3 4 -5 6))
+
+(ormap negative? (deque 1 -2))
+]}
+
+@defproc[(build-deque [size Natural]
+                      [func (Natural -> A)])
+                      (Deque A)]{
+Function @scheme[build-deque] is similar to @|racket-build-list|.
+@examples[#:eval evaluate
+
+(deque->list (build-deque 5 (λ:([x : Integer]) (add1 x))))
+
+(deque->list (build-deque 5 (λ:([x : Integer]) (* x x))))
+
+]}
+
+@defproc[(head+tail [deq (Deque A)])
+                    (Pair A (Deque A))]{
+Function @scheme[head+tail] returns a pair containing the head and the tail of
+the given deque.
+@examples[#:eval evaluate
+
+(head+tail (deque 1 2 3 4 5))
+
+(head+tail (build-deque 5 (λ:([x : Integer]) (* x x))))
+
+(head+tail empty)
+
+]}
+
+@defproc[(last+init [deq (Deque A)])
+                    (Pair A (Deque A))]{
+Function @scheme[last+init] returns a pair containing the last element and
+the init of the given deque.
+@examples[#:eval evaluate
+
+(last+init (deque 1 2 3 4 5))
+
+(last+init (build-deque 5 (λ:([x : Integer]) (* x x))))
+
+(last+init empty)
+
+]}
+
 @(close-eval evaluate)
