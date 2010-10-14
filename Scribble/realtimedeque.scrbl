@@ -33,8 +33,8 @@ Function @scheme[deque] creates a Real-Time Deque with the given inputs.
 In the above example, the deque obtained will have 1 as its head element.}
 
 
-@defthing[empty (Deque Nothing)]{
-An empty deque}
+@defproc[(empty [t A]) (Deque A)]{
+An empty deque.}
 
 @defproc[(empty? [dq (Deque A)]) Boolean]{
 Function @scheme[empty?] checks if the given deque is empty or not.
@@ -43,7 +43,7 @@ Function @scheme[empty?] checks if the given deque is empty or not.
 
 (empty? (deque 1 2 3 4 5 6))
 
-(empty? empty)
+(empty? (empty Integer))
 ]}
 
 
@@ -78,7 +78,7 @@ deque if deque is not empty else throws an error.
 @examples[#:eval evaluate
 
 (head (deque 1 2 3 4 5 6))
-(head empty)
+(head (empty Integer))
 ]}
 
 @defproc[(last [deq (Deque A)]) A]{
@@ -87,7 +87,7 @@ queue if deque is not empty else throws an error.
 @examples[#:eval evaluate
 
 (last (deque 1 2 3 4 5 6))
-(last empty)
+(last (empty Integer))
 ]}
 
 
@@ -97,7 +97,7 @@ elements if its a non empty deque else throws an error.
 @examples[#:eval evaluate
 
 (tail (deque 1 2 3 4 5 6))
-(tail empty)
+(tail (empty Integer))
 ]
 
 In the above example, @scheme[(tail (deque 1 2 3 4 5 6))], removes the head
@@ -111,7 +111,7 @@ last element if its a non empty deque else throws an error.
 @examples[#:eval evaluate
 
 (init (deque 1 2 3 4 5 6))
-(init empty)
+(init (empty Integer))
 ]
 
 In the above example, @scheme[(init (deque 1 2 3 4 5 6))], removes the last 
@@ -253,7 +253,7 @@ the given deque.
 
 (head+tail (build-deque 5 (λ:([x : Integer]) (* x x))))
 
-(head+tail empty)
+(head+tail (empty Integer))
 
 ]}
 
@@ -267,7 +267,7 @@ the init of the given deque.
 
 (last+init (build-deque 5 (λ:([x : Integer]) (* x x))))
 
-(last+init empty)
+(last+init (empty Integer))
 
 ]}
 

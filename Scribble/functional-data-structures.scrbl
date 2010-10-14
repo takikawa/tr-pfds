@@ -22,6 +22,7 @@ And the data structures have been entirely implemented in Typed Racket.
 @include-section{redblacktrees.scrbl}
 @include-section{tries.scrbl}
 @include-section{set.scrbl}
+@include-section{treap.scrbl}
 
 
 @;@subsection[#:tag "Hash List"]{VHash List}

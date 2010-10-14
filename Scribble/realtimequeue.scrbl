@@ -30,7 +30,7 @@ given inputs.
 In the above example, the queue obtained will have 1 as its first element.}
 
 
-@defthing[(empty [t A]) (Queue A)]{
+@defproc[(empty [t A]) (Queue A)]{
 An empty queue.
 @examples[#:eval evaluate
 (empty Nothing)

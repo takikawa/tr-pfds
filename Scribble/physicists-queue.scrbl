@@ -34,7 +34,7 @@ Function @scheme[queue] creates a Physicist's Queue with the given inputs.
 In the above example, the queue obtained will have 1 as its head element}
 
 
-@defthing[empty (Queue Nothing)]{
+@defproc[(empty [t A]) (Queue A)]{
 An empty queue.}
 
 @defproc[(empty? [que (Queue A)]) Boolean]{
@@ -44,7 +44,7 @@ Function @scheme[empty?] checks if the given queue is empty or not.
 
 (empty? (queue 1 2 3 4 5 6))
 
-(empty? empty)
+(empty? (empty Integer))
 ]}
 
 
@@ -65,7 +65,7 @@ queue if its a non empty queue else throws an error.
 @examples[#:eval evaluate
 
 (head (queue 1 2 3 4 5 6))
-(head empty)
+(head (empty Integer))
 ]}
 
 @defproc[(tail [que (Queue A)]) (Queue A)]{
@@ -75,7 +75,7 @@ elements if its a non empty queue else throws an error.
 
 (tail (queue 1 2 3 4 5 6))
 
-(tail empty)
+(tail (empty Integer))
 ]
 
 In the above example, @scheme[(tail (queue 1 2 3 4 5 6))], returns 
@@ -91,7 +91,7 @@ If the given queue is empty, then it returns an empty list.
 
 (queue->list (queue 10 2 34 4 15 6))
 
-(queue->list empty)
+(queue->list (empty Integer))
 ]}
 
 
@@ -219,7 +219,7 @@ the given queue.
 
 (head+tail (build-queue 5 (λ:([x : Integer]) (* x x))))
 
-(head+tail empty)
+(head+tail (empty Integer))
 
 ]}
 

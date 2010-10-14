@@ -33,8 +33,8 @@ Function @scheme[deque] creates a Bankers Deque with the given inputs.
 In the above example, the deque obtained will have 1 as its head element.
 }
 
-@defthing[(empty [t A]) (Deque A)]{
-An empty deque instantiated to type t.
+@defproc[(empty [t A]) (Deque A)]{
+An empty deque of type t.
 @examples[#:eval evaluate
 (empty Nothing)
 (empty Integer)
