@@ -1,4 +1,5 @@
-#lang typed/scheme
+#lang typed/racket
+
 (require (rename-in "../vlist.ss" 
                     [map vmap] 
                     [reverse vreverse] 
@@ -6,16 +7,18 @@
                     [foldr vfoldr]
                     [foldl vfoldl]
                     [filter vfilter]
-                    [list-ref get]))
+                    [list-ref get])
+         (prefix-in rk: racket/base))
+
 (require typed/test-engine/scheme-tests)
 
-(define lst (build-list 100 (λ:([x : Integer]) x)))
+(define lst (rk:build-list 100 (λ:([x : Integer]) x)))
 
 (define vlst (apply list lst))
 
-(check-expect (vlist->list vlst) lst)
+(check-expect (->list vlst) lst)
 
-(check-expect (vlist->list (vmap add1 vlst)) 
+(check-expect (->list (vmap add1 vlst)) 
               (map add1 lst))
 
 (check-expect (vfoldl + 0 vlst) (foldl + 0 lst))
@@ -30,10 +33,10 @@
 
 (check-expect (vfoldr + 0 vlst vlst) (foldr + 0 lst lst))
 
-(check-expect (vlist->list (vfilter (λ:([x : Integer]) (> x 50)) vlst)) 
+(check-expect (->list (vfilter (λ:([x : Integer]) (> x 50)) vlst)) 
               (filter (λ:([x : Integer]) (> x 50)) lst))
 
-(check-expect (vlist->list (vreverse vlst)) (reverse lst))
+(check-expect (->list (vreverse vlst)) (reverse lst))
 
 (check-expect (get vlst (sub1 (size vlst))) (last vlst))
 
@@ -41,7 +44,7 @@
 
 (check-error (get vlst (+ 5 (size vlst))) "list-ref: given index out of bounds")
 
-(check-expect (vlist->list (rest vlst)) (cdr lst))
+(check-expect (->list (rest vlst)) (cdr lst))
 
 (check-error (first empty) "first: given vlist is empty")
 

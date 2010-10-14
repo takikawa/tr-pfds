@@ -17,8 +17,8 @@
 
 (define inv-c 2)
 
-;; Constants
-(define empty (Deque empty-stream 0 empty-stream 0))
+(define-syntax-rule (empty A)
+  ((inst Deque A) empty-stream 0 empty-stream 0))
 
 ;; Checks if the given deque is empty
 (: empty? : (All (A) ((Deque A) -> Boolean)))
@@ -61,19 +61,19 @@
 ;; Pushes an element into the Deque at the front end
 (: enqueue-front : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue-front elem deq)
-  (internal-deque (stream-cons elem (Deque-front deq))
-                  (add1 (Deque-lenf deq))
-                  (Deque-rear deq)
-                  (Deque-lenr deq)))
+  ((inst internal-deque A) (stream-cons elem (Deque-front deq))
+                           (add1 (Deque-lenf deq))
+                           (Deque-rear deq)
+                           (Deque-lenr deq)))
 
 
 ;; Pushes an element into the Deque at the rear end
 (: enqueue : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue elem deq)
-  (internal-deque (Deque-front deq)
-                  (Deque-lenf deq)
-                  (stream-cons elem (Deque-rear deq))
-                  (add1 (Deque-lenr deq))))
+  ((inst internal-deque A) (Deque-front deq)
+                           (Deque-lenf deq)
+                           (stream-cons elem (Deque-rear deq))
+                           (add1 (Deque-lenr deq))))
 
 ;; Retrieves the head element of the queue
 (: head : (All (A) ((Deque A) -> A)))
@@ -107,7 +107,7 @@
         (error 'tail "given deque is empty")
         (let ([front (Deque-front deq)])
           (if (empty-stream? front) 
-              empty
+              (empty A)
               (internal-deque (stream-cdr front) 
                               (sub1 lenf)
                               (Deque-rear deq)
@@ -122,7 +122,7 @@
         (error 'init "given deque is empty")
         (let ([rear (Deque-rear deq)])
           (if (empty-stream? rear)
-              empty
+              (empty A)
               (internal-deque (Deque-front deq) 
                               lenf
                               (stream-cdr rear)
@@ -139,10 +139,10 @@
   (pcase-lambda: (A C B ...)
                  [([func : (A -> C)]
                    [deq  : (Deque A)])
-                  (map-single empty func deq)]
+                  (map-single (empty C) func deq)]
                  [([func : (A B ... B -> C)]
                    [deq  : (Deque A)] . [deqs : (Deque B) ... B])
-                  (apply map-multiple empty func deq deqs)]))
+                  (apply map-multiple (empty C) func deq deqs)]))
 
 
 (: map-single : (All (A C) ((Deque C) (A -> C) (Deque A) -> (Deque C))))
@@ -222,7 +222,7 @@
 ;; A Deque constructor with the given element
 (: deque : (All (A) (A * -> (Deque A))))
 (define (deque . lst)
-  (foldl (inst enqueue A) empty lst))
+  (foldl (inst enqueue A) (empty A) lst))
 
 ;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Deque A) -> (Deque A))))
@@ -236,7 +236,7 @@
           (if (func head)
               (inner func tail (enqueue head accum))
               (inner func tail accum)))))
-  (inner func que empty))
+  (inner func que (empty A)))
 
 ;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Deque A) -> (Deque A))))
@@ -250,7 +250,7 @@
           (if (func head)
               (inner func tail accum)
               (inner func tail (enqueue head accum))))))
-  (inner func que empty))
+  (inner func que (empty A)))
 
 
 ;; Similar to build-list function
@@ -258,7 +258,7 @@
 (define (build-deque size func)
   (let: loop : (Deque A) ([n : Natural size])
         (if (zero? n)
-            empty
+            (empty A)
             (let ([nsub1 (sub1 n)])
               (enqueue (func nsub1) (loop nsub1))))))
 
@@ -271,7 +271,7 @@
         (error 'head+tail "given deque is empty")
         (let ([front (Deque-front deq)])
           (if (empty-stream? front) 
-              (cons (stream-car (Deque-rear deq)) empty)
+              (cons (stream-car (Deque-rear deq)) (empty A))
               (cons (stream-car front)
                     (internal-deque (stream-cdr front) 
                                     (sub1 lenf)
@@ -287,7 +287,7 @@
         (error 'last+init "given deque is empty")
         (let ([rear (Deque-rear deq)])
           (if (empty-stream? rear)
-              (cons (stream-car (Deque-front deq)) empty)
+              (cons (stream-car (Deque-front deq)) (empty A))
               (cons (stream-car rear)
                     (internal-deque (Deque-front deq) 
                                     lenf

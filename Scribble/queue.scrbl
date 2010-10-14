@@ -32,15 +32,19 @@ Function @scheme[queue] creates a Banker's Queue with the given inputs.
 In the above example, the queue obtained will have 1 as its head element.
 }
 
-@defthing[empty (Queue Nothing)]{
-An empty queue}
+@defthing[(empty [t A]) (Queue Nothing)]{
+An empty queue instantiated to type t.
+@examples[#:eval evaluate
+(empty Nothing)
+(empty Integer)
+]}
 
 @defproc[(empty? [que (Queue A)]) Boolean]{
 Function @scheme[empty?] checks if the given queue is empty or not.
    
 @examples[#:eval evaluate
 (empty? (queue 1 2 3 4 5 6))
-(empty? empty)
+(empty? (empty Integer))
 ]}
 
 
@@ -63,7 +67,7 @@ in the queue if its a non empty queue else throws an error.
 
 (head (queue 10 4 3 12))
 
-(head empty)
+(head (empty Integer))
 ]}
 
 
@@ -75,7 +79,7 @@ without the first element. If the queue is empty it throws an error.
 
 (tail (queue 4 5 6))
 
-(tail empty)
+(tail (empty Integer))
 ]
 
 In the above example, @scheme[(tail (queue 4 5 6))], returns
@@ -89,7 +93,7 @@ elements. The list will have head of the given queue as its first element.
 @examples[#:eval evaluate
 
 (queue->list (queue 10 2 34 4 15 6))
-(queue->list empty)
+(queue->list (empty Integer))
 ]}
 
 
@@ -203,7 +207,7 @@ the given queue.
 
 (head+tail (build-queue 5 (λ:([x : Integer]) (* x x))))
 
-(head+tail empty)
+(head+tail (empty Integer))
 
 ]}
 

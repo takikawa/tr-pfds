@@ -1,25 +1,25 @@
 #lang typed/racket #:optimize
-(require (prefix-in sh: scheme/base))
+(require (prefix-in rk: racket/base))
 (provide filter remove reverse
          list ->list empty? cons empty head tail
-         (rename-out [first* first] [rest* rest] [list-map map] 
+         (rename-out [first* first] [rest* rest] [list-map map]
                      [list-foldr foldr] [list-foldl foldl]
                      [list-ormap ormap] [list-andmap andmap]
-                     [list-second second] [list-third third] 
-                     [list-fourth fourth] [list-fifth fifth] 
-                     [list-sixth sixth] [list-seventh seventh] 
-                     [list-eighth eighth] [list-ninth ninth] 
+                     [list-second second] [list-third third]
+                     [list-fourth fourth] [list-fifth fifth]
+                     [list-sixth sixth] [list-seventh seventh]
+                     [list-eighth eighth] [list-ninth ninth]
                      [list-tenth tenth] [list-last last]
                      [list-length length]) build-list make-list
          list-ref list-set drop List)
 
-(struct: (A) Leaf ([fst : A]))
-(struct: (A) Node ([fst : A]
-                   [lft : (Tree A)] 
-                   [rgt : (Tree A)]))
+(struct: (A) Leaf ([elem  : A]) #:transparent)
+(struct: (A) Node ([elem  : A]
+                   [left  : (Tree A)]
+                   [right : (Tree A)]) #:transparent)
+
 (define-type (Tree A) (U (Leaf A) (Node A)))
-(struct: (A) Root ([weight : Integer]
-                   [fst  : (Tree A)]))
+(define-type (Root A) (Pair Integer (Tree A)))
 
 (define-type (List A) (Listof (Root A)))
 
@@ -28,117 +28,109 @@
 
 ;; Checks for empty
 (: empty? : (All (A) ((List A) -> Boolean)))
-(define (empty? sralist)
-  (null? sralist))
-
-;; Helper to get the weight of the root
-(: getWeight : (All (A) ((Root A) -> Integer)))
-(define (getWeight root)
-  (Root-weight root))
+(define (empty? ralist)
+  (null? ralist))
 
 ;; Similar to list cons function
 (: cons  : (All (A) (A (List A) -> (List A))))
-(define (cons  elem sralist)
-  (if (or (null? sralist) (null? (cdr sralist)))
-      (sh:cons (Root 1 (Leaf elem)) sralist)
-      (let ([wgt1 (getWeight (car sralist))]
-            [wgt2 (getWeight (car (cdr sralist)))])
-        (if (eq? wgt1 wgt2)
-            (sh:cons (Root (+ 1 wgt1 wgt2) 
-                           (Node elem 
-                                 (Root-fst (car sralist)) 
-                                 (Root-fst (car (cdr sralist)))))
-                     (cdr (cdr sralist)))
-            (sh:cons (Root 1 (Leaf elem)) sralist)))))
+(define (cons elem ralist)
+  (if (or (null? ralist) (null? (cdr ralist)))
+      (rk:cons (rk:cons 1 (Leaf elem)) ralist)
+      (let* ([first   (car ralist)]
+             [rest    (cdr ralist)]
+             [weight1 (car first)]
+             [weight2 (car (car rest))])
+        (if (eq? weight1 weight2)
+            (rk:cons (rk:cons (+ 1 weight1 weight2)
+                              (Node elem (cdr first) (cdr (car rest))))
+                     (cdr rest))
+            (rk:cons (rk:cons 1 (Leaf elem)) ralist)))))
 
 ;; Similar to list car function
 (: head : (All (A) ((List A) -> A)))
-(define (head sralist)
-  (if (null? sralist) 
+(define (head ralist)
+  (if (null? ralist)
       (error 'head "given list is empty")
-      (let ([fst (Root-fst (car sralist))])
-        (if (Leaf? fst) 
-            (Leaf-fst fst)
-            (Node-fst fst)))))
+      (let ([first (cdr (car ralist))])
+        (if (Leaf? first)
+            (Leaf-elem first)
+            (Node-elem first)))))
 
 ;; Similar to list cdr function
 (: tail : (All (A) ((List A) -> (List A))))
-(define (tail sralist)
-  (if (null? sralist)
+(define (tail ralist)
+  (if (null? ralist)
       (error 'tail "given list is empty")
-      (let* ([fst (Root-fst (car sralist))]
-             [wgt (arithmetic-shift (getWeight (car sralist)) -1)])
-        (if (Leaf? fst) 
-            (cdr sralist) 
-            (list* (Root wgt (Node-lft fst))
-                   (Root wgt (Node-rgt fst))
-                   (cdr sralist))))))
+      (let* ([first (cdr (car ralist))]
+             [weight (arithmetic-shift (car (car ralist)) -1)]
+             [rest-ra (cdr ralist)])
+        (if (Leaf? first)
+            rest-ra
+            (rk:cons (rk:cons weight (Node-left first))
+                     (rk:cons (rk:cons weight (Node-right first)) rest-ra))))))
 
 ;; Helper for list-ref
 (: tree-lookup : (All (A) (Integer (Tree A) Integer -> A)))
-(define (tree-lookup wgt tre pos)
-  (let ([new-wgt (arithmetic-shift wgt -1)]
-        [pos0? (zero? pos)])
+(define (tree-lookup weight tree pos)
+  (let ([pos0? (zero? pos)])
+    (: tl-help : (All (A) (Integer (Node A) -> A)))
+    (define (tl-help new-weight tree)
+      (cond
+        [pos0? (Node-elem tree)]
+        [(<= pos new-weight)
+         (tree-lookup new-weight (Node-left tree) (sub1 pos))]
+        [else (tree-lookup new-weight (Node-right tree) (- pos 1 new-weight))]))
     (cond
-      [(and (Leaf? tre) pos0?) (Leaf-fst tre)]
-      [(Node? tre) (tl-help new-wgt tre pos pos0?)]
+      [(and (Leaf? tree) pos0?) (Leaf-elem tree)]
+      [(Node? tree) (tl-help (arithmetic-shift weight -1) tree)]
       [else (error 'list-ref "given index out of bounds")])))
 
 
-(: tl-help : (All (A) (Integer (Node A) Integer Boolean -> A)))
-(define (tl-help new-wgt tre pos pos0?)
-  (cond
-    [pos0? (Node-fst tre)]
-    [(<= pos new-wgt)
-     (tree-lookup new-wgt (Node-lft tre) (sub1 pos))]
-    [else (tree-lookup new-wgt (Node-rgt tre) (- pos 1 new-wgt))]))
-
 ;; Helper for list-set
 (: tree-update : (All (A) (Integer (Tree A) Integer A -> (Tree A))))
-(define (tree-update wgt tre pos elem)
-  (let ([new-wgt (arithmetic-shift wgt -1)]
-        [pos0? (zero? pos)])
+(define (tree-update weight tree pos elem)
+  (let ([pos0? (zero? pos)])
+    (: tu-help : (All (A) Integer (Node A) -> (Tree A)))
+    (define (tu-help new-weight tree)
+      (let ([left  (Node-left tree)]
+            [right (Node-right tree)]
+            [first (Node-elem tree)])
+        (cond
+          [pos0? (Node elem left right)]
+          [(<= pos new-weight)
+           (Node first (tree-update new-weight left (sub1 pos) elem) right)]
+          [else (Node first left (tree-update new-weight right
+                                              (- pos 1 new-weight) elem))])))
     (cond
-      [(and (Leaf? tre) pos0?) (Leaf elem)]
-      [(Node? tre) (tu-help new-wgt tre pos pos0? elem)]
+      [(and (Leaf? tree) pos0?) (Leaf elem)]
+      [(Node? tree) (tu-help (arithmetic-shift weight -1) tree)]
       [else (error 'list-set "given index out of bounds")])))
 
 
-(: tu-help : (All (A) (Integer (Node A) Integer Boolean A -> (Tree A))))
-(define (tu-help new-wgt tre pos pos0? elem)
-  (let ([lft (Node-lft tre)]
-        [rgt (Node-rgt tre)]
-        [fst (Node-fst tre)])
-    (cond
-      [pos0? (Node elem lft rgt)]
-      [(<= pos new-wgt) (Node fst 
-                              (tree-update new-wgt lft (sub1 pos) elem)
-                              rgt)]
-      [else (Node fst lft (tree-update new-wgt rgt 
-                                       (- pos 1 new-wgt) elem))])))
+
 
 ;; Similar to list list-ref function
 (: list-ref : (All (A) ((List A) Integer -> A)))
-(define (list-ref sralist pos)
+(define (list-ref ralist pos)
   (cond
-    [(null? sralist) (error 'list-ref "given index out of bounds")]
-    [(< pos (getWeight (car sralist)))
-     (tree-lookup (getWeight (car sralist)) (Root-fst (car sralist)) pos)]
-    [else (list-ref (cdr sralist) (- pos (getWeight (car sralist))))]))
+    [(null? ralist) (error 'list-ref "given index out of bounds")]
+    [(< pos (car (car ralist)))
+     (tree-lookup (car (car ralist)) (cdr (car ralist)) pos)]
+    [else (list-ref (cdr ralist) (- pos (car (car ralist))))]))
 
 ;; Similar to list list-set function
 (: list-set : (All (A) ((List A) Integer A -> (List A))))
-(define (list-set sralist pos elem)
+(define (list-set ralist pos elem)
   (cond
-    [(null? sralist) (error 'list-set "given index out of bounds")]
-    [(< pos (getWeight (car sralist)))
-     (sh:cons (Root (getWeight (car sralist)) 
-                    (tree-update (getWeight (car sralist))
-                                 (Root-fst (car sralist)) pos elem)) 
-              (cdr sralist))]
-    [else (sh:cons (car sralist)
-                   (list-set (cdr sralist)
-                             (- pos (getWeight (car sralist)))
+    [(null? ralist) (error 'list-set "given index out of bounds")]
+    [(< pos (car (car ralist)))
+     (rk:cons (rk:cons (car (car ralist)) 
+                    (tree-update (car (car ralist))
+                                 (cdr (car ralist)) pos elem)) 
+              (cdr ralist))]
+    [else (rk:cons (car ralist)
+                   (list-set (cdr ralist)
+                             (- pos (car (car ralist)))
                              elem))]))
 
 ;; Helper for drop
@@ -146,15 +138,15 @@
 (define (tree-drop size tre pos ralist)
   (let ([newsize (arithmetic-shift size -1)])
     (cond 
-      [(zero? pos) (sh:cons (Root size tre) ralist)]
+      [(zero? pos) (rk:cons (rk:cons size tre) ralist)]
       [(and (Leaf? tre) (= pos 1)) ralist]
       [(and (Node? tre) (<= pos newsize)) 
        (tree-drop newsize 
-                  (Node-lft tre) (- pos 1) 
-                  (sh:cons (Root newsize (Node-rgt tre)) ralist))]
+                  (Node-left tre) (- pos 1) 
+                  (rk:cons (rk:cons newsize (Node-right tre)) ralist))]
       [(and (Node? tre) (> pos newsize)) 
        (tree-drop newsize 
-                  (Node-rgt tre) (- pos 1 newsize) 
+                  (Node-right tre) (- pos 1 newsize) 
                   ralist)]
       [else (error 'drop "not enough elements to drop")])))
 
@@ -168,8 +160,8 @@
 
 (: drop-helper : (All (A) ((Root A) (List A) Integer -> (List A))))
 (define (drop-helper root rest pos)
-  (let ([size (Root-weight root)]
-        [tree (Root-fst root)])
+  (let ([size (car root)]
+        [tree (cdr root)])
     (if (< pos size)
         (tree-drop size tree pos rest)
         (drop (- pos size) rest))))
@@ -177,30 +169,39 @@
 ;; Similar to list length function
 (: list-length : (All (A) ((List A) -> Integer)))
 (define (list-length ralist)
-  (foldl + 0 (map (inst getWeight A) ralist)))
+  (foldl + 0 (map (inst car Integer (Tree A)) ralist)))
 
 
 ;; similar to list map function. apply is expensive so using case-lambda
 ;; in order to saperate the more common case
 (: list-map : 
-   (All (A C B ...) 
+   (All (A B) 
         (case-lambda 
-          ((A -> C) (List A) -> (List C))
-          ((A B ... B -> C) (List A) (List B) ... B -> (List C)))))
+          ((A -> B) (List A) -> (List B))
+          ((A A -> B) (List A) (List A) -> (List B))
+          ((A A A -> B) (List A) (List A) (List A) -> (List B)))))
 (define list-map
-  (pcase-lambda: (A C B ...)
-                 [([func : (A -> C)]
-                   [list  : (List A)])
+  (pcase-lambda: (A B)
+                 [([func : (A -> B)]
+                   [list : (List A)])
                   (if (empty? list)
                       empty
                       (cons (func (head list)) (list-map func (tail list))))]
-                 [([func : (A B ... B -> C)]
-                   [list  : (List A)] . [lists : (List B) ... B])
-                  (if (or (empty? list) (ormap empty? lists))
+                 [([func : (A A -> B)]
+                   [list1 : (List A)]
+                   [list2 : (List A)])
+                  (if (or (empty? list1) (empty? list2))
                       empty
-                      (cons (apply func (head list) (map head lists))
-                            (apply list-map func (tail list)
-                                   (map tail lists))))]))
+                      (cons (func (head list1) (head list2))
+                            (list-map func (tail list1) (tail list2))))]
+                 [([func : (A A A -> B)]
+                   [list1 : (List A)]
+                   [list2 : (List A)]
+                   [list3 : (List A)])
+                  (if (or (empty? list1) (empty? list2) (empty? list3))
+                      empty
+                      (cons (func (head list1) (head list2) (head list3))
+                            (list-map func (tail list1) (tail list2) (tail list3))))]))
 
 
 ;; Similar to list foldr function. apply is expensive so using case-lambda
@@ -254,7 +255,7 @@
 (define (->list ralist)
   (if (empty? ralist)
       null
-      (sh:cons (head ralist) (->list (tail ralist)))))
+      (rk:cons (head ralist) (->list (tail ralist)))))
 
 ;; list constructor
 (: list : (All (A) (A * -> (List A))))

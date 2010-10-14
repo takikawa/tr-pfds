@@ -63,10 +63,28 @@
 
 (define int-list (build-list 100 (λ: ([x : Integer]) x)))
 
-(check-expect (sorted-list (apply heap less-than? int-list)) 
+(check-expect (sorted-list (apply heap < int-list)) 
               int-list)
 
-(check-expect (sorted-list (apply heap gt int-list))
+(check-expect (sorted-list (apply heap > int-list))
               (reverse int-list))
+
+(check-expect (fold + 0 (heap < 1 1 1 10 1 15)) 29)
+(check-expect (sorted-list (map < add1 (heap < 10 4 5 14 29 15)))
+              (list 5 6 11 15 16 30))
+(check-expect (fold + 0 (heap > 1)) 1)
+(check-expect (sorted-list (filter even? (heap < 10 4 5 14 29 15)))
+              (list 4 10 14))
+(check-expect (sorted-list (remove odd? (heap < 10 4 5 14 29 15)))
+              (list 4 10 14))
+(check-expect (sorted-list (remove even? (heap < 10 4 5 14 29 15)))
+              (list 5 15 29))
+(check-expect (sorted-list (filter odd? (heap < 10 4 5 14 29 15)))
+              (list 5 15 29))
+
+(check-expect (ormap odd? (heap < 10 4 5 14 29 15)) #t)
+(check-expect (ormap even? (heap < 5 29 15)) #f)
+(check-expect (andmap odd? (heap < 5 29 15)) #t)
+(check-expect (andmap odd? (heap < 5 29 14)) #f)
 
 (test)

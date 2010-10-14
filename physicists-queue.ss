@@ -6,48 +6,62 @@
                      [queue-andmap andmap] 
                      [queue-ormap ormap]) fold)
 
+
+(define-type (Promiseof A) (Boxof (U (→ (Listof A)) (Listof A))))
+
 ;; Physicists Queue
 ;; Maintains invariant lenr <= lenf
 ;; pref is empty only if lenf = 0
 (struct: (A) Queue ([preF  : (Listof A)]
-                    [front : (Promise (Listof A))]
+                    [front : (Promiseof A)]
                     [lenf  : Integer]
                     [rear  : (Listof A)]
                     [lenr  : Integer]))
 
-;; Empty Queue
-(define empty (Queue '() (delay '()) 0 '() 0))
+;; Empty Queue Because of some limitations in TR in typechecking the
+;; boxed values, I had to make empty a macro so that users can
+;; instantiate empty easily.
+(define-syntax-rule (empty A)
+  ((inst Queue A) '() (box (lambda: () '())) 0 '() 0))
 
 ;; Checks if the given Queue is empty
 (: empty? : (All (A) ((Queue A) -> Boolean)))
 (define (empty? que)
   (zero? (Queue-lenf que)))
 
+(define-syntax-rule (force promise)
+  (let ([p (unbox promise)])
+    (if (procedure? p)
+        (let ([result (p)])
+          (set-box! (ann promise (Promiseof A)) result)
+          result)
+        p)))
 
 ;; Maintains "preF" invariant (preF in not not null when front is not null)
-(: check-preF-inv : 
-   (All (A) ((Listof A) (Promise (Listof A)) Integer (Listof A) Integer ->
-                        (Queue A))))
-(define (check-preF-inv pref front lenf rear lenr)
+;(: check-pref-inv : 
+;   (All (A) ((Listof A) (Promiseof A) Integer (Listof A) Integer ->
+;                        (Queue A))))
+(define-syntax-rule (check-pref-inv pref front lenf rear lenr)
   (if (null? pref)
-      (Queue (force front) front lenf rear lenr)
-      (Queue pref front lenf rear lenr)))
+      ((inst Queue A) (force front) front lenf rear lenr)
+      ((inst Queue A) pref front lenf rear lenr)))
 
 
 ;; Maintains lenr <= lenf invariant
-(: check-len-inv : 
-   (All (A) ((Listof A) (Promise (Listof A)) Integer (Listof A) Integer -> (Queue A))))
-(define (check-len-inv pref front lenf rear lenr)
+;(: check-len-inv : 
+;   (All (A) ((Listof A) (Promiseof A) Integer (Listof A) Integer -> (Queue A))))
+(define-syntax-rule (check-len-inv pref front lenf rear lenr)
   (if (>= lenf lenr)
-      (check-preF-inv pref front lenf rear lenr)
-      (let* ([newpref (force front)]
-             [newf (delay (append newpref (reverse rear)))])
-        (check-preF-inv newpref newf (+ lenf lenr) null 0))))
+      (check-pref-inv pref front lenf rear lenr)
+      (let*: ([newpref : (Listof A) (force front)]
+              [newf    : (Promiseof A)
+                       (box (lambda () (append newpref (reverse rear))))])
+             (check-pref-inv newpref newf (+ lenf lenr) null 0))))
 
 ;; Maintains queue invariants
-(: internal-queue : 
-   (All (A) ((Listof A) (Promise (Listof A)) Integer (Listof A) Integer -> (Queue A))))
-(define (internal-queue pref front lenf rear lenr)
+;(: internal-queue : 
+;   (All (A) ((Listof A) (Promiseof A) Integer (Listof A) Integer -> (Queue A))))
+(define-syntax-rule (internal-queue pref front lenf rear lenr)
   (check-len-inv pref front lenf rear lenr))
 
 ;; Enqueues an item into the list
@@ -75,7 +89,7 @@
     (if (zero? lenf)
         (error 'tail "given queue is empty")
         (internal-queue (cdr (Queue-preF que))
-                        (delay (cdr (force (Queue-front que))))
+                        (box (lambda () (cdr (force (Queue-front que)))))
                         (sub1 lenf)
                         (Queue-rear que)
                         (Queue-lenr que)))))
@@ -92,10 +106,13 @@
   (pcase-lambda: (A C B ...)
                  [([func : (A -> C)]
                    [deq  : (Queue A)])
-                  (map-single empty func deq)]
+                  (map-single 
+                   ((inst Queue C) '() (box (lambda () '())) 0 '() 0) func deq)]
                  [([func : (A B ... B -> C)]
                    [deq  : (Queue A)] . [deqs : (Queue B) ... B])
-                  (apply map-multiple empty func deq deqs)]))
+                  (apply map-multiple 
+                         ((inst Queue C) '() (box (lambda () '())) 0 '() 0) 
+                         func deq deqs)]))
 
 
 (: map-single : (All (A C) ((Queue C) (A -> C) (Queue A) -> (Queue C))))
@@ -149,12 +166,14 @@
 
 (: list->queue : (All (A) ((Listof A) -> (Queue A))))
 (define (list->queue items)
-  (foldl (inst enqueue A) empty items))
+  (foldl (inst enqueue A) 
+         ((inst Queue A) '() (box (lambda: () '())) 0 '() 0) items))
 
 ;; Queue constructor function
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . items)
-  (foldl (inst enqueue A) empty items))
+  (foldl (inst enqueue A) 
+         ((inst Queue A) '() (box (lambda: () '())) 0 '() 0) items))
 
 ;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
@@ -168,7 +187,8 @@
           (if (func head)
               (inner func tail (enqueue head accum))
               (inner func tail accum)))))
-  (inner func que empty))
+  (inner func que 
+         ((inst Queue A) '() (box (lambda: () '())) 0 '() 0)))
 
 ;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
@@ -182,7 +202,8 @@
           (if (func head)
               (inner func tail accum)
               (inner func tail (enqueue head accum))))))
-  (inner func que empty))
+  (inner func que 
+         ((inst Queue A) '() (box (lambda: () '())) 0 '() 0)))
 
 (: head+tail : (All (A) ((Queue A) -> (Pair A (Queue A)))))
 (define (head+tail que)
@@ -191,11 +212,12 @@
         (error 'head+tail "given queue is empty")
         (let ([pref (Queue-preF que)])
           (cons (car pref)
-                (internal-queue (cdr pref) 
-                                (delay (cdr (force (Queue-front que))))
-                                (sub1 lenf) 
-                                (Queue-rear que) 
-                                (Queue-lenr que)))))))
+                (internal-queue
+                 (cdr pref) 
+                 (box (lambda () (cdr (force (Queue-front que)))))
+                 (sub1 lenf) 
+                 (Queue-rear que) 
+                 (Queue-lenr que)))))))
 
 
 ;; Similar to build-list function
@@ -203,7 +225,7 @@
 (define (build-queue size func)
   (let: loop : (Queue A) ([n : Natural size])
         (if (zero? n)
-            empty
+            ((inst Queue A) '() (box (lambda: () '())) 0 '() 0)
             (let ([nsub1 (sub1 n)])
               (enqueue (func nsub1) (loop nsub1))))))
 

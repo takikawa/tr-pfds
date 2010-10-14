@@ -15,7 +15,7 @@
 (define-type (Heaps A) (U Null (IntHeap A)))
 
 (struct: (A) BSHeap ([comparer : (A A -> Boolean)]
-                     [heap : (Heaps A)]))
+                     [heap     : (Heaps A)]))
 
 (define-type (Heap A) (BSHeap A))
 
@@ -25,8 +25,7 @@
 ;; Checks for empty
 (: empty? : (All (A) ((BSHeap A) -> Boolean)))
 (define (empty? bsheap)
-  (let ([hp (BSHeap-heap bsheap)])
-    (if (null? hp) #t (ph:empty? (IntHeap-heap hp)))))
+  (null? (BSHeap-heap bsheap)))
 
 ;; Merges two given heaps
 (: merge : (All (A) ((BSHeap A) (BSHeap A) -> (BSHeap A))))
@@ -198,10 +197,11 @@
   (pcase-lambda: (A C B ...) 
                  [([func : (C A -> C)]
                    [base : C]
-                   [heap  : (Heap A)])
+                   [heap : (Heap A)])
                   (if (empty? heap)
                       base
-                      (fold func (func base (find-min/max heap))
+                      (fold func 
+                            (func base (find-min/max heap))
                             (delete-min/max heap)))]
                  [([func : (C A B ... B -> C)]
                    [base : C]

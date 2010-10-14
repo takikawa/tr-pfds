@@ -19,8 +19,9 @@
 ;; Invariant
 (define inv-c 2)
 
-(define empty (Deque empty-stream 0 empty-stream
-                     empty-stream 0 empty-stream))
+(define-syntax-rule (empty A) 
+  ((inst Deque A) empty-stream 0 empty-stream
+                  empty-stream 0 empty-stream))
 
 ;; Check for empty dequeue
 (: empty? : (All (A) ((Deque A) -> Boolean)))
@@ -53,7 +54,8 @@
 (define (rev-append strm accum)
   (if (empty-stream? strm)
       accum
-      (rev-append (stream-cdr strm) (stream-cons (stream-car strm) accum))))
+      (rev-append (stream-cdr strm) 
+                  (ann (stream-cons (stream-car strm) accum) (Stream A)))))
 
 (: rotate-drop : (All (A) ((Stream A) Integer (Stream A) -> (Stream A))))
 (define (rotate-drop frnt num rer)
@@ -69,9 +71,9 @@
 ;; 1. lenf <= inv-c * lenr
 ;; 2. lenr <= inv-c * lenf
 
-(: internal-Deque : 
+(: internal-deque : 
    (All (A) ((S A) Integer (S A) (S A) Integer (S A) -> (Deque A))))
-(define (internal-Deque fr lenf sf r lenr sr)
+(define (internal-deque fr lenf sf r lenr sr)
   (cond 
     [(> lenf (add1 (* lenr inv-c))) (maintainR fr lenf sf r lenr sr)]
     [(> lenr (add1 (* lenf inv-c))) (maintainF fr lenf sf r lenr sr)]
@@ -105,23 +107,23 @@
 ;; Pushes an element into the Deque at the front end
 (: enqueue : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue elem rtdq)
-  (internal-Deque (stream-cons elem (Deque-front rtdq))
-                  (add1 (Deque-lenf rtdq))
-                  (exec-one (Deque-scdulF rtdq))
-                  (Deque-rear rtdq)
-                  (Deque-lenr rtdq)
-                  (exec-one (Deque-scdulR rtdq))))
+  ((inst internal-deque A) (stream-cons elem (Deque-front rtdq))
+                           (add1 (Deque-lenf rtdq))
+                           (exec-one (Deque-scdulF rtdq))
+                           (Deque-rear rtdq)
+                           (Deque-lenr rtdq)
+                           (exec-one (Deque-scdulR rtdq))))
 
 
 ;; Pushes an element into the Deque at the rear end
 (: enqueue-front : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue-front elem rtdq)
-  (internal-Deque (Deque-front rtdq)
-                  (Deque-lenf rtdq)
-                  (exec-one (Deque-scdulF rtdq))
-                  (stream-cons elem (Deque-rear rtdq))
-                  (add1 (Deque-lenr rtdq))
-                  (exec-one (Deque-scdulR rtdq))))
+  ((inst internal-deque A) (Deque-front rtdq)
+                           (Deque-lenf rtdq)
+                           (exec-one (Deque-scdulF rtdq))
+                           (stream-cons elem (Deque-rear rtdq))
+                           (add1 (Deque-lenr rtdq))
+                           (exec-one (Deque-scdulR rtdq))))
 
 ;; Retrieves the last element of the queue
 (: last : (All (A) ((Deque A) -> A)))
@@ -153,14 +155,14 @@
         (error 'init "given deque is empty")
         (let ([front (Deque-front rtdq)])
           (if (empty-stream? front) 
-              empty
-              (internal-Deque (stream-cdr front) 
-                              (sub1 lenf)
-                              (exec-two (Deque-scdulF rtdq))
-                              (Deque-rear rtdq)
-                              lenr
-                              (exec-two (Deque-scdulR rtdq))))))))
-  
+              (empty A)
+              ((inst internal-deque A) (stream-cdr front) 
+                                       (sub1 lenf)
+                                       (exec-two (Deque-scdulF rtdq))
+                                       (Deque-rear rtdq)
+                                       lenr
+                                       (exec-two (Deque-scdulR rtdq))))))))
+
 ;; Removes the last and returns the Deque without the last
 (: tail : (All (A) ((Deque A) -> (Deque A))))
 (define (tail rtdq)
@@ -170,13 +172,13 @@
         (error 'tail "given deque is empty")
         (let ([rear (Deque-rear rtdq)])
           (if (empty-stream? rear)
-              empty
-              (internal-Deque (Deque-front rtdq)
-                              lenf
-                              (exec-two (Deque-scdulF rtdq))
-                              (stream-cdr rear)
-                              (sub1 lenr)
-                              (exec-two (Deque-scdulR rtdq))))))))
+              (empty A)
+              ((inst internal-deque A) (Deque-front rtdq)
+                                       lenf
+                                       (exec-two (Deque-scdulF rtdq))
+                                       (stream-cdr rear)
+                                       (sub1 lenr)
+                                       (exec-two (Deque-scdulR rtdq))))))))
 
 ;; similar to list map function. apply is expensive so using case-lambda
 ;; in order to saperate the more common case
@@ -189,10 +191,10 @@
   (pcase-lambda: (A C B ...)
                  [([func : (A -> C)]
                    [deq  : (Deque A)])
-                  (map-single empty func deq)]
+                  (map-single (empty C) func deq)]
                  [([func : (A B ... B -> C)]
                    [deq  : (Deque A)] . [deqs : (Deque B) ... B])
-                  (apply map-multiple empty func deq deqs)]))
+                  (apply map-multiple (empty C) func deq deqs)]))
 
 
 (: map-single : (All (A C) ((Deque C) (A -> C) (Deque A) -> (Deque C))))
@@ -272,12 +274,12 @@
 
 (: list->deque : (All (A) ((Listof A) -> (Deque A))))
 (define (list->deque lst)
-  (foldl (inst enqueue A) empty lst))
+  (foldl (inst enqueue A) (empty A) lst))
 
 ;; A Deque constructor
 (: deque : (All (A) (A * -> (Deque A))))
 (define (deque . lst)
-  (foldl (inst enqueue A) empty lst))
+  (foldl (inst enqueue A) (empty A) lst))
 
 ;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Deque A) -> (Deque A))))
@@ -291,7 +293,7 @@
           (if (func head)
               (inner func tail (enqueue head accum))
               (inner func tail accum)))))
-  (inner func que empty))
+  (inner func que (empty A)))
 
 ;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Deque A) -> (Deque A))))
@@ -305,14 +307,14 @@
           (if (func head)
               (inner func tail accum)
               (inner func tail (enqueue head accum))))))
-  (inner func que empty))
+  (inner func que (empty A)))
 
 ;; Similar to build-list
 (: build-deque : (All (A) (Natural (Natural -> A) -> (Deque A))))
 (define (build-deque size func)
   (let: loop : (Deque A) ([n : Natural size])
         (if (zero? n)
-            empty
+            (empty A)
             (let ([nsub1 (sub1 n)])
               (enqueue (func nsub1) (loop nsub1))))))
 
@@ -325,9 +327,9 @@
         (error 'head+tail "given deque is empty")
         (let ([rear (Deque-rear rtdq)])
           (if (empty-stream? rear)
-              (cons (stream-car (Deque-front rtdq)) empty)
+              (cons (stream-car (Deque-front rtdq)) (empty A))
               (cons (stream-car rear)
-                    (internal-Deque (Deque-front rtdq)
+                    (internal-deque (Deque-front rtdq)
                                     lenf
                                     (exec-two (Deque-scdulF rtdq))
                                     (stream-cdr rear)
@@ -343,9 +345,9 @@
         (error 'last+init "given deque is empty")
         (let ([front (Deque-front rtdq)])
           (if (empty-stream? front)
-              (cons (stream-car (Deque-rear rtdq)) empty)
+              (cons (stream-car (Deque-rear rtdq)) (empty A))
               (cons (stream-car front)
-                    (internal-Deque (stream-cdr front) 
+                    (internal-deque (stream-cdr front) 
                                     (sub1 lenf)
                                     (exec-two (Deque-scdulF rtdq))
                                     (Deque-rear rtdq)

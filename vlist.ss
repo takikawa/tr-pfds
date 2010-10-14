@@ -13,18 +13,19 @@
                      [list-tenth tenth]
                      [list-length length]) build-list make-list)
 
-(require (prefix-in ra: "skewbinaryrandomaccesslist.ss"))
-(define-struct: (A) Base ([prevbase : (Block A)]
-                          [elems : (ra:List A)]))
+(require (prefix-in ra: typed/racket/base))
 
-(define-type-alias Block (All (A) (U Null (Base A))))
+(struct: (A) Base ([prevbase : (Block A)]
+                   [elems    : (Listof A)]))
 
-(define-struct: (A) List ([offset : Integer]
-                          [base : (Base A)]
-                          [size : Integer]))
+(define-type (Block A) (U Null (Base A)))
+
+(struct: (A) List ([offset : Integer]
+                   [base   : (Base A)]
+                   [size   : Integer]))
 
 ;; An empty list
-(define empty (make-List 0 (make-Base null ra:empty) 0))
+(define empty (List 0 (Base null null) 0))
 
 ;; Checks for empty
 (: empty? : (All (A) ((List A) -> Boolean)))
@@ -37,36 +38,34 @@
   (let ([offset (List-offset vlst)]
         [size (List-size vlst)]
         [base (List-base vlst)])
-    (cond 
-      [(zero? size) (make-List 1 (make-Base null 
-                                            (ra:cons elem ra:empty)) 1)]
-      [(= offset size)
-       (make-List 1 (make-Base base (ra:cons elem ra:empty)) (* size 2))]
-      [else (make-List (add1 offset) 
-                       (make-Base (Base-prevbase base) 
-                                  (ra:cons elem (Base-elems base))) 
-                       size)])))
+    (cond
+      [(zero? size) (List 1 (Base null (ra:cons elem null)) 1)]
+      [(= offset size) (List 1 (Base base (ra:cons elem null)) (* size 2))]
+      [else (List (add1 offset)
+                  (Base (Base-prevbase base)
+                        (ra:cons elem (Base-elems base)))
+                  size)])))
 
 ;; Similar to list car function
 (: first : (All (A) ((List A) -> A)))
 (define (first vlst)
   (if (zero? (List-size vlst))
-    (error 'first "given vlist is empty")
-    (ra:first (Base-elems (List-base vlst)))))
+      (error 'first "given vlist is empty")
+      (car (Base-elems (List-base vlst)))))
 
 ;; Similar to list last function
 (: last : (All (A) ((List A) -> A)))
 (define (last vlst)
   (if (zero? (List-size vlst))
-    (error 'last "given vlist is empty")
-    (last-helper (List-base vlst))))
+      (error 'last "given vlist is empty")
+      (last-helper (List-base vlst))))
 
 (: last-helper : (All (A) ((Base A) -> A)))
 (define (last-helper base)
   (let ([prevbase (Base-prevbase base)])
     (if (null? prevbase)
-      (ra:first (Base-elems base))
-      (last-helper prevbase))))
+        (car (Base-elems base))
+        (last-helper prevbase))))
 
 ;; Similar to list cdr function
 (: rest : (All (A) ((List A) -> (List A))))
@@ -77,11 +76,11 @@
          [prev (Base-prevbase base)])
     (cond 
       [(zero? size) (error 'rest "given vlist is empty")]
-      [(zero? new-offset) 
+      [(zero? new-offset)
        (let ([newsize (arithmetic-shift size -1)]) 
-         (if (Base? prev) (make-List newsize prev newsize) empty))]
-      [else (make-List new-offset 
-                       (make-Base prev (ra:tail (Base-elems base)))
+         (if (Base? prev) (List newsize prev newsize) empty))]
+      [else (List new-offset
+                       (Base prev (cdr (Base-elems base)))
                        size)])))
 
 ;; Similar to list length function
@@ -238,10 +237,12 @@
 ;; Similar to build-list function of racket list
 (: build-list : (All (A) (Natural (Natural -> A) -> (List A))))
 (define (build-list size func)
-  (let: loop : (List A) ([n : Natural size] [accum : (List A) empty])
-        (if (zero? n)
-            accum 
-            (loop (sub1 n) (vcons (func (sub1 n)) accum)))))
+  (: loop : Natural (List A) -> (List A))
+  (define (loop n accum)
+    (if (zero? n)
+        accum 
+        (loop (sub1 n) (vcons (func (sub1 n)) accum))))
+  (loop size empty))
 
 ;; Similar to make-list function of racket list
 (: make-list : (All (A) (Natural A -> (List A))))

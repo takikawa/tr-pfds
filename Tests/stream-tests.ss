@@ -43,6 +43,12 @@
 (check-expect (stream->list (take 0 (apply stream lst1)))
               null)
 
+(check-error (stream->list (take 10 (stream 1 2 3 4)))
+             "take: not enough elements to take")
+
+(check-error (stream->list (drop 10 (stream 1 2 3 4)))
+             "drop: not enough elements to drop")
+
 (check-expect (stream->list (take 10 (apply stream lst1)))
               (list 0 1 2 3 4 5 6 7 8 9))
 

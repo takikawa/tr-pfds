@@ -1,20 +1,13 @@
 #lang slideshow
 
-;(require unstable/gui/slideshow)
-
 (current-font-size 30)
-;(current-titlet (lambda (s)
-;                  (colorize (text s (current-main-font) 40)
-;                            (current-title-color))))
-;(set-title-h! 10.0)
 (current-main-font 'roman)
 
 (current-title-color "Blue")
 
-(slide
- #:title "Functional Data Structures for Typed Racket"
- (t "Hari Prashanth and Sam Tobin-Hochstadt")
- (t "Northeastern University"))
+(slide #:title "Functional Data Structures for Typed Racket"
+       (t "Hari Prashanth and Sam Tobin-Hochstadt")
+       (t "Northeastern University"))
 
 (define custom-bullet1 (colorize (arrowhead 22 (* 2 pi)) "LightSkyBlue"))
 (define custom-bullet (colorize (arrowhead 22 (* 2 pi)) "DarkGreen"))
@@ -23,7 +16,7 @@
 (define invis-bul (text ""))
 
 (define sel-bul1 
-  (pin-over (colorize (arrowhead 22 (* 2 pi)) "SteelBlue") 
+  (pin-over (colorize (arrowhead 22 (* 2 pi)) "SteelBlue")
             8 0 
             custom-bullet))
 
@@ -33,127 +26,98 @@
 
 (require slideshow/code)
 
+;(current-keyword-list (list "Racket" "Typed"))
+(current-keyword-color "blue")
+(slide #:title "Functional Data Structures for Typed Racket"
+       (hc-append (t "PLT Scheme is now ") (code Racket))
+       (hc-append 10 (t "Typed Scheme is is now ") (code Typed) (code Racket)))
 
-;(slide
-; #:title "Outline"
-; (item #:bullet custom-bullet "Motivation") 
-; (item #:bullet custom-bullet "Typed Racket in a Nutshell") 
-; (item #:bullet custom-bullet "Purely Functional Data Structures")
-; (item #:bullet custom-bullet "Benchmarks")
-; (item #:bullet custom-bullet "Conclusion"))
-;
-;
-;(slide
-; #:title "Outline"
-; (item #:bullet sel-bul "Motivation") 
-; (item #:bullet custom-bullet "Typed Racket in a Nutshell") 
-; (item #:bullet custom-bullet "Purely Functional Data Structures")
-; (item #:bullet custom-bullet "Benchmarks")
-; (item #:bullet custom-bullet "Conclusion"))
+(current-keyword-list null)
 
 
-(slide
- #:title "Motivation"
- (item #:bullet invis-bul "Typed Racket has very few data structures")
- 'next
- (subitem #:bullet invis-bul "Lists")
- ; (subitem #:bullet invis-bul (code '(1 2 3 4)))
- 'next
- (subitem #:bullet invis-bul "Vectors")
- 'next
- ; (subitem #:bullet invis-bul (code #, (tt "#(1 2 3 4)")))
- (subitem #:bullet invis-bul "Hash Tables")
- ; (subitem #:bullet invis-bul (code #, (tt "#hash((\"a\" . 1) (\"b\" . 2))")))
- 'next
- (code code:blank)
- (item #:bullet invis-bul "Practical use of Typed Racket"))
+(slide #:title "Motivation"
+       (item #:bullet invis-bul "Typed Racket has very few data structures")
+       'next
+       (subitem #:bullet invis-bul "Lists")
+       'next
+       (subitem #:bullet invis-bul "Vectors")
+       'next
+       (subitem #:bullet invis-bul "Hash Tables")
+       'next
+       (code code:blank)
+       (item #:bullet invis-bul "Practical use of Typed Racket"))
 
 
 
-(slide
- #:title "Outline"
- (item #:bullet custom-bullet "Motivation") 
- (item #:bullet sel-bul "Typed Racket in a Nutshell") 
- (item #:bullet custom-bullet "Purely Functional Data Structures")
- (item #:bullet custom-bullet "Benchmarks")
- (item #:bullet custom-bullet "Typed Racket Evaluation")
- (item #:bullet custom-bullet "Conclusion"))
+(slide #:title "Outline"
+       (item #:bullet custom-bullet "Motivation") 
+       (item #:bullet sel-bul "Typed Racket in a Nutshell") 
+       (item #:bullet custom-bullet "Purely Functional Data Structures")
+       (item #:bullet custom-bullet "Benchmarks")
+       (item #:bullet custom-bullet "Typed Racket Evaluation")
+       (item #:bullet custom-bullet "Conclusion"))
 
-;(slide
-; (t "Typed Racket in a Nutshell"))
-
-;(slide
-; #:title "Typed Racket in a Nutshell"
-; (t "What is Typed Racket"))
-
-(slide
- #:title "Function definition in Racket"
- (t "")
- (code
-  #, (tt "#lang") racket
-  code:blank
-  (code:comment "Computes the length of a given list of elements")
-  (code:comment "length : list-of-elems -> natural")
-  (define (length list)
-    (if (null? list)
-        0
-        (add1 (length (cdr list)))))))
+(slide #:title "Function definition in Racket"
+       (t "")
+       (code
+        #, (tt "#lang") racket
+        code:blank
+        (code:comment "Computes the length of a given list of elements")
+        (code:comment "length : list-of-elems -> natural")
+        (define (length list)
+          (if (null? list)
+              0
+              (add1 (length (cdr list)))))))
 
 (current-keyword-list (list "typed/racket" "->" ":"))
 (current-keyword-color "red")
 
-(slide
- #:title "Function definition in Typed Racket"
- (t "")
- (code
-  #, (tt "#lang") typed/racket
-  code:blank
-  (code:comment "Computes the length of a given list of integers")
-  (: length : (Listof Integer) -> Natural) 
-  (define (length list)
-    (if (null? list)
-        0
-        (add1 (length (cdr list)))))))
+(slide #:title "Function definition in Typed Racket"
+       (t "")
+       (code
+        #, (tt "#lang") typed/racket
+        code:blank
+        (code:comment "Computes the length of a given list of integers")
+        (: length : (Listof Integer) -> Natural) 
+        (define (length list)
+          (if (null? list)
+              0
+              (add1 (length (cdr list)))))))
 
 (current-keyword-list (list))
 
 (current-keyword-list (list "All" "A"))
 
-(slide
- #:title "Function definition in Typed Racket"
- (t "")
- (code
-  #, (tt "#lang") typed/racket
-  code:blank
-  (code:comment "Computes the length of a given list of elements")
-  (: length : (All (A) ((Listof A) -> Natural))) 
-  (define (length list)
-    (if (null? list)
-        0
-        (add1 (length (cdr list)))))))
+(slide #:title "Function definition in Typed Racket"
+       (t "")
+       (code
+        #, (tt "#lang") typed/racket
+        code:blank
+        (code:comment "Computes the length of a given list of elements")
+        (: length : (All (A) ((Listof A) -> Natural))) 
+        (define (length list)
+          (if (null? list)
+              0
+              (add1 (length (cdr list)))))))
 
-(slide
- #:title "Data definition in Racket"
- (t "")
- (code
-  #, (tt "#lang") racket
-  code:blank
-  (code:comment "Data definition of tree of integers    ")
-  code:blank
-  (code:comment "A Tree is one of")
-  (code:comment "- null")
-  (code:comment "- BTree")
-  code:blank
-  (define-struct BTree
-    (left
-     elem
-     right))
-  code:blank
-  (code:comment "left and right are of type Tree")
-  (code:comment "elem is an Integer")))
+(slide #:title "Data definition in Racket"
+       (t "")
+       (code
+        #, (tt "#lang") racket
+        code:blank
+        (code:comment "Data definition of tree of integers    ")
+        code:blank
+        (code:comment "A Tree is one of")
+        (code:comment "- null")
+        (code:comment "- BTree")
+        code:blank
+        (struct BTree (left elem right))
+        code:blank
+        (code:comment "left and right are of type Tree")
+        (code:comment "elem is an Integer")))
 
 
-(current-keyword-list (list "U" "define-type" "define-struct:"))
+(current-keyword-list (list "U" "define-type" "struct:"))
 
 (slide
  #:title "Data definition in Typed Racket"
@@ -166,10 +130,11 @@
   (define-type Tree (U Null BTree))
   code:blank
   code:blank
-  (define-struct: BTree
-    ([left  : Tree]
-     [elem  : Integer]
-     [right : Tree]))
+  code:blank
+  (struct: BTree
+           ([left  : Tree]
+            [elem  : Integer]
+            [right : Tree]))
   code:blank
   code:blank))
 
@@ -187,10 +152,11 @@
   (define-type (Tree A) (U Null (BTree A)))
   code:blank
   code:blank
-  (define-struct: (A) BTree
-    ([left  : (Tree A)]
-     [elem  : A]
-     [right : (Tree A)]))
+  code:blank
+  (struct: (A) BTree
+           ([left  : (Tree A)]
+            [elem  : A]
+            [right : (Tree A)]))
   code:blank
   code:blank))
 
@@ -204,10 +170,6 @@
  (item #:bullet custom-bullet "Benchmarks")
  (item #:bullet custom-bullet "Typed Racket Evaluation")
  (item #:bullet custom-bullet "Conclusion"))
-
-
-;(slide
-; (t "Purely Functional Data Structures"))
 
 
 (define destructive-update
@@ -261,8 +223,6 @@
 
 
 
-;(current-keyword-list (list "Promise"))
-
 (define bankers (bitmap "bankers.png"))
 
 (current-font-size 25)
@@ -279,6 +239,7 @@
 (define dequeue
   (code
    (: dequeue : (All (A) ((Queue A) -> (Queue A))))
+   code:blank
    (define (dequeue que)
      (let ([front (cdr (Queue-front que))]
            [rear  (Queue-rear que)])
@@ -289,15 +250,14 @@
 (current-font-size 30)
 
 (define stream
-  (code (define-type (Stream A) 
-          (Pair A (Promise (Stream A))))))
+  (code (define-type (Stream A) (Pair A (Promise (Stream A))))))
 
 
 (current-keyword-list (list "accum" "delay"))
 (current-font-size 25)
 (define incr-rev
   (code code:blank
-        (: rotate : 
+        (: rotate :
            (All (A) ((Stream A) (Listof A) (Stream A) -> (Stream A))))
         code:blank
         (define (rotate front rear accum)
@@ -316,51 +276,47 @@
         code:blank
         (define (check front lenf rear lenr)
           (if (>= lenf lenr)
-              (make-Queue front lenf rear lenr)
-              (make-Queue (stream-append front (stream-reverse rear))
-                          (+ lenf lenr) null 0)))))
+              (Queue front lenf rear lenr)
+              (Queue (stream-append front (stream-reverse rear))
+                     (+ lenf lenr) null 0)))))
 
 (define else
-  (code 
+  (code
    code:blank
    code:blank
    code:blank
    code:blank
    code:blank
    code:blank
-   (make-Queue (stream-append front (stream-reverse rear)) 
-               (+ lenf lenr) null 0)))
+   (Queue (stream-append front (stream-reverse rear)) 
+          (+ lenf lenr) null 0)))
 
 (current-font-size 30)
 
-(current-keyword-list (list "Promise"))
-(slide
- #:title "Functional Queue"
- (blank 10)
- 'alts
- (list (list (code
-              (define-struct: (A) Queue
-                ([front : (Listof A)]
-                 [rear  : (Listof A)]))
-              code:blank
-              code:blank)
-             'next
-             bankers)))
+(current-keyword-list (list "Promise" "delay" "force"))
+(slide #:title "Functional Queue"
+       (blank 10)
+       'alts
+       (list (list (code (struct: (A) Queue
+                                  ([front : (Listof A)]
+                                   [rear  : (Listof A)]))
+                         code:blank
+                         code:blank)
+                   'next
+                   bankers)))
 
 (define for-loop
-  (code
-   (for ([id (in-range 100)])
-     (dequeue q))))
+  (code (for ([id (in-range 100)])
+          (dequeue q))))
 
-(slide
- #:title "Functional Queue"
- (blank 10)
- 'alts
- (list (list dequeue)
-       (list (item #:align 'center #:bullet invis-bul "Queue " (code q))
-             (bitmap "whylazy.png")             
-             (blank 10)
-             for-loop)))
+(slide #:title "Functional Queue"
+       (blank 10)
+       'alts
+       (list (list dequeue)
+             (list (item #:align 'center #:bullet invis-bul "Queue " (code q))
+                   (bitmap "whylazy.png")
+                   (blank 10)
+                   for-loop)))
 
 (current-font-size 30)
 
@@ -372,57 +328,53 @@
                       "Lazy evaluation solves this problem") 
              'next
              'alts
-             (list
-              (list (code
-                     code:blank
-                     code:blank
-                     (: val : (Promise Exact-Rational))
-                     code:blank
-                     (define val (delay (/ 5 0)))))
-              (list 
-               (subitem #:bullet invis-bul "Streams")
-               stream)
-              (list
-               'alts
-               (list 
-                (list
-                 (code
-                  code:blank
-                  (define-struct: (A) Queue
-                    ([front : (Stream A)]
-                     [lenf  : Integer]
-                     [rear  : (Stream A)]
-                     [lenr  : Integer]))
-                  code:blank)
-                 (subitem #:align 'center #:bullet invis-bul "Invariant " (code lenf >= lenr)))
-                (list check)
-                (list else)
-                (list 
-                 (vc-append 
-                  16 (subitem #:bullet invis-bul
-                              (new-text "Amortized running time of O(1) for the operations"))
-                  (subitem #:bullet invis-bul
-                           (hc-append (code enqueue)
-                                      (new-text ", ")
-                                      (code dequeue)
-                                      (new-text "  and  ") 
-                                      (code head)))))))))))
+             (list (list (code
+                          code:blank
+                          code:blank
+                          (: val : (Promise Exact-Rational))
+                          code:blank
+                          (define val (delay (/ 5 0)))
+                          code:blank
+                          (force val)))
+                   (list (blank 20)
+                         stream)
+                   (list 'alts
+                         (list (list
+                                (code code:blank
+                                      (struct: (A) Queue
+                                               ([front : (Stream A)]
+                                                [lenf  : Integer]
+                                                [rear  : (Stream A)]
+                                                [lenr  : Integer]))
+                                      code:blank)
+                                (subitem #:align 'center #:bullet invis-bul "Invariant " (code lenf >= lenr)))
+                               (list check)
+                               (list else)
+                               (list 
+                                (vc-append 
+                                 16 (subitem #:bullet invis-bul
+                                             (new-text "Amortized running time of O(1) for the operations"))
+                                 (subitem #:bullet invis-bul
+                                          (hc-append (code enqueue)
+                                                     (new-text ", ")
+                                                     (code dequeue)
+                                                     (new-text "  and  ") 
+                                                     (code head)))))))))))
 
 
 (slide
  #:title "Real-Time Queues [Hood & Melville 81]"
- ;(item #:bullet invis-bul "")
- ;(code code:blank)
  'next
  (item #:bullet invis-bul "Eliminating amortization by Scheduling")
  (blank 10)
  'next
  'alts
  (list (list bankers
-             (item #:align 'center #:bullet invis-bul 
-                   "Banker's Queue -" (code reverse) 
-                   " is a forced completely"))
-       (list incr-rev
+             (item #:align 'center #:bullet invis-bul
+                   "Banker's Queue - rear stream is reversed completely"))
+       (list (item #:align 'center #:bullet invis-bul
+                   "Invariant " (code lenf >= lenr))
+             incr-rev
              (blank 10)
              (t "Incremental reversing"))
        (list (vc-append 16 
@@ -475,20 +427,30 @@
        (list 'alts
              (list (list 'alts
                          (list
-                          (list (code (define-type (RAList A) (Listof (Digit A))))
-                                'next     
-                                (code (define-type (Digit A) (U Zero (One A)))))
-                          (list (code (define-struct: Zero ()))
-                                'next 
-                                (code (define-struct: (A) One ([fst  : (Tree A)]))))
-                          (list (code (define-type (Tree A) (U (Leaf A) (Node A))))
+                          (list (code code:blank
+                                      code:blank
+                                      code:blank
+                                      (define-type (RAList A) (Listof (Digit A))))
                                 'next
-                                (code (define-struct: (A) Leaf ([fst : A])))
+                                (code code:blank
+                                      (define-type (Digit A) (U Zero (One A)))))
+                          (list (code code:blank
+                                      code:blank
+                                      code:blank
+                                      (struct: Zero ()))
                                 'next
-                                (code (define-struct: (A) Node 
-                                        ([size  : Integer]
-                                         [left  : (Tree A)] 
-                                         [right : (Tree A)]))))))
+                                (code code:blank
+                                      (struct: (A) One ([fst  : (Tree A)]))))
+                          (list (code code:blank
+                                      (define-type (Tree A) (U (Leaf A) (Node A))))
+                                'next
+                                (code code:blank
+                                      (struct: (A) Leaf ([fst : A])))
+                                'next
+                                (code (struct: (A) Node
+                                               ([size  : Integer]
+                                                [left  : (Tree A)] 
+                                                [right : (Tree A)]))))))
                    (list (code (define-type (RAList A) (Listof (Digit A))))
                          list0)
                    (list (code (define-type (RAList A) (Listof (Digit A))))
@@ -512,20 +474,18 @@
               (subitem #:bullet invis-bul
                        (code cons) ", " (code car) ", " (code cdr) ", " (code lookup) " and "
                        (code update))))))
-;             (subitem #:bullet invis-bul 
-;                      " cons, car, cdr, lookup and update"))))
 
 (define vlist
   (code
-   (define-struct: (A) Base 
-     ([previous : (U Null (Base A))]
-      [elems    : (RAList A)]))
+   (struct: (A) Base 
+            ([previous : (U Null (Base A))]
+             [elems    : (RAList A)]))
    code:blank
    code:blank
-   (define-struct: (A) VList 
-     ([offset : Natural]
-      [base   : (Base A)]
-      [size   : Natural]))))
+   (struct: (A) VList 
+            ([offset : Natural]
+             [base   : (Base A)]
+             [size   : Natural]))))
 
 (slide
  #:title "VLists [Bagwell 2002]"
@@ -558,10 +518,7 @@
    (subitem #:bullet invis-bul "Variants of Deques")
    (subitem #:bullet invis-bul "Variants of Heaps")
    (subitem #:bullet invis-bul "Variants of Lists")
-   (subitem #:bullet invis-bul "Red-Black Trees")
-   (subitem #:bullet invis-bul "Tries")
-   (subitem #:bullet invis-bul "Sets")
-   (subitem #:bullet invis-bul "Hash Lists"))
+   (subitem #:bullet invis-bul "Red-Black Trees, Tries, Sets, Hash Lists, Treaps etc."))
   (list 
    (item #:bullet invis-bul "Library has 30 data structures")
    'next
@@ -579,43 +536,58 @@
  (item #:bullet custom-bullet "Conclusion"))
 
 (define enqueue-benchmark (bitmap "enqueue.png"))
-(define dequeue-benchmark 
-  (pin-over (ghost enqueue-benchmark) 0 0 
+(define dequeue-benchmark
+  (pin-over (ghost enqueue-benchmark) 0 0
             (bitmap "dequeue.png")))
 
-(slide
- #:title "Benchmarks"
- 'alts
- (list (list enqueue-benchmark
-             (code (foldl enqueue que list-of-100000-elems)))
-       (list dequeue-benchmark)
-       (list (bitmap "insert.png"))
-       (list (bitmap "find.png"))
-       (list (bitmap "delete.png"))))
+(current-keyword-list (list "enqueue"))
+(current-font-size 25)
+(define queues
+  (code (define list (build-list 100000 add1))
+        code:blank
+        (foldl enqueue 1000-element-queue list)
+        code:blank
+        (foldl enqueue 10000-element-queue list)
+        code:blank
+        (foldl enqueue 100000-element-queue list)
+        code:blank
+        (foldl enqueue 1000000-element-queue list)))
+(current-font-size 30)
+(current-keyword-list null)
+
+(slide #:title "Benchmarks" queues)
+
+(slide #:title "Benchmarks"
+       'alts
+       (list (list enqueue-benchmark)
+             (list dequeue-benchmark)
+             (list (bitmap "insert.png"))
+             (list (bitmap "find.png"))
+             (list (bitmap "delete.png"))))
 
 (current-font-size 25)
 (define bq
-  (code 
+  (code
    type 'a Queue = int * 'a Stream * int * 'a Stream
    code:blank
    code:blank
-   (define-struct: (A) Queue
-     ([lenf  : Integer]
-      [front : (Stream A)]
-      [lenr  : Integer]
-      [rear  : (Stream A)]))))
+   (struct: (A) Queue
+            ([lenf  : Integer]
+             [front : (Stream A)]
+             [lenr  : Integer]
+             [rear  : (Stream A)]))))
 
 (define pq
   (code
    type 'a Queue = 'a list * int * 'a list susp * int * 'a list
    code:blank
    code:blank
-   (define-struct: (A) Queue 
-     ([pref  : (Listof A)]
-      [lenf  : Integer]
-      [front : (Promise (Listof A))]
-      [lenr  : Integer]
-      [rear  : (Listof A)]))))
+   (struct: (A) Queue
+            ([pref  : (Listof A)]
+             [lenf  : Integer]
+             [front : (Promise (Listof A))]
+             [lenr  : Integer]
+             [rear  : (Listof A)]))))
 (current-font-size 30)
 
 (slide
@@ -663,19 +635,12 @@
        (list regular
              (blank 20)
              (t "Uniform type"))))
-;       (list regular
-;             (blank 20)
-;             (code
-;              (de
-;              (cons 1 (cons 1 2)))
 
 (slide
  #:title "Conclusion"
  (item #:bullet invis-bul "Typed Racket is useful for real-world software.")
  (item #:bullet invis-bul "Functional data structures in Typed Racket are useful and performant.")
  (item #:bullet invis-bul "A comprehensive library of data structures is now available."))
-; (item #:bullet invis-bul 
-;       "Benchmarks that we obtained looks very promising and we feel that functional data structures can be good alternatives to more traditional ones and their imperative counterparts."))
 
 (current-font-size 35)
 (define thank-you

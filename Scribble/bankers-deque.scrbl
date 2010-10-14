@@ -33,13 +33,17 @@ Function @scheme[deque] creates a Bankers Deque with the given inputs.
 In the above example, the deque obtained will have 1 as its head element.
 }
 
-@defthing[empty (Deque Nothing)]{
-An empty deque}
+@defthing[(empty [t A]) (Deque A)]{
+An empty deque instantiated to type t.
+@examples[#:eval evaluate
+(empty Nothing)
+(empty Integer)
+]}
 
 @defproc[(empty? [dq (Deque A)]) Boolean]{
 Function @scheme[empty?] checks if the given deque is empty.
 @examples[#:eval evaluate
-(empty? empty)
+(empty? (empty Natural))
 (empty? (deque 1 2))
 ]}
 
@@ -73,12 +77,11 @@ deque if deque is not empty else throws an error.
 
 (head (deque 5 2 3))
 
-(head empty)
+(head (empty Integer))
 ]
 
-In the above example, @scheme[(head empty)] throws an error since the given 
-deque is empty.
-}
+In the above example, @scheme[(head (empty Integer))] throws an error
+since the given deque is empty.  }
 
 @defproc[(last [deq (Deque A)]) A]{
 Function @scheme[last] takes a deque and gives the last element in the
@@ -87,12 +90,11 @@ deque if deque is not empty else throws an error.
 
 (last (deque 1 2 3 4 5 6))
 
-(last empty)
+(last (empty Integer))
 ]
 
-In the above example, @scheme[(last empty)]throws an error since the given 
-deque is empty.
-}
+In the above example, @scheme[(last (empty Integer))]throws an error
+since the given deque is empty.}
 
 @defproc[(tail [deq (Deque A)]) (Deque A)]{
 Function @scheme[tail] takes a deque and returns the given deque 
@@ -102,7 +104,7 @@ error.
 
 (tail (deque 1 2 3 4 5 6))
 
-(tail empty)
+(tail (empty Integer))
 ]
 
 In the above example, @scheme[(tail (deque 1 2 3 4 5 6))], removes the head of
@@ -117,7 +119,7 @@ without the last element if the given deque is not empty else throws an error.
 
 (init (deque 1 2 3 4 5 6))
 
-(init empty)
+(init (empty Integer))
 ]
 
 In the above example, @scheme[(init (deque 1 2 3 4 5 6))], removes the 
@@ -131,7 +133,7 @@ If the given deque is empty, then it returns an empty list.
 @examples[#:eval evaluate
 
 (deque->list (deque 10 2 34 4 15 6))
-(deque->list empty)
+(deque->list (empty Integer))
 ]}
 
 @defproc[(map [func (A B ... B -> C)] 
@@ -259,7 +261,7 @@ the given deque.
 
 (head+tail (build-deque 5 (λ:([x : Integer]) (* x x))))
 
-(head+tail empty)
+(head+tail (empty Integer))
 
 ]}
 
@@ -273,7 +275,7 @@ the init of the given deque.
 
 (last+init (build-deque 5 (λ:([x : Integer]) (* x x))))
 
-(last+init empty)
+(last+init (empty Integer))
 
 ]}
 

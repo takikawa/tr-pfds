@@ -30,8 +30,12 @@ given inputs.
 In the above example, the queue obtained will have 1 as its first element.}
 
 
-@defthing[empty (Queue Nothing)]{
-An empty queue.}
+@defthing[(empty [t A]) (Queue A)]{
+An empty queue.
+@examples[#:eval evaluate
+(empty Nothing)
+(empty Integer)
+]}
 
 @defproc[(empty? [que (Queue A)]) Boolean]{
 Function @scheme[empty?] checks if the given queue is empty or not.
@@ -40,7 +44,7 @@ Function @scheme[empty?] checks if the given queue is empty or not.
 
 (empty? (queue 1 2 3 4 5 6))
 
-(empty? empty)
+(empty? (empty Integer))
 
 ]}
 
@@ -61,7 +65,7 @@ queue if queue is not empty else throws an error.
 @examples[#:eval evaluate
 
 (head (queue 1 2 3 4 5 6))
-(head empty)
+(head (empty Integer))
 ]}
 
 @defproc[(tail [que (Queue A)]) (Queue A)]{
@@ -71,7 +75,7 @@ head element of the given queue if its a non empty queue else throws an error.
 @examples[#:eval evaluate
 
 (tail (queue 1 2 3 4 5 6))
-(tail empty)
+(tail (empty Integer))
 ]
 
 In the above example, @scheme[(tail (queue 1 2 3 4 5 6))], returns 
@@ -197,7 +201,7 @@ the given queue.
 
 (head+tail (build-queue 5 (λ:([x : Integer]) (* x x))))
 
-(head+tail empty)
+(head+tail (empty Integer))
 
 ]}
 

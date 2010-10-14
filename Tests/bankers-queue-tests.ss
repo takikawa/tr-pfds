@@ -2,25 +2,26 @@
 (require "../bankers-queue.ss")
 (require typed/test-engine/scheme-tests)
 
-(check-expect (empty? empty) #t)
+(check-expect (empty? (empty Integer)) #t)
 (check-expect (empty? (queue 1)) #f)
 (check-expect (empty? (queue 1 2)) #f)
 
 (check-expect (head (queue 4 5 2 3)) 4)
-(check-expect (head (queue 2)) 2)  
+(check-expect (head (queue 2)) 2)
 
 (check-expect (queue->list (tail (queue 4 5 2 3)))
               (list 5 2 3))
 (check-expect (queue->list (tail (queue 1))) null)
-(check-error (tail empty) "tail: given queue is empty")
+(check-error (tail (empty Integer)) "tail: given queue is empty")
 
-(check-expect (queue->list (enqueue 1 empty)) (list 1))
+(check-expect (queue->list (enqueue 1 (empty Integer)))
+              (list 1))
 (check-expect (queue->list (enqueue 1 (queue 1 2 3))) (list 1 2 3 1))
 
-(check-expect (head (enqueue 1 empty)) 1)
+(check-expect (head (enqueue 1 (empty Integer))) 1)
 (check-expect (head (enqueue 10 (queue 5 2 3))) 5)
 
-(check-error (head empty) "head: given queue is empty")
+(check-error (head (empty Integer)) "head: given queue is empty")
 
 (check-expect (queue->list (map + (queue 1 2 3 4 5) (queue 1 2 3 4 5)))
               (list 2 4 6 8 10))

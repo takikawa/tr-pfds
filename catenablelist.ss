@@ -72,22 +72,22 @@
 ;; Similar to list cdr function
 (: tail : (All (A) ((CatenableList A) -> (CatenableList A))))
 (define (tail cat)
-  (if (null? cat) 
+  (if (null? cat)
       (error 'rest "given list is empty")
       (tail-helper cat)))
 
 (: tail-helper : (All (A) ((List A) -> (CatenableList A))))
 (define (tail-helper cat)
   (let ([ques (List-ques cat)])
-    (if (bsq:empty? ques) 
+    (if (bsq:empty? ques)
         empty
         (link-all ques))))
 
 ;; similar to list map function. apply is expensive so using case-lambda
 ;; in order to saperate the more common case
-(: list-map : 
-   (All (A C B ...) 
-        (case-lambda 
+(: list-map :
+   (All (A C B ...)
+        (case-lambda
           ((A -> C) (CatenableList A) -> (CatenableList C))
           ((A B ... B -> C)
            (CatenableList A) (CatenableList B) ... B -> (CatenableList C)))))
@@ -111,8 +111,8 @@
       accum
       (map-single (kons (func (head list)) accum) func (tail list))))
 
-(: map-multiple : 
-   (All (A C B ...) 
+(: map-multiple :
+   (All (A C B ...)
         ((CatenableList C) (A B ... B -> C)
                            (CatenableList A) (CatenableList B) ... B -> (CatenableList C))))
 (define (map-multiple accum func list . lists)
@@ -120,7 +120,7 @@
       accum
       (apply map-multiple
              (kons (apply func (head list) (map head lists)) accum)
-             func 
+             func
              (tail list)
              (map tail lists))))
 
@@ -155,7 +155,7 @@
                              (map head lists)))]))
 
 ;; similar to list foldl function
-(: list-foldl : 
+(: list-foldl :
    (All (A C B ...) 
         (case-lambda ((C A -> C) C (CatenableList A) -> C)
                      ((C A B ... B -> C) C
@@ -214,8 +214,8 @@
 
 ;; list constructor
 (: clist : (All (A) (A * -> (CatenableList A))))
-(define (clist . lst)
-  (foldr (inst kons A) empty lst))
+(define (clist . list)
+  (foldr (inst kons A) empty list))
 
 
 (: clist->list : (All (A) ((CatenableList A) -> (Listof A))))
@@ -226,24 +226,25 @@
 
 ;; Similar to list reverse function
 (: reverse : (All (A) ((CatenableList A) -> (CatenableList A))))
-(define (reverse ral)
+(define (reverse list)
   (: local-reverse : (All (A) ((CatenableList A) (CatenableList A)
                                                  ->
                                                  (CatenableList A))))
-  (define (local-reverse ral accum)
-    (if (empty? ral)
+  (define (local-reverse list accum)
+    (if (empty? list)
         accum
-        (local-reverse (tail ral) (kons (head ral) accum))))
-  (local-reverse ral empty))
+        (local-reverse (tail list) (kons (head list) accum))))
+  (local-reverse list empty))
 
 
 
 ;; Similar to build-list function of racket list
 (: build-list : (All (A) (Natural (Natural -> A) -> (CatenableList A))))
 (define (build-list size func)
-  (let: loop : (CatenableList A) ([n : Natural size] [accum : (CatenableList A) empty])
+  (let: loop : (CatenableList A) ([n : Natural size]
+                                  [accum : (CatenableList A) empty])
         (if (zero? n)
-            accum 
+            accum
             (loop (sub1 n) (kons (func (sub1 n)) accum)))))
 
 ;; Similar to make-list function of racket list
@@ -251,13 +252,13 @@
 (define (make-list size elem)
   (let: loop : (CatenableList A) ([n : Natural size] [accum : (CatenableList A) empty])
         (if (zero? n)
-            accum 
+            accum
             (loop (sub1 n) (kons elem accum)))))
 
 
 ;; similar to list andmap function
-(: list-andmap : 
-   (All (A B ...) 
+(: list-andmap :
+   (All (A B ...)
         (case-lambda ((A -> Boolean) (CatenableList A) -> Boolean)
                      ((A B ... B -> Boolean) (CatenableList A) 
                                              (CatenableList B) ... B 
@@ -270,12 +271,12 @@
                       (and (func (head list))
                            (list-andmap func (tail list))))]
                  [([func : (A B ... B -> Boolean)]
-                   [list  : (CatenableList A)] 
-                   . 
+                   [list  : (CatenableList A)]
+                   .
                    [lists : (CatenableList B) ... B])
                   (or (empty? list) (ormap empty? lists)
                       (and (apply func (head list) (map head lists))
-                           (apply list-andmap func (tail list) 
+                           (apply list-andmap func (tail list)
                                   (map tail lists))))]))
 
 
@@ -283,21 +284,21 @@
 (: list-ormap : 
    (All (A B ...) 
         (case-lambda ((A -> Boolean) (CatenableList A) -> Boolean)
-                     ((A B ... B -> Boolean) (CatenableList A) 
-                                             (CatenableList B) ... B 
+                     ((A B ... B -> Boolean) (CatenableList A)
+                                             (CatenableList B) ... B
                                              -> Boolean))))
 (define list-ormap
-  (pcase-lambda: (A B ... ) 
+  (pcase-lambda: (A B ... )
                  [([func : (A -> Boolean)]
                    [list  : (CatenableList A)])
                   (and (not (empty? list))
                        (or (func (head list))
                            (list-ormap func (tail list))))]
                  [([func : (A B ... B -> Boolean)]
-                   [list  : (CatenableList A)] 
-                   . 
+                   [list  : (CatenableList A)]
+                   .
                    [lists : (CatenableList B) ... B])
                   (and (not (or (empty? list) (ormap empty? lists)))
                        (or (apply func (head list) (map head lists))
-                           (apply list-ormap func (tail list) 
+                           (apply list-ormap func (tail list)
                                   (map tail lists))))]))

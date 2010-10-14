@@ -2,7 +2,7 @@
 (require "../physicists-queue.ss")
 (require typed/test-engine/scheme-tests)
 
-(check-expect (empty? empty) #t)
+(check-expect (empty? (empty Nothing)) #t)
 (check-expect (empty? (queue 1)) #f)
 (check-expect (empty? (queue 1 2)) #f)
 
@@ -17,7 +17,7 @@
 (check-error (tail (list->queue (list))) "tail: given queue is empty")
 
 
-(check-expect (queue->list (enqueue 1 empty)) (list 1))
+(check-expect (queue->list (enqueue 1 (empty Integer))) (list 1))
 (check-expect (queue->list (enqueue 1 (queue 4 1 2))) (list 4 1 2 1))
 (check-expect (queue->list (enqueue 1 (queue 4 1 2 5))) 
               (list 4 1 2 5 1))

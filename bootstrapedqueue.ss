@@ -38,7 +38,7 @@
 (: enqueue : (All (A) (A (Queue A) -> (Queue A))))
 (define (enqueue elem bsq)
   (if (null? bsq)
-      (IntQue (cons elem null) pq:empty 1 null 0)
+      (IntQue (cons elem null) (pq:empty (Promise (Listof A))) 1 null 0)
       (internal-queue (IntQue-F bsq)
                       (IntQue-M bsq)
                       (IntQue-LenFM bsq)

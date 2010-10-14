@@ -1,7 +1,7 @@
 #lang typed/racket #:optimize
 
 (provide filter remove head+tail build-queue
-         queue queue->list empty empty? 
+         queue queue->list empty empty?
          (rename-out [qmap map] [queue-andmap andmap] [queue-ormap ormap]) 
          fold head tail enqueue Queue list->queue)
 
@@ -13,7 +13,8 @@
 
 
 ;; An empty queue
-(define empty (Queue empty-stream null empty-stream))
+(define-syntax-rule (empty A)
+  ((inst Queue A) empty-stream null empty-stream))
 
 ;; Function to check for empty queue
 (: empty? : (All (A) ((Queue A) -> Boolean)))
@@ -27,9 +28,9 @@
     (if (empty-stream? frnt)
         (stream-cons carrer accum)
         (stream-cons (stream-car frnt)
-                     (rotate (stream-cdr frnt) 
-                             (cdr rer) 
-                             (stream-cons carrer accum))))))
+                     ((inst rotate A) (stream-cdr frnt) 
+                                      (cdr rer) 
+                                      (stream-cons carrer accum))))))
 
 (: internal-queue : (All (A) ((Stream A) (Listof A) (Stream A) -> (Queue A))))
 (define (internal-queue front rear schdl)
@@ -75,10 +76,12 @@
   (pcase-lambda: (A C B ...)
                  [([func : (A -> C)]
                    [deq  : (Queue A)])
-                  (map-single empty func deq)]
+                  (map-single ((inst Queue C) empty-stream null empty-stream) 
+                              func deq)]
                  [([func : (A B ... B -> C)]
                    [deq  : (Queue A)] . [deqs : (Queue B) ... B])
-                  (apply map-multiple empty func deq deqs)]))
+                  (apply map-multiple ((inst Queue C) empty-stream null empty-stream) 
+                         func deq deqs)]))
 
 
 (: map-single : (All (A C) ((Queue C) (A -> C) (Queue A) -> (Queue C))))
@@ -133,11 +136,13 @@
 
 (: list->queue : (All (A) ((Listof A) -> (Queue A))))
 (define (list->queue lst)
-  (foldl (inst enqueue A) empty lst))
+  (foldl (inst enqueue A) 
+         ((inst Queue A) empty-stream null empty-stream) lst))
 
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
-  (foldl (inst enqueue A) empty lst))
+  (foldl (inst enqueue A) 
+         ((inst Queue A) empty-stream null empty-stream) lst))
 
 (: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (filter func que)
@@ -150,7 +155,7 @@
           (if (func head)
               (inner func tail (enqueue head accum))
               (inner func tail accum)))))
-  (inner func que empty))
+  (inner func que ((inst Queue A) empty-stream null empty-stream) ))
 
 
 (: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
@@ -164,7 +169,8 @@
           (if (func head)
               (inner func tail accum)
               (inner func tail (enqueue head accum))))))
-  (inner func que empty))
+  (inner func que 
+         ((inst Queue A) empty-stream null empty-stream) ))
 
 ;; Returns the pair of first and the rest of the queue
 (: head+tail : (All (A) ((Queue A) -> (Pair A (Queue A)))))
@@ -182,7 +188,7 @@
 (define (build-queue size func)
   (let: loop : (Queue A) ([n : Natural size])
         (if (zero? n)
-            empty
+            ((inst Queue A) empty-stream null empty-stream) 
             (let ([nsub1 (sub1 n)])
               (enqueue (func nsub1) (loop nsub1))))))
 
