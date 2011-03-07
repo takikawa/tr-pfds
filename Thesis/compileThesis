@@ -1,0 +1,12 @@
+rm -f *.{blg,bbl,toc,out,log,aux,pdf,dvi}
+PATH=$PATH:/home/swamiji/plt-racket-677867b/bin/
+
+slatex Thesis
+latex Thesis
+bibtex Thesis
+#makeindex Thesis.nlo -s nomencl.ist -o Thesis.nls
+latex Thesis
+latex Thesis
+latex Thesis
+
+dvipdfm -p a4 -o Thesis.pdf Thesis.dvi

@@ -1,0 +1,522 @@
+\chapter{Performance Analysis}
+\label{chap:four}
+This chapter reports on my performance evaluation of the library using
+micro-benchmarks. The results demonstrate the practical usefulness of
+purely functional data structures. The benchmarks compare the
+performance of my purely functional data structures with each other and
+with simple functional implementations based on lists and with
+imperative implementations already available as Racket libraries. All
+the data structures are implemented in Typed Racket, with the exception
+of the pre-existing imperative versions which are implemented in untyped
+Racket. Data structures in untyped Racket and Typed Racket are
+benchmarked in their respective languages to ensure comparability;
+otherwise language boundary-crossing would impose substantial contract
+overheads.
+
+The benchmarking was done on a 2.1 GHz Intel Core 2 Duo (Linux) machine
+using Racket version 5.0.2. Each benchmark was run 10 times, with times
+measured by the Racket's \scheme|time| form. In the tables below, all
+times are milliseconds of CPU time as reported by Racket, including garbage
+collection time.% and the times mentioned are in milliseconds.
+
+
+\section{Queue Performance}
+
+\footnotetext[1]{The constructor functions \scheme|queue|, \scheme|heap|
+and \scheme|list| were repeated only 100 times.}
+
+Table~\ref{fig:queue} shows the performance of the Physicist's Queue,
+Banker's Queue, Real-Time Queue and Bootstrapped Queue compared with a
+naive implementation based on lists and an imperative queue from the
+Racket standard library. Some functions of the imperative queue from the
+Racket standard library provide contracts. In the benchmarks where these
+functions are used, separate benchmarks for the implementation without
+contracts has been provided. The \emph{Size} column in
+Table~\ref{fig:queue} indicates the initial size of the queue and the
+times are the time taken for performing each operation 100000 times on
+queues of different initial sizes, averaged over 10 runs. Because the
+\scheme|head| operation runs in a very short amount of time, it is
+repeated 1000000 times to reduce noise in the benchmark.
+
+Benchmark~Code~\ref{bm:3} shows the Typed Racket code used for
+generating the benchmarks for the \scheme|enqueue| operation; the
+untyped Racket benchmarks are run with an equivalent untyped script.
+
+%\footnotetext[1]{The functions \scheme|head| and \scheme|find| were
+%repeated 1000000 times to improve the expressiveness of the benchmarks.}
+
+
+\begin{benchmark}
+ \begin{schemedisplay}
+   (define Size 1000)
+
+   (: que : (Queue Integer))
+   (define que (build-queue Size add1))
+
+   (: list : (Listof Integer))
+   (define list (build-list 100000 add1))
+
+   (time (foldl enqueue que list))
+
+ \end{schemedisplay}
+ \label{bm:3}
+\end{benchmark}
+
+
+%Interesting performance characteristics of each Queue implementation can
+%be derived from the results of the benchmarks from the
+
+\begin{figure*}[ht]
+  %\begin{center}
+  \begin{adjustwidth}{-5em}{}
+    \begin{threeparttable}
+      \begin{tabular}{|c|c|c|c|c|c|c|c|}
+        \hline
+        Size & Operation & Banker's & Physicist's & Real-Time & Bootstrapped & List & Imperative \\
+        \hline
+        \multirow{3}{*}{1000} & \scheme|queue| & 72 & 16 & 137 & 20 & 6 & 24 \\
+        \cline{2-8}
+        & \scheme|head| & 55 & 45 & 85 & 40 & 30 & 55 \\
+        \cline{2-8}
+        & \scheme|enqueue| & 127 & 10 & 176 & 22 & 256450 & 12 \\
+        \hline
+        \multirow{3}{*}{10000} & \scheme|queue| & 887 & 232 & 1576 & 227 & 61 & 290 \\
+        \cline{2-8}
+        & \scheme|head| & 55 & 45 & 95 & 45 & 35 & 60 \\
+        \cline{2-8}
+        & \scheme|enqueue| & 132 & 11 & 172 & 18 & 314710 & 14 \\
+        \hline
+        \multirow{3}{*}{100000} & \scheme|queue| & 13192 & 3410 & 20332 & 2276 & 860 & 3590 \\
+        \cline{2-8}
+        & \scheme|head| & 60 & 40 & 90 & 50 & 35 & 60 \\
+        \cline{2-8}
+        & \scheme|tail| \tnote{$\dagger$} & 312 & 412 & 147 & 20 & 7 & 10 \\
+        \cline{2-8}
+        & \scheme|enqueue| & 72 & 12 & 224 & 18 & 1289370 & 14 \\
+        \hline
+        \multirow{3}{*}{1000000} & \scheme|queue| & 182858 & 65590 & 294310 & 53032 & 31480 & 68310 \\
+        \cline{2-8}
+        & \scheme|head| & 60 & 40 & 90 & 40 & 35 & 60 \\
+        \cline{2-8}
+        & \scheme|tail| \tnote{$\dagger$} & 1534 & 243 & 1078 & 20 & 8 & 10 \\
+        \cline{2-8}
+        & \scheme|enqueue| & 897 & 30 & 1218 & 20 & $\infty$ \tnote{$\ddagger$} & 16 \\
+        \hline
+      \end{tabular}
+      \begin{tablenotes}%[para]
+      \item[$\dagger$] Since 100000 (successive) \scheme|tail| (or
+        \scheme|dequeue|) operations cannot be performed on 1000 and
+        10000 element queue, the \scheme|tail| operation is omitted for
+        these sizes.
+      \item[$\ddagger$] Longer than 30 minutes.
+      %\item[$\uparrow$] Imperative Queues with and without contracts have similar performance.
+      \end{tablenotes}
+    \end{threeparttable}
+    %\end{center}
+  \end{adjustwidth}
+  \caption{Queue Performance: Individual Operations}
+  \label{fig:queue}
+  %\changetext{}{}{-4em}{}{}
+\end{figure*}
+%\end{adjustwidth}
+
+%\footnotetext[2]{Since 100000 (successive) \scheme|tail| (or
+%  \scheme|dequeue|) operations can not be performed on 1000 element
+%  queue, we do not have running time for \scheme|tail| operation for
+%  for these sizes.}
+
+
+%\changetext{-5\baselineskip}{10em}{}{}{}
+
+%\clearpage
+\noindent
+Table~\ref{fig:queue} suggests four observations:
+\begin{enumerate}
+\item{For the queue constructor \scheme|queue|, Physicist's Queues and
+  Bootstrapped Queues perform slightly better than the imperative
+  queues, the performance of imperative queues is better than Banker's
+  Queues, and the queue implementation based on lists outperforms all
+  the other implementations.}
+\item{For the \scheme|head| operation, all the implementations perform
+  better than Real-Time Queues. Performance of Physicist's Queues,
+  Bootstrapped Queues and imperative queues are similar and slightly
+  better than Banker's Queues. The queue implementation based on lists
+  performs slightly better than all of these implementations.}
+\item{For the \scheme|enqueue| operation, the implementation based on
+  lists is extremely slow when compared to other implementations as
+  expected. Physicist's Queues, Bootstrapped Queues and imperative
+  queues have similar performance and perform better than Banker's Queue and
+  Real-Time Queues.}
+\item{For the \scheme|tail| operation, performance of imperative queues
+  and the implementation based on lists are comparable and is slightly
+  better than Bootstrapped Queues. All the other functional data
+  structures are slower than these queue implementations.}
+\end{enumerate}
+
+
+\begin{figure*}
+  %\begin{center}
+  \begin{adjustwidth}{-3em}{}
+    \begin{threeparttable}
+      \begin{tabular}{|c|c|c|c|c|c|c|c|}
+        \hline
+        \# of Repetitions & Banker's & Physicist's & Real-Time & Bootstrapped & Imperative & Imperative\tnote{$\ddagger$} \\
+        \hline
+        1000000 & 2040  & 2010  & 2170  & 560  & 750  & 410  \\
+        \hline
+        2000000 & 5060  & 5040  & 4430  & 1120 & 1490 & 810  \\
+        \hline
+        3000000 & 7990  & 7880  & 7260  & 2180 & 2260 & 1190 \\
+        \hline
+        4000000 & 10240 & 10280 & 9230  & 2930 & 3780 & 1630 \\
+        \hline
+        5000000 & 13690 & 13670 & 11930 & 3670 & 4580 & 2140 \\
+        \hline
+      \end{tabular}
+      \begin{tablenotes}
+      \item[$\ddagger$] Imperative Queue implementation without contracts.
+      \end{tablenotes}
+    \end{threeparttable} 
+    %\end{center}
+  \end{adjustwidth}
+  \caption{Queue Performance: Multiple Operations}
+  \label{fig:loopq}
+  %\changetext{}{}{-4em}{}{}
+\end{figure*}
+
+%\noindent
+Table~\ref{fig:loopq} presents the results of a multiple-operation
+workload micro benchmarks. The times in are for building a queue by
+repeating the \scheme|enqueue| operation \scheme|N| times and then
+performing \scheme|head| and \scheme|tail| on the resulting queue
+\scheme|N| times with \scheme|N| taking the values 1000000, 2000000,
+3000000, 4000000 and 5000000, again averaged over 10
+runs. Benchmark~Code~\ref{bm:1} shows the Typed Racket code used to
+benchmark functional queues in Typed Racket. Untyped benchmark code in
+Racket similar to Benchmark~Code~\ref{bm:1} was used to benchmark the
+imperative queue implementation.
+
+
+The results of the benchmarks from the Table~\ref{fig:loopq} indicate
+that the performance of Bootstrapped Queues is faster than the
+imperative queue implementation with contracts and the imperative queue
+implementation without contracts perform better than Bootstrapped
+Queues. Real-Time Queues, Banker's Queues and Physicist's Queues are all
+almost 3 times slower than imperative queues.
+
+\begin{benchmark}
+ \begin{schemedisplay}
+  (: benchmark : Integer -> Integer)
+  (define (benchmark N)
+
+    (: build : Integer (Queue Integer) -> (Queue Integer))
+    (define (build i que)
+      (if (<= i N)
+          (build (add1 i) (enqueue i que))
+          que))
+
+    (: q : (Queue Integer))
+    (define q (build 0 (queue)))
+
+    (let add-all ([sum 0] [que q])
+      (if (empty? que)
+          sum
+          (add-all (+ sum (head que)) (tail que)))))
+
+  (time (benchmark 1000000))
+ \end{schemedisplay}
+ \label{bm:1}
+\end{benchmark}
+
+According to \citet{oka} Real-Time Queues are among the fastest queue
+implementations. However, the above results show that the performance of
+Typed Racket implementation of Real-Time Queues is slower than the other
+functional queue implementations. The performance of some operations on
+Physicist's Queue is comparable to the performance of Bootstrapped and
+imperative Queues. But the overall performance of Bootstrapped Queue is
+better than Physicist's Queue, the imperative queue implementation with
+contracts and the other functional queue implementations. The imperative
+queue implementation without contracts preforms better than all the
+functional queue implementations.
+
+%\begin{adjustwidth}{}{-8em}
+%\changepage{}{}{-2em}{}{}{}{}{}{}
+%\begin{adjustwidth}{-8em}{}
+  %\changetext{-5\baselineskip}{10em}{}{}{}
+
+
+
+\section{Heap Performance}
+Table~\ref{fig:heap} shows the performance of the Leftist Heap, Pairing
+Heap, Binomial Heap and Bootstrapped Heap implementations, compared with
+a simple implementation based on sorted lists, and a simple imperative
+heap. The \emph{Size} column of the table indicate the initial size of
+the heaps. The times in the table are time taken for performing heap
+operations 100000 times on heaps with different initial sizes, averaged
+over 10 runs. Again, because the \scheme|find| operation runs in a very
+short amount of time, it is repeated 1000000 times to reduce noise in
+the benchmark.
+
+
+The performance characteristics of the heap implementations can be
+derived from the results of the benchmarks from the
+Table~\ref{fig:heap}.
+
+\begin{enumerate}
+\item{For the heap constructor \scheme|heap|, Pairing Heaps and the
+  imperative heap implementation perform similarly for smaller sizes and
+  for larger sizes imperative heaps perform better than all the
+  functional heap implementations. Pairing Heaps perform better than all
+  the other functional heap implementations and the heap implementation
+  based on lists outperforms all other implementations.}
+\item{For the \scheme|insert| operation, the heap implementation based
+  on lists is extremely slow. Among other heap implementations, the
+  performance of imperative heaps, Binomial Heaps and Pairing Heaps is
+  almost the same and is better than the other functional heap
+  implementations.}
+\item{For the \scheme|find| operation, the performance of almost all the
+  heap implementations is very similar, except for Binomial Heaps, which
+  are slower than the other heap implementations.}
+\item{For the \scheme|delete| operation, the heap implementation based
+  on lists outperforms the other heap implementations. Imperative heaps
+  perform better than all the functional heap implementations. Among
+  functional heaps, Leftist Heaps perform slightly better than Binomial
+  and Pairing Heaps.}
+\end{enumerate}
+
+\begin{figure*}
+  %\begin{center}
+  \begin{adjustwidth}{-3em}{}
+    \begin{threeparttable}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
+      \hline
+      Size & Operation & Binomial & Leftist & Pairing & Bootstrapped & List & Imperative \\
+      \hline
+      \multirow{3}{*}{1000} & \scheme|heap| & 45 & 192 & 30 & 122 & 9 & 30 \\
+      \cline{2-8}
+      & \scheme|insert| & 36 & 372 & 24 & 218 & 323874 & 20 \\
+      \cline{2-8}
+      & \scheme|find| & 480 & 40 & 40 & 45 & 35 & 40 \\
+      \cline{2-8}
+      \hline
+      \multirow{3}{*}{10000} & \scheme|heap| & 422 & 2730 & 260 & 1283 & 76 & 360 \\
+      \cline{2-8}
+      & \scheme|insert| & 34 & 358 & 28 & 224 & 409051 & 24 \\
+      \cline{2-8}
+      & \scheme|find| & 430 & 40 & 45 & 45 & 35 & 40 \\
+      \cline{2-8}
+      \hline
+      \multirow{3}{*}{100000} & \scheme|heap| & 6310 & 40580 & 4240 & 24418 & 1010 & 3490 \\
+      \cline{2-8}
+      & \scheme|insert| & 33 & 434 & 30 & 198 & 1087545 & 30 \\
+      \cline{2-8}
+      & \scheme|find| & 480 & 40 & 45 & 40 & 40 & 45 \\
+      \cline{2-8}
+      & \scheme|delete| \tnote{$\dagger$} & 986 & 528 & 462 & 1946 & 7 & 180 \\
+      \cline{2-8}
+      \hline
+      \multirow{3}{*}{1000000} & \scheme|heap| & 109380 & 471588 & 80210 & 293788 & 11140 & 43010 \\
+      \cline{2-8}
+      & \scheme|insert| & 32 & 438 & 28 & 218 & $\infty$  \tnote{$\ddagger$} & 140 \\
+      \cline{2-8}
+      & \scheme|find| & 590 & 45 & 40 & 45 & 40 & 45 \\
+      \cline{2-8}
+      & \scheme|delete| \tnote{$\dagger$} & 1488 & 976 & 1489 & 3063 & 8 & 280 \\
+      \cline{2-8}
+      \hline
+    \end{tabular}
+    \begin{tablenotes}%[para]
+      \item[$\dagger$] Since 100000 (successive) \scheme|delete| operations
+        cannot be performed on 1000 and 10000 element heap, running time
+        for \scheme|delete| operation for these sizes are not available.
+      \item[$\ddagger$] Takes longer than 30 minutes.
+    \end{tablenotes}
+    \end{threeparttable}
+  %\end{center}
+    \end{adjustwidth}
+  \caption{Heap Performance: Individual Operations}
+  \label{fig:heap}
+\end{figure*}
+
+The times in Table~\ref{fig:heap1} are the times taken for building a
+heap by repeating the \scheme|insert| operation \scheme|N| times and
+then performing \scheme|find-min/max| and \scheme|delete-min/max| on the
+resulting queue \scheme|N| times, with \scheme|N| taking the values
+100000, 200000, 300000, 400000 and 500000. Benchmark~Code~\ref{bm:2}
+shows the Typed Racket code used to benchmark functional heaps in Typed
+Racket. Untyped benchmark code in Racket similar to
+Benchmark~Code~\ref{bm:2} was used to benchmark the imperative heap
+implementation in Racket.
+
+The results of the benchmarks from the Table~\ref{fig:heap1} show that
+Pairing Heaps perform slightly better than imperative heaps, and the
+imperative heaps better than all other heap implementations.
+
+\begin{benchmark}
+ \begin{schemedisplay}
+  (: benchmark : Integer -> Integer)
+  (define (benchmark N)
+   
+    (: build : Integer (Heap Integer) -> (Heap Integer))
+    (define (build i heap)
+      (if (<= i N)
+          (build (add1 i) (insert i heap))
+          heap))
+
+    (: init-heap : (Heap Integer))
+    (define init-heap (build 0 (heap < 1)))
+
+    (let add-all ([sum 0] [init-heap init-heap])
+      (if (empty? init-heap)
+          sum
+          (add-all (+ sum (find-min/max init-heap))
+                (delete-min/max init-heap)))))
+
+  (time (benchmark 100000))
+ \end{schemedisplay}
+ \label{bm:2}
+\end{benchmark}
+
+\begin{figure*}[ht]
+  \begin{adjustwidth}{0em}{}
+    \begin{threeparttable}
+      \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline
+        \# of Repetitions & Binomial & Leftist & Pairing & Bootstrapped & Imperative \\%&IBinary&IFibo\\ %& Splay \\ % & Skew Binomial
+        \hline
+        100000 & 290  & 620  & 120 & 320  & 240  \\%& 1060 & 810  \\ %& 160  \\ %  & 980  
+        \hline%                                   \\%          
+        200000 & 610  & 1330 & 320 & 660  & 480  \\%& 2270 & 1810 \\ %& 440  \\ %  & 2140 
+        \hline%                                   \\%          
+        300000 & 980  & 2140 & 480 & 1030 & 840  \\%& 3570 & 2760 \\ %& 730  \\ %  & 3390 
+        \hline%                                   \\%          
+        400000 & 1310 & 3020 & 690 & 1370 & 940  \\%& 4950 & 3690 \\ %& 1020 \\ %  & 4630 
+        \hline%                                   \\%          
+        500000 & 1630 & 3760 & 820 & 1660 & 1410 \\%& 6090 & 4770 \\ %& 1240 \\ %  & 4630 
+        \hline
+      \end{tabular}
+      \caption{Heap Performance: Multiple Operations}
+      \label{fig:heap1}
+    \end{threeparttable} 
+  \end{adjustwidth}
+\end{figure*}
+
+The results show that some functional heap implementations perform
+comparable to and in some cases better than imperative heap
+implementation. Among the functional heap implementations, Pairing Heaps
+are fastest overall.
+
+\section{List Performance}
+Table~\ref{fig:list} shows the performance of Skew Binary Random Access
+Lists and VLists compared with built-in lists. The \emph{Size} column in
+the table indicate the initial size of the list. The times in the table
+indicate the time taken to perform list operations 100000 times on lists
+of different initial sizes. The results of the benchmark show the
+performance characteristics of each list implementation.
+
+\begin{figure*}[htb]
+  \begin{adjustwidth}{+6em}{}
+    \begin{threeparttable}
+      \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        Size & Operation & RAList & VList & List \\
+        \hline
+        \multirow{3}{*}{1000} & \scheme|list| & 24 & 51 & 2 \\
+        \cline{2-5}
+        & \scheme|list-ref| & 77 & 86 & 240 \\
+        \cline{2-5}
+        & \scheme|first| & 2 & 9 & 1 \\
+        \cline{2-5}
+        & \scheme|rest| & 20 & 48 & 1 \\
+        \cline{2-5}
+        & \scheme|last| & 178 & 40 & 520 \\
+        \cline{2-5}
+        \hline
+        \multirow{3}{*}{10000} & \scheme|list| & 263 & 476 & 40 \\
+        \cline{2-5}
+        & \scheme|list-ref| & 98 & 110 & 2538 \\
+        \cline{2-5}
+        & \scheme|first| & 2 & 9 & 1 \\
+        \cline{2-5}
+        & \scheme|rest| & 9 & 28 & 1 \\
+        \cline{2-5}
+        & \scheme|last| & 200 & 52 & 5414 \\
+        \cline{2-5}
+        \hline
+        \multirow{3}{*}{100000} & \scheme|list| & 2890 & 9796 & 513 \\
+        \cline{2-5}
+        & \scheme|list-ref| & 124 & 131 & 33187 \\
+        \cline{2-5}
+        & \scheme|first| & 3 & 10 & 1 \\
+        \cline{2-5}
+        & \scheme|rest| & 18 & 40 & 1 \\
+        \cline{2-5}
+        & \scheme|last| & 204 & 58 & 77217 \\
+        \cline{2-5}
+        \hline
+        \multirow{3}{*}{1000000} & \scheme|list| & 104410 & 147510 & 4860 \\
+        \cline{2-5}
+        & \scheme|list-ref| & 172 & 178 & 380960 \\
+        \cline{2-5}
+        & \scheme|first| & 2 & 10 & 1 \\
+        \cline{2-5}
+        & \scheme|rest| & 20 & 42 & 1 \\
+        \cline{2-5}
+        & \scheme|last| & 209 & 67 & 755520 \\
+        \cline{2-5}
+        \hline
+      \end{tabular}
+      \caption{List Performance}
+      \label{fig:list}
+    \end{threeparttable} 
+  \end{adjustwidth}
+\end{figure*}
+
+\begin{enumerate}
+\item{For the list constructor \scheme|list|, \scheme|cons| list perform
+  better than RALists and VLists, RALists perform much better than
+  VLists.}
+\item{For \scheme|first|, the performance of RALists and
+  \scheme|cons| lists is similar and slightly better than VLists.}
+\item{For \scheme|rest|, the performance of \scheme|cons| list is better
+  than RALists and the performance of RALists is better than VLists.}
+\item{For \scheme|list-ref|, the performance of cons lists is
+  slow compared to RALists and VLists, and the performance of RALists
+  and VLists is similar.}
+\item{For \scheme|last|, the performance of cons lists is slow
+  compared to RALists and VLists. And the performance of VLists is
+  better than RALists.}
+\end{enumerate}
+
+The analysis of the list benchmarks show that the built-in lists are
+faster than VList and RAList implementations for the operations
+\scheme|first|, \scheme|rest| and \scheme|cons|. Unsurprisingly, in the
+case of the random-access operations, RALists and VLists perform better
+than the built-in list implementation.
+
+
+\section{Conclusion}
+The analysis shows that Bootstrapped Queues and Pairing Heaps are among
+the fastest Typed Racket functional queue and heap implementations
+respectively. Choosing these functional queue and heap data structures
+produces results close to, and in some cases better than optimized
+imperative versions of these data structures. Therefore, these
+functional queues and heaps serve as viable alternatives to imperative
+implementations. For some basic operations, naive implementations based
+on lists perform significantly better than more sophisticated functional
+and imperative data structures. However, other operations perform
+extremely poorly when using lists, making them impractical for general
+use. In summary, for queues and heaps programmers can freely use
+functional data structures without worrying that they lose performance.
+
+Despite the disadvantage of library implementation, the performance of
+the basic operations of RALists and VLists competitive with built-in
+\scheme|cons|-lists. For the simple operations, the data structures of
+this thesis perform acceptably for general use, and for a few
+operations, the implementations of the library are significantly
+faster. This makes RALists and VLists viable options when fast and
+growable random access data structures are required.
+
+% the performance of functional data structures is
+%comparable to the implementations based on lists and the imperative data
+%structures.

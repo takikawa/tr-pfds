@@ -1,0 +1,285 @@
+\documentclass[12pt,final,twoside]{ThesisStyle}
+
+\include{formatAndDefs}
+%\include{combine}
+%\usepackage{dissertationfmt}
+\begin{document}
+
+%\renewcommand*{\@setsize}[4]{%
+%  \@nomath#1%
+%  \let\@currsize#1%
+%  \baselineskip #2%
+%  \baselineskip \baselinestretch\baselineskip
+%  \parskip \baselinestretch\parskip
+%  \setbox\strutbox \hbox{%
+%    \vrule height.7\baselineskip
+%           depth .3\baselineskip
+%           width \z@}%
+%  \skip\footins \baselinestretch\skip\footins
+%  \normalbaselineskip\baselineskip#3#4}
+
+\dominitoc
+
+\pagenumbering{roman}
+
+\include{TitlePage}
+
+%\DoubleSpacing
+
+\setspecialsymbol{langtr}{{{\bf \#lang} typed/racket}}
+\setspecialsymbol{langr}{{\bf \#lang} racket}
+\setspecialsymbol{langrl}{{\bf \#lang} racket/load}
+
+\newcounter{ex}
+
+\newsavebox{\boxedtextbin}
+\newenvironment{boxedtext}
+{\begin{lrbox}{\boxedtextbin}
+      \begin{minipage}{0.95 \textwidth}    }
+{\end{minipage}\end{lrbox}
+\begin{center}\fbox{\usebox{\boxedtextbin}}\end{center}}
+
+\newbox\exbox
+
+\newenvironment{example}{
+\refstepcounter{ex}%
+\begin{boxedtext}
+\setbox\exbox=\vbox{\par\hfill\framebox{\small Function Definition~\theex}}
+\usebox\exbox
+\vskip-1em
+\vskip-\ht\exbox
+\begin{SingleSpace*}}
+{\end{SingleSpace*}
+\end{boxedtext}}
+
+\newcounter{defex}
+
+%\newsavebox{\boxedtextbindef}
+%\newenvironment{boxedtextdef}
+%{\begin{lrbox}{\boxedtextbindef}
+%      \begin{minipage}{0.95 \textwidth}    }
+%{\end{minipage}\end{lrbox}
+%\begin{center}\fbox{\usebox{\boxedtextbindef}}\end{center}}
+
+%\newbox\exbox
+
+\newenvironment{defexample}{
+\refstepcounter{defex}%
+\begin{boxedtext}
+\setbox\exbox=\vbox{\par\hfill\framebox{\small Data Definition~\thedefex}}
+\usebox\exbox
+\vskip-1em
+\vskip-\ht\exbox
+\begin{SingleSpace*}}
+{\end{SingleSpace*}
+\end{boxedtext}}
+
+\newcounter{modules}
+
+\newenvironment{defmodule}{
+\refstepcounter{modules}%
+\begin{boxedtext}
+\setbox\exbox=\vbox{\par\hfill\framebox{\small Example~\themodules}}
+\usebox\exbox
+\vskip-1em
+\vskip-\ht\exbox
+\begin{SingleSpace*}}
+{\end{SingleSpace*}
+\end{boxedtext}}
+
+\newcounter{structure}
+
+\newenvironment{datastructure}{
+\refstepcounter{structure}%
+\begin{boxedtext}
+\setbox\exbox=\vbox{\par\hfill\framebox{\small Data Structure~\thestructure}}
+\usebox\exbox
+\vskip-1em
+\vskip-\ht\exbox
+\begin{SingleSpace*}}
+{\end{SingleSpace*}
+\end{boxedtext}}
+
+\newcounter{mlntr}
+\newenvironment{mlexample}{
+\refstepcounter{mlntr}%
+\begin{boxedtext}
+\setbox\exbox=\vbox{\par\hfill\framebox{\small Typed Racket and ML Definition~\themlntr}}
+\usebox\exbox
+\vskip-1em
+\vskip-\ht\exbox
+\begin{SingleSpace*}}
+{\end{SingleSpace*}
+\end{boxedtext}}
+
+
+\newenvironment{plain}{
+\refstepcounter{modules}%
+\begin{boxedtext}
+%\setbox\exbox=\vbox{\par\hfill\framebox{\small}}
+\usebox\exbox
+\vskip-1em
+\vskip-\ht\exbox
+\begin{SingleSpace*}}
+{\end{SingleSpace*}
+\end{boxedtext}}
+
+
+\newenvironment{file}[1]{
+\begin{boxedtext}
+\setbox\exbox=\vbox{\par\hfill\framebox{\small #1}}
+\usebox\exbox
+\vskip-1em
+\vskip-\ht\exbox
+\begin{SingleSpace*}}
+{\end{SingleSpace*}
+\end{boxedtext}}
+
+
+\newcounter{bench}
+
+\newenvironment{benchmark}{
+\refstepcounter{bench}%
+\begin{boxedtext}
+\setbox\exbox=\vbox{\par\hfill\framebox{\small Benchmark Code~\thebench}}
+\usebox\exbox
+\vskip-1em
+\vskip-\ht\exbox
+\begin{SingleSpace*}}
+{\end{SingleSpace*}
+\end{boxedtext}}
+
+
+\newcounter{struct}
+
+\newenvironment{pstructure}{
+\refstepcounter{struct}%
+\begin{boxedtext}
+\setbox\exbox=\vbox{\par\hfill\framebox{\small Structure~\thestruct}}
+\usebox\exbox
+\vskip-1em
+\vskip-\ht\exbox
+\begin{SingleSpace*}}
+{\end{SingleSpace*}
+\end{boxedtext}}
+
+
+\setkeyword{require/typed pdefine: Listof require-typed-struct lib 
+  int U Null
+  planet Symbol Opaque require/opaque-type define-values values
+  All cases define-type Any Pair let-values let* Stream
+  Char N B A S Path Queue Deque List Heap Treap RedBlackTree CatenableList
+  -> Number String Boolean : define: define-type struct
+  define-typed-struct module with-syntax syntax-case
+  struct: let*: Refinement R provide for-syntax require 
+  rename-out except-out all-from-out define-for-syntax
+  begin-for-syntax match rename-in compiled-module define/contract
+  #%app #%module-begin #%top-interaction class unit
+  Integer inst Natural Promise}
+\setspecialsymbol{lambda}{\ma{\lambda}}
+\setspecialsymbol{lambda:}{\ma{\lambda}:}
+\setspecialsymbol{l:}{\ma{\lambda}:}
+\setspecialsymbol{hlang}{{\bf \#lang}}
+\setspecialsymbol{mu}{$\mu$} 
+\setspecialsymbol{string->number}{\mbox{\variablefont{string}$\rightarrow$\variablefont{number}}}
+\setspecialsymbol{->}{$\rightarrow$}
+%\setspecialsymbol{U}{\ma{\bigcup}}
+\setspecialsymbol{-U>}{\ma{\stackrel{\mbox{(\usym\ {\bf Number} {\bf Boolean})}}{\to}}}
+\setspecialsymbol{bover}{\ma{\stackrel{b}{\to}}}
+\setspecialsymbol{bot}{\ma{\bot}}
+\setspecialsymbol{ELIDED}{\mbox{$\mbox{\tiny ~~{\it omitted\/}~~} \over ~$}}
+\setspecialsymbol{dotsa}{$\dots_{\alpha}$}
+\setspecialsymbol{dotsb}{$\dots_{\beta}$}
+\setspecialsymbol{dotsc}{$\dots_{\gamma}$}
+\setspecialsymbol{alpha}{$\alpha$}
+\setspecialsymbol{leq}{$\leq$}
+\setspecialsymbol{beta}{$\beta$}
+\setspecialsymbol{gamma}{$\gamma$}
+\setspecialsymbol{sigma}{$\sigma$}
+\setspecialsymbol{tau}{$\tau$}
+\setspecialsymbol{All}{$\forall$}
+\setvariable{rec}
+
+%\begin{vcenterpage}
+%\noindent\rule[2pt]{\textwidth}{0.5pt}
+%\begin{center}
+%{\large\textbf{Abstract}}
+%\end{center}
+%{\large\textbf{Abstract:}}
+
+%\frontmatter
+%\makeccsthesistitle
+
+ 
+
+\section*{Abstract}
+In the past two decades, a wide variety of functional data structures
+have been developed and proved to be practical. These data structures
+appear in functional languages such as Haskell, OCaml and
+Clojure. Although Typed Racket provides some valuable functional data
+structures, these are insufficient to fully support functional
+programming. This MS thesis presents a library of functional data
+structures for Typed Racket and reports on their feasibility and
+performance. At the same time, it presents an evaluation of Typed
+Racket's suitability for developing large libraries.
+%\end{abstracts}
+%\noindent\rule[2pt]{\textwidth}{0.5pt}
+%\end{vcenterpage}
+
+\clearpage
+
+\section*{Acknowledgments}
+ 
+I express my sincere gratitude to Prof. Matthias Felleisen for
+introducing me to the exciting world of functional programming, for his
+continuous support and motivation. I could not have imagined having a
+better teacher and advisor.
+
+Besides my advisor, I would like to thank Dr. Sam Tobin-Hochstadt for
+his patience, enthusiasm and constant encouragement. His guidance helped
+me in all the time of research and writing of this thesis.
+
+Thanks also to Dr. Olin Shivers for taking time off from his busy
+schedule to be part of my thesis committee. I am grateful to Dr. Eli
+Barzilay for helping me refine and polish this work. Without his help
+this thesis would not have been the same.
+
+I thank my fellow lab mates and friends in Northeastern Programming
+Research Lab for many stimulating discussions.
+
+Last but not the least, I would like to thank my family: my parents and
+my brothers for their love and encouragement.
+
+\tableofcontents
+
+\mainmatter
+
+\include{Chapter1}
+
+\include{Chapter2}
+
+\include{Chapter3}
+
+\include{Chapter4}
+
+\include{Chapter5}
+
+\include{Chapter6}
+
+%\appendix
+
+%\include{Appendix1}
+\include{Conclusion}
+%\include{Appendix}
+
+\bibliographystyle{ThesisStyle}
+%\bibliographystyle{plainnat}
+%\bibliographystyle{unsrtnat}
+\bibliography{Thesis}
+
+%\printnomenclature
+
+%\cleardoublepage
+
+
+\end{document}

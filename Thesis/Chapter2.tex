@@ -1,0 +1,322 @@
+\chapter{An Overview to Typed Racket}
+Typed Racket \citep{thf-popl, th-diss} is a statically typed sister
+language of Racket. The purpose of Typed Racket is to enable the gradual
+and straightforward migration from the untyped to the typed
+language. This chapter gives an overview of the features of Typed Racket
+that are used in later chapters.
+
+\section{Data Definitions}
+\label{sec:datadef}
+\noindent
+A Data Definition states, in a mixture of English and Racket, how a
+class of structures are used and how an element of the class of data is
+constructed. Data~Definition~\ref{ddef:1} shows an example.
+
+\begin{defexample}
+\begin{schemedisplay}
+  langr
+ 
+  ;; Data definition for a simple queue of integers
+  (struct IntQueue 
+    (front rear))
+ 
+  ;; front and rear are list-of integers.
+\end{schemedisplay}
+\label{ddef:1}
+\end{defexample}
+
+%In the above data definition, Racket does not provide any static type
+%safety for front and rear fields of the IntQueue structure. In Typed
+%Racket, the fields of the IntQueue structure must be annotated with
+%types and the type checker makes sure that the fields have the right
+%type.
+
+\noindent
+The structure \scheme|IntQueue| in Data~Definition~\ref{ddef:1} has two
+fields \scheme|front| and \scheme|rear|. As part of the data definition,
+both the fields of \scheme|IntQueue| structure are declared to be list
+of integers in the comment. But no guarantees are made by the language
+about the types that are stated in the comment.
+
+
+In contrast, in Typed Racket the fields of the \scheme|IntQueue|
+structure must be annotated with types and the type checker makes sure
+that the fields have the right type and no extra comments are required
+here. Data~Definition~\ref{ddef:2} the definition of \scheme|IntQueue|
+in Typed Racket.
+
+\begin{defexample}
+\begin{schemedisplay}
+  langtr
+
+  ;; Data definition for a simple queue of integers
+  (struct: IntQueue 
+    ([front : (Listof Integer)]
+     [rear  : (Listof Integer)]))
+
+\end{schemedisplay}
+\label{ddef:2}
+\end{defexample}
+\noindent
+\scheme|struct:| is used to define structures in Typed Racket. And both
+the fields have been annotated to be of type \scheme|(Listof Integer)|.
+
+Typed Racket provides \scheme|define-type| to define new types. Data
+Definition~\ref{ddef:3} defines the type \scheme|IntString| which is the
+union of \scheme|Integer| and \scheme|String|. Here, \scheme|U| is used
+for the union of two or more types.
+
+\begin{defexample}
+\begin{schemedisplay}
+  langtr
+
+  (define-type IntString (U Integer String))
+
+\end{schemedisplay}
+\label{ddef:3}
+\end{defexample}
+
+\section{Function Definitions}
+
+%  ;; Compute the length of a given list of integers
+%  ;; length : (listof integers) -> natural
+%  (define (length list)
+%    (if (null? list)
+%        0
+%        (add1 (length (rest list)))))
+The functions in this section are defined using the data definitions
+from Section~\ref{sec:datadef}. The functions in Racket use the
+Racket definition of \scheme|IntQueue| and Typed Racket definitions use
+the Typed Racket definition of \scheme|IntQueue|.
+
+Function~Definition~\ref{fdef:1} shows the definition of the function
+\scheme|head| in Racket. \scheme|head| returns the first element from
+the given \scheme|IntQueue|.
+\begin{example}
+\begin{schemedisplay}
+  langr
+
+  ;; head : IntQueue $\rightarrow$ Integer
+  ;; Returns the first element of the given queue
+  (define (head queue)
+    (if (null? (IntQueue-front queue))
+        (error 'head "given queue is empty")
+        (first (IntQueue-front queue))))
+
+\end{schemedisplay}
+\label{fdef:1}
+\end{example}
+
+%\noindent
+%The \scheme|head| function throws an error if the front list of the
+%given \scheme|IntQueue| is empty.
+
+Racket's convention of writing the input and output types of the
+function as comments change to actual types in Typed Racket. The infix
+identifier $\rightarrow$ is used to specify function
+types. Function~Definition~\ref{fdef:2} shows the definition of the
+function \scheme|head| in Typed Racket.
+
+%  ;; Compute the length of a given list of integers
+%  (: length : (Listof Integer) -> Natural)
+%  (define (length list)
+%    (if (null? list)
+%        0
+%        (add1 (length (rest list)))))
+
+\begin{example}
+\begin{schemedisplay}
+  langtr
+
+  (: head : IntQueue -> Integer)
+  ;; Returns the first element of the given queue
+  (define (head queue)
+    (if (null? (IntQueue-front queue))
+        (error 'head "given queue is empty")
+        (first (IntQueue-front queue))))
+
+\end{schemedisplay}
+\label{fdef:2}
+\end{example}
+
+
+
+\section{Polymorphic Definitions}
+
+Typed Racket supports polymorphism. For example, Data
+Definition~\ref{ddef:4} shows the polymorphic definition of queue using
+two lists in Typed Racket.
+
+\begin{defexample}
+\begin{schemedisplay}
+  langtr
+
+  ;; Data definition for a simple queue
+  (struct: (alpha) Queue
+    ([front : (Listof alpha)]
+     [rear  : (Listof alpha)]))
+
+\end{schemedisplay}
+\label{ddef:4}
+\end{defexample}
+
+\noindent
+In Data~Definition~\ref{ddef:4}, \scheme|alpha| is a type variable. The
+fields \scheme|front| and \scheme|rear| are of type \scheme|(Listof
+alpha)|.
+
+The function \scheme|head| on the polymorphic structure \scheme|Queue|
+is defined in Function~Definition~\ref{fdef:3}.
+
+\begin{example}
+\begin{schemedisplay}
+  langtr
+
+  (: head : (All (alpha) (Queue alpha) -> alpha))
+  ;; Returns the first element of the given queue
+  (define (head queue)
+    (if (null? (Queue-front queue))
+        (error 'head "given queue is empty")
+        (first (Queue-front queue))))
+
+\end{schemedisplay}
+\label{fdef:3}
+\end{example}
+
+\noindent
+The Polymorphic type constructor \scheme|All| is used to construct the
+type for polymorphic functions. Again, \scheme|alpha| is the polymorphic
+type variable.
+
+\section{Integration of typed and untyped code}
+
+Typed Racket code smoothly interoperates with Racket code. Untyped
+module can imported into typed modules. For example, typed module
+\scheme|M2| imports untyped module \scheme|M1|.
+
+\begin{file}{M1}
+\begin{schemedisplay}
+
+  langr
+  ;; Data definition for a simple queue of integers
+  (struct IntQueue
+    (front rear))
+
+  (provide (struct-out IntQueue))
+\end{schemedisplay}
+\end{file}
+
+\begin{file}{M2}
+\begin{schemedisplay}
+  langtr
+  (require/typed M1 [struct IntQueue ([front : (Listof Integer)]
+                                      [rear  : (Listof Integer)])])
+  (: head : IntQueue -> Integer)
+  ;; Returns the first element of the queue
+  (define (head queue)
+    (if (null? (IntQueue-front queue))
+        (error 'head "given queue is empty")
+        (first (IntQueue-front queue))))
+
+  (provide head (struct-out IntQueue))
+\end{schemedisplay}
+\end{file}
+
+The \scheme|require/typed| form used in module \scheme|M2| specifies the
+types for imported untyped code. Module \scheme|M2| imports the untyped
+structure \scheme|IntQueue| from module \scheme|M1| and specifies the
+types for its fields.
+
+Importing typed modules into untyped modules is also straightforward.
+The untyped module \scheme|M3| imports the typed module \scheme|M2| uses
+the function \scheme|head|.
+
+\begin{file}{M3}
+\begin{schemedisplay}
+
+  langr
+  (require M2)
+
+  (head (make-IntQueue (list 1 2 3) (list 6 5 4)))
+  (head (make-IntQueue (list) (list)))
+
+\end{schemedisplay}
+\end{file}
+
+%\clearpage
+\section{A Simple Queue}
+
+\begin{figure}
+\begin{datastructure}
+\begin{schemedisplay}
+  langtr
+  
+   (struct: (alpha) Queue 
+     ([front : (Listof alpha)]
+      [rear  : (Listof alpha)]))
+
+   (: empty? : (All (alpha) (Queue alpha) -> Boolean))
+   ;; Returns true if the queue is empty
+   (define (empty? queue)
+     (null? (Queue-front queue)))
+
+   (: balance : (All (alpha) (Listof alpha) (Listof alpha) -> (Queue alpha)))
+   (define (balance front rear)
+     (if (null? front)
+         (Queue (reverse rear) null)
+         (Queue front rear)))
+
+   (: head : (All (alpha) (Queue alpha) -> alpha))
+   ;; Returns the first element of the queue
+   (define (head queue)
+     (if (empty? queue)
+         (error 'head "given queue is empty")
+         (first (Queue-front queue))))
+
+   (: dequeue : (All (alpha) (Queue alpha) -> (Queue alpha)))
+   ;; Returns the rest of the queue
+   (define (dequeue queue)
+     (if (empty? queue)
+         (error 'dequeue "given queue is empty")
+         (balance (rest (Queue-front queue)) (Queue-rear queue))))
+
+   (: enqueue : (All (alpha) alpha (Queue alpha) -> (Queue alpha)))
+   ;; Inserts the given element into the queue
+   (define (enqueue elem queue)
+     (Queue (Queue-front queue)
+            (cons elem (Queue-rear queue))))
+
+\end{schemedisplay}
+\end{datastructure}
+\caption{Typed Racket implementation of a Batched Queue}
+\label{fig:queueds}
+\end{figure}
+A Batched Queue is a simple implementation of a Queue data structure
+using two lists. Figure~\ref{fig:queueds} shows a Typed Racket
+implementation of Batched Queue. The implementation includes the the
+basic operations on the Queue structure namely, \scheme|empty?|,
+\scheme|head|, \scheme|dequeue| and \scheme|enqueue|.
+%\\
+
+%\raisebox{0pt}[0pt][0pt]{\Large%
+%\raisebox{-0.3ex}{a}%
+%\raisebox{-0.7ex}{aa}%
+%\raisebox{-1.2ex}{r}%
+%\raisebox{-2.2ex}{g}%
+%\raisebox{-4.5ex}{h}}
+% 
+%\makebox(30, 20){cvvvvvvvvvv
+%ddddddddddd}
+
+
+%\boxed{
+%\begin{schemeresponsebox}
+%  #lang racket
+%  ;; Compute the length of a given list of integers
+%  ;; lenght : (listof integers) -> natural
+%  (define (length list)
+%    (if (null? list)
+%        0
+%        (add1 (length (rest list)))))
+%\end{schemeresponsebox}
+%}

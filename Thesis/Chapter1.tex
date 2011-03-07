@@ -1,0 +1,109 @@
+\chapter{Introduction}
+\label{chap:intro}
+%\minitoc
+
+%\section{Functional Data Structures for Typed Racket}
+
+%\section*{Functional Data Structures}
+
+The past decade has seen advancements in the development of efficient
+functional data structures, particularly by \cite{oka} and
+\cite{bagwell-lists, bagwell-trie}. However, few attempts have been made
+to port these structures to
+Racket~\footnote{\url{http://planet.plt-scheme.org/display.ss?package=ralist.plt&owner=dvanhorn}
+\par ~~~\url{http://planet.plt-scheme.org/display.ss?package=galore.plt&owner=soegaard}}.
+
+In this MS thesis, I present a comprehensive library of efficient
+functional data structures in Typed Racket \citep{thf-popl, th-diss}, a
+recently developed typed dialect of Racket. The thesis also includes an
+investigation of the usefulness of these data structures and evaluation
+of the practicality of Typed Racket in the context of functional data
+structures.
+
+The programming productivity in a language is largely determined by the
+data structures that are built-in to the language. Data structures
+available in C-like languages cannot be easily adapted to functional
+languages like Typed Racket as they depend crucially on mutation, which
+is discouraged and/or disallowed in functional languages. So, functional
+language require functional data structures to support functional
+programming.
+
+In response, I have developed the library of functional data structures
+for Typed Racket
+
+\begin{itemize}
+\item
+  Variants of FIFO queues including those discussed by \cite{oka} and
+  Hood-Melville Queues \citep{hood-mel}.
+\item
+  Variants of priority queues or heaps which include Binomial Heaps,
+  Pairing Heaps \citep{pairing}, Leftist Heap \citep{crane}, Bootstrapped
+  Heaps \citep{oka} and Skew Binomial Heap.
+\item
+  Variants of lists such as random access lists \cite{oka}, catenable
+  lists \citep{oka} and vlists \citep{bagwell-lists}
+\item
+  Other data structures such as Red-Black Trees \cite{oka-red-black},
+  Treaps \citep{Seidel}, Hash Lists \citep{bagwell-lists}, Tries
+  \citep{bagwell-trie} and Sets.
+\end{itemize}
+
+Historically, Racket and Typed Racket provide three data structures:
+linked lists, which supports many forms of functional programming,
+vectors, and hash tables. However, these are not sufficient. To truly
+support efficient programming in a functional style, additional
+functional data structure support is required.
+
+%Furtherly, the past decade has seen advancements in the development of
+%efficient functional data structures, particularly by \cite{oka} and
+%\cite{bagwell-lists, bagwell-trie}. However, few attempts have been made
+%to port these structures to Racket \citep{galore, dvh-ra}.% and \citep{}.
+
+%\section*{Typed Racket}
+Typed Racket has a novel type checker, based on \emph{occurrence
+typing}, that ensures type safety, supports all the Racket idioms and
+inter-operates well with Racket. Even though Typed Racket has seen use
+in the past several years, all of this use is in classroom settings. The
+development of a robust functional data structure library in Typed
+Racket, thus provides an opportunity to evaluate the usefulness and
+practicality of Typed Racket.
+%and extended the evaluation of Typed Racket to more
+%real-world projects.
+
+%Second,  Finally, I
+%believe that features of Typed Racket are well suited for the developing
+%this library.
+
+
+
+%\begin{figure}[!htbp]
+%  \begin{center}
+%    \includegraphics[width=0.9\textwidth]{Chapitre1/arctic_control}
+%  \end{center}
+%  \caption{A nice image...}
+%  \label{fig:jolieImage}
+%\end{figure}
+%
+%\section{An equation}
+%
+%Just to show argmin and partial derivative commands.
+%
+%\begin{equation}
+%  T = \argmin_T E(T,R,F)
+%\end{equation}
+%
+%Regularization:
+%
+%\begin{equation}
+%  \pd{T}{t} = \Delta T
+%\end{equation}
+%
+%\section{An other section}
+%
+%Showing a great bullet list environment:
+%
+%\begin{bulletList}
+% \item First point
+% \item Second point
+%% \item Here is an abbreviation reference \nomenclature{DTI}{Diffusion Tensor Imaging} DTI
+%\end{bulletList}

@@ -1,0 +1,36 @@
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}
+\contentsline {chapter}{\numberline {2}An Overview to Typed Racket}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}Data Definitions}{3}{section.2.1}
+\contentsline {section}{\numberline {2.2}Function Definitions}{4}{section.2.2}
+\contentsline {section}{\numberline {2.3}Polymorphic Definitions}{5}{section.2.3}
+\contentsline {section}{\numberline {2.4}Integration of typed and untyped code}{6}{section.2.4}
+\contentsline {section}{\numberline {2.5}A Simple Queue}{7}{section.2.5}
+\contentsline {chapter}{\numberline {3}Functional Data Structures}{9}{chapter.3}
+\contentsline {section}{\numberline {3.1}Purely Functional Data Structures}{9}{section.3.1}
+\contentsline {section}{\numberline {3.2}Choice of Data Structures}{10}{section.3.2}
+\contentsline {section}{\numberline {3.3}Data Structure Interfaces}{11}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Queue Interface}{11}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Interface for Deque}{12}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}Heap Interface}{12}{subsection.3.3.3}
+\contentsline {subsection}{\numberline {3.3.4}List Interface}{13}{subsection.3.3.4}
+\contentsline {section}{\numberline {3.4}Data Structure Implementation}{15}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}Queue Implementations}{15}{subsection.3.4.1}
+\contentsline {subsection}{\numberline {3.4.2}Deque Implementations}{18}{subsection.3.4.2}
+\contentsline {subsection}{\numberline {3.4.3}Heap Implementations}{19}{subsection.3.4.3}
+\contentsline {subsection}{\numberline {3.4.4}List Implementations}{23}{subsection.3.4.4}
+\contentsline {subsection}{\numberline {3.4.5}Other Data Structures}{25}{subsection.3.4.5}
+\contentsline {chapter}{\numberline {4}Performance Analysis}{29}{chapter.4}
+\contentsline {section}{\numberline {4.1}Queue Performance}{29}{section.4.1}
+\contentsline {section}{\numberline {4.2}Heap Performance}{33}{section.4.2}
+\contentsline {section}{\numberline {4.3}List Performance}{36}{section.4.3}
+\contentsline {section}{\numberline {4.4}Conclusion}{37}{section.4.4}
+\contentsline {chapter}{\numberline {5}Evaluation of Typed Racket}{39}{chapter.5}
+\contentsline {section}{\numberline {5.1}Benefits of Typed Racket}{39}{section.5.1}
+\contentsline {section}{\numberline {5.2}Disadvantages of Typed Racket}{42}{section.5.2}
+\contentsline {chapter}{\numberline {6}Related Work}{47}{chapter.6}
+\contentsline {section}{\numberline {6.1}In Other Languages}{47}{section.6.1}
+\contentsline {section}{\numberline {6.2}In Racket}{47}{section.6.2}
+\contentsline {chapter}{\numberline {7}Conclusion}{49}{chapter.7}
+\contentsline {section}{\numberline {7.1}Contributions}{49}{section.7.1}
+\contentsline {section}{\numberline {7.2}Future Work}{49}{section.7.2}
+\contentsline {chapter}{Bibliography}{51}{section*.39}
