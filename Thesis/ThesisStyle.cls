@@ -781,5 +781,3 @@
   \onecolumn
 \fi
 \endinput
-%%
-%% End of file `book.cls'.
