@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
 @defmodule/this-package[implicitdeque]
-@(require (for-label (planet krhari/pfds:1:0/implicitdeque))
+@(require (for-label "../deque/implicit/main.rkt")
           "helper.rkt")
 
 @(require scribble/eval)
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "implicitdeque.ss"))
+@(evaluate '(require "../deque/implicit/main.rkt"))
 
 @title{Implicit Deque}
 

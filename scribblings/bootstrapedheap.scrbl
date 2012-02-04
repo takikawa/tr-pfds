@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require "helper.rkt")
-@(require unstable/scribble)
-@defmodule/this-package[bootstrapedheap]
-@(require (for-label (planet krhari/pfds:1:0/bootstrapedheap)))
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label "../heap/bootstrapped/main.rkt"))
+
+@defmodule/this-package[heap/bootstrapped]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "bootstrapedheap.ss"))
+@(evaluate '(require "../heap/bootstrapped/main.rkt"))
 
 @title{Bootstrapped Heap}
 

@@ -1,15 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[bankers-deque]
-@(require (for-label (planet krhari/pfds:1:0/bankers-deque)))
-@;(require (for-label "bankers-deque.ss"))
+
+@(require (for-label "../deque/bankers/main.rkt"))
 @(require "helper.rkt")
 
-@(require scribble/eval)
+@defmodule/this-package[deque/bankers]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "bankers-deque.ss"))
+@(evaluate '(require "../deque/bankers/main.rkt"))
 
 @title{Bankers Deque}
 
