@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (provide (rename-out [heap-map map]
                      [heap-ormap ormap] [heap-andmap andmap]) 
@@ -85,8 +85,7 @@
 ;; Returns min or max element of the heap
 (: find-min/max : (All (A) ((LeftistHeap A) -> A)))
 (define (find-min/max lheap)
-  (let ([heap (LeftistHeap-heap lheap)]
-        [comparer (LeftistHeap-comparer lheap)])
+  (let ([heap (LeftistHeap-heap lheap)])
     (if (null? heap)
         (error 'find-min/max "given heap is empty")
         (Tree-elem heap))))
