@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require "helper.rkt")
-@(require unstable/scribble)
-@defmodule/this-package[treap]
-@(require (for-label (planet krhari/pfds:1:0/treap)))
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/treap/main))
+
+@defmodule/this-package[treap]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "../treap.rkt"))
+@(evaluate '(require tr-pfds/treap/main))
 
 @title{Treap}
 

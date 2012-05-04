@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require "helper.rkt")
-@(require unstable/scribble)
-@defmodule/this-package[leftistheap]
-@(require (for-label (planet krhari/pfds:1:0/leftistheap)))
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/heap/leftist/main))
+
+@defmodule/this-package[heap/leftist]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "leftistheap.ss"))
+@(evaluate '(require tr-pfds/heap/leftist/main))
 
 @title{Leftist Heap}
 

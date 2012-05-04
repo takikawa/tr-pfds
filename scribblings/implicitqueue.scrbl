@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require "helper.rkt")
-@(require unstable/scribble)
-@defmodule/this-package[implicitqueue]
-@(require (for-label (planet krhari/pfds:1:0/implicitqueue)))
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/queue/implicit/main))
+
+@defmodule/this-package[queue/implicit]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "implicitqueue.ss"))
+@(evaluate '(require tr-pfds/queue/implicit/main))
 
 @title{Implicit Queue}
 

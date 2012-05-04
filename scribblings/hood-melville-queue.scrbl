@@ -1,12 +1,14 @@
 #lang scribble/manual
+
 @(require "helper.rkt")
-@(require unstable/scribble)
-@defmodule/this-package[hood-melville-queue]
-@(require (for-label (planet krhari/pfds:1:0/hood-melville-queue)))
-@(require scribble/eval)
+@(require (for-label tr-pfds/queue/hood-melville/main))
+
+@defmodule/this-package[queue/hood-melville]
+
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "hood-melville-queue.ss"))
+@(evaluate '(require tr-pfds/queue/hood-melville/main))
+
 @title{Hood-Melville Queue}
 
 Similar to Real-Time Queues in many ways. But the implementation is

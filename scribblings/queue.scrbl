@@ -1,13 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[bankers-queue]
-@(require (for-label (planet krhari/pfds:1:0/bankers-queue))
-          "helper.rkt")
-@(require scribble/eval)
-@(provide (for-label (all-from-out)))
+
+@(require "helper.rkt")
+@(require (for-label "../queue/bankers/main.rkt"))
+
+@defmodule/this-package[queue/bankers]
+
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "bankers-queue.ss"))
+@(evaluate '(require tr-pfds/queue/bankers/main))
 
 @title{Banker's Queue}
 

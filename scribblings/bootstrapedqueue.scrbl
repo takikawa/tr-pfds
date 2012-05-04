@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require "helper.rkt")
-@(require unstable/scribble)
-@defmodule/this-package[bootstrapedqueue]
-@(require (for-label (planet krhari/pfds:1:0/bootstrapedqueue)))
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/queue/bootstrapped/main))
+
+@defmodule/this-package[queue/bootstrapped]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "bootstrapedqueue.ss"))
+@(evaluate '(require tr-pfds/queue/bootstrapped/main))
 
 @title[#:tag "boot-que"]{Bootstraped Queue}
 

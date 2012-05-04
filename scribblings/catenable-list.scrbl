@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[catenablelist]
-@(require (for-label (planet krhari/pfds:1:0/catenablelist))
-          "helper.rkt")
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/catenable-list/main))
+
+@defmodule/this-package[catenable-list]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "catenablelist.ss"))
+@(evaluate '(require tr-pfds/catenable-list/main))
 
 @title{Catenable List}
 

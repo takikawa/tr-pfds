@@ -1,13 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[stream]
-@(require (for-label (planet krhari/pfds:1:0/stream)))
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/stream/stream))
+
+@defmodule/this-package[stream]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "stream.ss"))
+@(evaluate '(require tr-pfds/stream/stream))
 
 @title[#:tag "streams"]{Streams}
 

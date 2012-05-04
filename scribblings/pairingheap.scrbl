@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require "helper.rkt")
-@(require unstable/scribble)
-@defmodule/this-package[pairingheap]
-@(require (for-label (planet krhari/pfds:1:0/pairingheap)))
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/heap/pairing/main))
+
+@defmodule/this-package[heap/pairing]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "pairingheap.ss"))
+@(evaluate '(require tr-pfds/heap/pairing/main))
 
 @title{Pairing Heap}
 

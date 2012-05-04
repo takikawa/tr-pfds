@@ -1,12 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[tries]
-@(require (for-label (planet krhari/pfds:1:0/tries)))
-@(require scribble/eval)
+
+@(require "helper.rkt")
+@(require (for-label tr-pfds/trie/main))
+
+@defmodule/this-package[trie]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "tries.ss"))
+@(evaluate '(require tr-pfds/trie/main))
 
 @title{Tries}
 

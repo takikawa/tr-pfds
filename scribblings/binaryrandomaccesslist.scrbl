@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[binaryrandomaccesslist]
-@(require (for-label (planet krhari/pfds:1:0/binaryrandomaccesslist))
-          "helper.rkt")
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/ralist/binary/main))
+
+@defmodule/this-package[ralist/binary]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "binaryrandomaccesslist.ss"))
+@(evaluate '(require tr-pfds/ralist/binary/main))
 
 @title[#:tag "bral"]{Binary Random Access List}
 

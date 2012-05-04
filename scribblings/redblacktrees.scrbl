@@ -1,13 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[redblacktrees]
-@(require (for-label (planet krhari/pfds:1:0/redblacktrees)))
+
 @(require "helper.rkt")
-@(require scribble/eval)
+@(require (for-label tr-pfds/red-black-tree/main))
+
+@defmodule/this-package[red-black-tree]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "redblacktrees.ss"))
+@(evaluate '(require tr-pfds/red-black-tree/main))
 
 @title{Red-Black Trees}
 

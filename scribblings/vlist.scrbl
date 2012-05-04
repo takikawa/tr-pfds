@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[vlist]
-@(require (for-label (planet krhari/pfds:1:0/vlist))
-          "helper.rkt")
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/vlist/main))
+
+@defmodule/this-package[vlist]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "vlist.ss"))
+@(evaluate '(require tr-pfds/vlist/main))
 
 @title{VList}
 

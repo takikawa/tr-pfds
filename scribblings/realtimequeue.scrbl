@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require "helper.rkt")
-@(require unstable/scribble)
-@defmodule/this-package[realtimequeue]
-@(require (for-label (planet krhari/pfds:1:0/realtimequeue)))
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/queue/real-time/main))
+
+@defmodule/this-package[queue/real-time]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "realtimequeue.ss"))
+@(evaluate '(require tr-pfds/queue/real-time/main))
 
 @title[#:tag "rtq"]{Real-Time Queue}
 

@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[skewbinaryrandomaccesslist]
-@(require (for-label (planet krhari/pfds:1:0/skewbinaryrandomaccesslist))
-          "helper.rkt")
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/ralist/skew/main))
+
+@defmodule/this-package[ralist/skew]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "skewbinaryrandomaccesslist.ss"))
+@(evaluate '(require tr-pfds/ralist/skew/main))
 
 @title[#:tag "sbral"]{Skew Binary Random Access List}
 

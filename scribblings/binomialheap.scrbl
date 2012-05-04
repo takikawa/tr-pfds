@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require "helper.rkt")
-@(require unstable/scribble)
-@defmodule/this-package[binomialheap]
-@(require (for-label (planet krhari/pfds:1:0/binomialheap)))
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@;@(require (for-label tr-pfds/heap/binominal/main))
+
+@defmodule[heap/binomial]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "binomialheap.ss"))
+@(evaluate '(require tr-pfds/heap/binomial/main))
 
 @title{Binomial Heap}
 

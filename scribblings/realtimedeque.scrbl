@@ -1,14 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[realtimedeque]
-@(require (for-label (planet krhari/pfds:1:0/realtimedeque))
-          "helper.rkt")
 
-@(require scribble/eval)
+@(require "helper.rkt")
+@(require (for-label tr-pfds/deque/real-time/main))
+
+@defmodule/this-package[deque/real-time]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "realtimedeque.ss"))
+@(evaluate '(require tr-pfds/deque/real-time/main))
 
 @title{Real-Time Deque}
 

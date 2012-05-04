@@ -1,13 +1,13 @@
 #lang scribble/manual
-@(require unstable/scribble)
-@defmodule/this-package[set]
-@(require (for-label (planet krhari/pfds:1:0/set)))
+
 @(require "helper.rkt")
-@(require scribble/eval)
+@(require (for-label tr-pfds/set/main))
+
+@defmodule/this-package[set]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require "set.ss"))
+@(evaluate '(require tr-pfds/set/main))
 
 @title{Sets}
 
