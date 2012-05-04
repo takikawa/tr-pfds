@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/queue/implicit/main))
+@(require (for-label tr-pfds/queue/implicit))
 
 @defmodule/this-package[queue/implicit]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/queue/implicit/main))
+@(evaluate '(require tr-pfds/queue/implicit))
 
 @title{Implicit Queue}
 

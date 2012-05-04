@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../queue/physicists/main.rkt")
+(require "../queue/physicists.rkt")
 (require typed/test-engine/scheme-tests)
 
 (check-expect (empty? (empty Nothing)) #t)

@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../stream/stream.rkt")
+(require "../stream.rkt")
 (require typed/test-engine/scheme-tests)
 
 (check-expect (empty-stream? empty-stream) #t)

@@ -6,7 +6,7 @@
          empty? insert find-min/max delete-min/max empty
          merge sorted-list heap BSHeap Heap build-heap)
 
-(require (prefix-in ph: "../pairing/main.rkt")
+(require (prefix-in ph: "pairing.rkt")
          scheme/match)
 
 (struct: (A) IntHeap ([elem : A]

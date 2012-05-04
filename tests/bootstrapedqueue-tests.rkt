@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../queue/bootstrapped/main.rkt")
+(require "../queue/bootstrapped.rkt")
 (require typed/test-engine/scheme-tests)
 
 (check-expect (empty? empty) #t)

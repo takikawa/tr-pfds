@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label "../queue/bankers/main.rkt"))
+@(require (for-label tr-pfds/queue/bankers))
 
 @defmodule/this-package[queue/bankers]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/queue/bankers/main))
+@(evaluate '(require tr-pfds/queue/bankers))
 
 @title{Banker's Queue}
 
@@ -32,7 +32,7 @@ Function @scheme[queue] creates a Banker's Queue with the given inputs.
 In the above example, the queue obtained will have 1 as its head element.
 }
 
-@defthing[(empty [t A]) (Queue Nothing)]{
+@defproc[(empty [t A]) (Queue Nothing)]{
 An empty queue instantiated to type t.
 @examples[#:eval evaluate
 (empty Nothing)

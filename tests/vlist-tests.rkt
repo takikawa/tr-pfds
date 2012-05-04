@@ -1,6 +1,6 @@
 #lang typed/racket
 
-(require (rename-in "../vlist/main.rkt"
+(require (rename-in "../vlist.rkt"
                     [map vmap] 
                     [reverse vreverse] 
                     [length size]

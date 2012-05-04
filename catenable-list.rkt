@@ -8,7 +8,7 @@
                      [list-ormap ormap] [list-andmap andmap]) 
          build-list make-list)
 
-(require (prefix-in bsq: "../queue/bootstrapped/main.rkt"))
+(require (prefix-in bsq: "queue/bootstrapped.rkt"))
 
 (struct: (A) List ([elem : A]
                    [ques : (bsq:Queue (Promise (List A)))]))

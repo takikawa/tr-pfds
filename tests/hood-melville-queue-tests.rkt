@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../queue/hood-melville/main.rkt")
+(require "../queue/hood-melville.rkt")
 (require typed/test-engine/scheme-tests)
 
 (check-expect (empty? empty) #t)

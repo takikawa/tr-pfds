@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/ralist/binary/main))
+@(require (for-label tr-pfds/ralist/binary))
 
 @defmodule/this-package[ralist/binary]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/ralist/binary/main))
+@(evaluate '(require tr-pfds/ralist/binary))
 
 @title[#:tag "bral"]{Binary Random Access List}
 

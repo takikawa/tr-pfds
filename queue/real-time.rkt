@@ -1,66 +1,69 @@
 #lang typed/racket #:optimize
 
-(require "../../stream/stream.rkt")
-
 (provide filter remove head+tail build-queue
-         Queue empty empty? enqueue head tail queue queue->list
-         (rename-out [qmap map] 
-                     [queue-andmap andmap] 
-                     [queue-ormap ormap]) fold)
+         queue queue->list empty empty?
+         (rename-out [qmap map] [queue-andmap andmap] [queue-ormap ormap]) 
+         fold head tail enqueue Queue list->queue)
 
-;; A Banker's Queue (Maintains length of front >= length of rear)
+(require "../stream.rkt")
 
 (struct: (A) Queue ([front : (Stream A)]
-                    [lenf  : Integer]
-                    [rear  : (Stream A)]
-                    [lenr  : Integer]))
+                    [rear  : (Listof A)]
+                    [scdul : (Stream A)]))
 
 
 ;; An empty queue
 (define-syntax-rule (empty A)
-  ((inst Queue A) empty-stream 0 empty-stream 0))
+  ((inst Queue A) empty-stream null empty-stream))
 
-;; Checks if the given queue is empty
+;; Function to check for empty queue
 (: empty? : (All (A) ((Queue A) -> Boolean)))
-(define (empty? que)
-  (zero? (Queue-lenf que)))
+(define (empty? rtq)
+  (empty-stream? (Queue-front rtq)))
 
 
-;; A Pseudo-constructor. Maintains the invariant lenf >= lenr
-(: internal-queue : 
-   (All (A) ((Stream A) Integer (Stream A) Integer -> (Queue A))))
-(define (internal-queue front lenf rear lenr)
-  (if (>= lenf lenr)
-      ((inst Queue A) front lenf rear lenr)
-      (Queue (stream-append front (stream-reverse rear))
-             (+ lenf lenr)
-             empty-stream 0)))
+(: rotate : (All (A) ((Stream A) (Listof A) (Stream A) -> (Stream A))))
+(define (rotate frnt rer accum)
+  (let ([carrer (car rer)])
+    (if (empty-stream? frnt)
+        (stream-cons carrer accum)
+        (stream-cons (stream-car frnt)
+                     ((inst rotate A) (stream-cdr frnt) 
+                                      (cdr rer) 
+                                      (stream-cons carrer accum))))))
 
-;; Pushes an element into the queue
-(: enqueue : (All (A) A (Queue A) -> (Queue A)))
-(define (enqueue elem que)
-  (internal-queue (Queue-front que) 
-                  (Queue-lenf que) 
-                  (ann (stream-cons elem (Queue-rear que)) (Stream A))
-                  (add1 (Queue-lenr que))))
+(: internal-queue : (All (A) ((Stream A) (Listof A) (Stream A) -> (Queue A))))
+(define (internal-queue front rear schdl)
+  (if (empty-stream? schdl)
+      (let ([newf (rotate front rear schdl)])
+        (Queue newf null newf))
+      (Queue front rear (stream-cdr schdl))))
 
-;; Retrieves the head element of the queue
+
+(: enqueue : (All (A) (A (Queue A) -> (Queue A))))
+(define (enqueue elem rtq)
+  (internal-queue (Queue-front rtq)
+                  (cons elem (Queue-rear rtq))
+                  (Queue-scdul rtq)))
+
+
 (: head : (All (A) ((Queue A) -> A)))
-(define (head que)
-  (if (zero? (Queue-lenf que))
-      (error 'head "given queue is empty")
-      (stream-car (Queue-front que))))
+(define (head rtq)
+  (let ([front (Queue-front rtq)])
+    (if (empty-stream? front)
+        (error 'head "given queue is empty")
+        (stream-car front))))
 
-;; Queueue operation. Removes the head and returns the rest of the queue
+
 (: tail : (All (A) ((Queue A) -> (Queue A))))
-(define (tail que)
-  (let ([lenf (Queue-lenf que)])
-    (if (zero? lenf)
+(define (tail rtq)
+  (let ([front (Queue-front rtq)])
+    (if (empty-stream? front)
         (error 'tail "given queue is empty")
-        (internal-queue (stream-cdr (Queue-front que))
-                        (sub1 lenf)
-                        (Queue-rear que)
-                        (Queue-lenr que)))))
+        (internal-queue (stream-cdr front) 
+                        (Queue-rear rtq) 
+                        (Queue-scdul rtq)))))
+  
 
 ;; similar to list map function. apply is expensive so using case-lambda
 ;; in order to saperate the more common case
@@ -73,12 +76,11 @@
   (pcase-lambda: (A C B ...)
                  [([func : (A -> C)]
                    [deq  : (Queue A)])
-                  (map-single ((inst Queue C) empty-stream 0 empty-stream 0) 
+                  (map-single ((inst Queue C) empty-stream null empty-stream) 
                               func deq)]
                  [([func : (A B ... B -> C)]
                    [deq  : (Queue A)] . [deqs : (Queue B) ... B])
-                  (apply map-multiple 
-                         ((inst Queue C) empty-stream 0 empty-stream 0) 
+                  (apply map-multiple ((inst Queue C) empty-stream null empty-stream) 
                          func deq deqs)]))
 
 
@@ -125,7 +127,23 @@
                              (tail que)
                              (map tail ques)))]))
 
-;; similar to list filter function
+
+(: queue->list : (All (A) ((Queue A) -> (Listof A))))
+(define (queue->list rtq)
+  (if (empty? rtq)
+      null
+      (cons (head rtq) (queue->list (tail rtq)))))
+
+(: list->queue : (All (A) ((Listof A) -> (Queue A))))
+(define (list->queue lst)
+  (foldl (inst enqueue A) 
+         ((inst Queue A) empty-stream null empty-stream) lst))
+
+(: queue : (All (A) (A * -> (Queue A))))
+(define (queue . lst)
+  (foldl (inst enqueue A) 
+         ((inst Queue A) empty-stream null empty-stream) lst))
+
 (: filter : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (filter func que)
   (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
@@ -137,9 +155,9 @@
           (if (func head)
               (inner func tail (enqueue head accum))
               (inner func tail accum)))))
-  (inner func que ((inst Queue A) empty-stream 0 empty-stream 0) ))
+  (inner func que ((inst Queue A) empty-stream null empty-stream) ))
 
-;; similar to list remove function
+
 (: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
 (define (remove func que)
   (: inner : (All (A) ((A -> Boolean) (Queue A) (Queue A) -> (Queue A))))
@@ -151,43 +169,29 @@
           (if (func head)
               (inner func tail accum)
               (inner func tail (enqueue head accum))))))
-  (inner func que ((inst Queue A) empty-stream 0 empty-stream 0) ))
+  (inner func que 
+         ((inst Queue A) empty-stream null empty-stream) ))
 
-(: queue->list : (All (A) ((Queue A) -> (Listof A))))
-(define (queue->list que)
-  (if (zero? (Queue-lenf que))
-      null
-      (cons (head que) (queue->list (tail que)))))
-
-;; A Queue constructor with the given element
-(: queue : (All (A) (A * -> (Queue A))))
-(define (queue . lst)
-  (foldl (inst enqueue A) 
-         ((inst Queue A) empty-stream 0 empty-stream 0) 
-         lst))
+;; Returns the pair of first and the rest of the queue
+(: head+tail : (All (A) ((Queue A) -> (Pair A (Queue A)))))
+(define (head+tail que)
+  (let ([front (Queue-front que)])
+    (if (empty-stream? front)
+        (error 'head+tail "given queue is empty")
+        (cons (stream-car front)
+              (internal-queue (stream-cdr front) 
+                              (Queue-rear que) 
+                              (Queue-scdul que))))))
 
 ;; Similar to build-list function
 (: build-queue : (All (A) (Natural (Natural -> A) -> (Queue A))))
 (define (build-queue size func)
   (let: loop : (Queue A) ([n : Natural size])
         (if (zero? n)
-            ((inst Queue A) empty-stream 0 empty-stream 0)
+            ((inst Queue A) empty-stream null empty-stream) 
             (let ([nsub1 (sub1 n)])
               (enqueue (func nsub1) (loop nsub1))))))
 
-;; Returns pair of the first element of the queue and the rest 
-;; of the queue
-(: head+tail : (All (A) ((Queue A) -> (Pair A (Queue A)))))
-(define (head+tail que)
-  (let ([lenf (Queue-lenf que)])
-    (if (zero? lenf)
-        (error 'head+tail "given queue is empty")
-        (let ([front (Queue-front que)])
-          (cons (stream-car front) 
-                (internal-queue (stream-cdr front)
-                                (sub1 lenf)
-                                (Queue-rear que)
-                                (Queue-lenr que)))))))
 
 ;; similar to list andmap function
 (: queue-andmap : 

@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@;@(require (for-label tr-pfds/heap/binominal/main))
+@;@(require (for-label tr-pfds/heap/binominal))
 
 @defmodule[heap/binomial]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/heap/binomial/main))
+@(evaluate '(require tr-pfds/heap/binomial))
 
 @title{Binomial Heap}
 

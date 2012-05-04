@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/deque/bankers/main))
+@(require (for-label tr-pfds/deque/bankers))
 
 @defmodule/this-package[deque/bankers]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/deque/bankers/main))
+@(evaluate '(require tr-pfds/deque/bankers))
 
 @title{Bankers Deque}
 

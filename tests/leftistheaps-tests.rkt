@@ -1,5 +1,5 @@
 #lang typed/scheme
-(require "../heap/leftist/main.rkt")
+(require "../heap/leftist.rkt")
 (require typed/test-engine/scheme-tests)
 
 (define lst (build-list 100 (λ: ([x : Integer]) x)))

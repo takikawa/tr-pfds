@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../queue/real-time/main.rkt")
+(require "../queue/real-time.rkt")
 (require typed/test-engine/scheme-tests)
 
 (check-expect (empty? (empty Integer)) #t)

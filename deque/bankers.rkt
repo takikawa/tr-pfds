@@ -1,6 +1,6 @@
 #lang typed/racket #:optimize
 
-(require "../../stream/stream.rkt")
+(require "../stream.rkt")
 
 (provide filter remove Deque build-deque
          empty? empty enqueue-front head tail deque enqueue last init

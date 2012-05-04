@@ -6,7 +6,7 @@
          foldr (rename-out [deque-map map] [dqfoldl foldl]
                            [deque-andmap andmap] [deque-ormap ormap]))
 
-(require "../../stream/stream.rkt")
+(require "../stream.rkt")
 
 (struct: (A) Deque
          ([front  : (Stream A)]

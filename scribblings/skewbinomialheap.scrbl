@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/heap/skew-binomial/main))
+@(require (for-label tr-pfds/heap/skew-binomial))
 
 @defmodule/this-package[heap/skew-binomial]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/heap/skew-binomial/main))
+@(evaluate '(require tr-pfds/heap/skew-binomial))
 
 @title[#:tag "skewbh"]{Skew Binomial Heap}
 

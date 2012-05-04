@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/queue/real-time/main))
+@(require (for-label tr-pfds/queue/real-time))
 
 @defmodule/this-package[queue/real-time]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/queue/real-time/main))
+@(evaluate '(require tr-pfds/queue/real-time))
 
 @title[#:tag "rtq"]{Real-Time Queue}
 

@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../deque/bankers/main.rkt")
+(require "../deque/bankers.rkt")
 (require typed/test-engine/scheme-tests)
 
 (check-expect (empty? (empty Nothing)) #t)
