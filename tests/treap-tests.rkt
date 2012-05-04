@@ -30,7 +30,7 @@
               (list -3 -2 1))
 
 (check-expect ((inst sort Integer Integer)
-               (treap->list (insert 10 (treap <= 1 -2 -3 -4))) <)
+               (treap->list ((inst insert Integer) 10 (treap <= 1 -2 -3 -4))) <)
               (list -4 -3 -2 1 10))
 
 (check-expect ((inst sort Integer Integer)
