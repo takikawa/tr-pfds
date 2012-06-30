@@ -53,12 +53,13 @@
     [(struct Deep ((struct Two (a b)) m r)) 
      (Deep (Three elem a b) m r)]
     [(struct Deep ((struct Three (f s t)) m r)) 
-     (let* ([forced-mid (force m)]
-            [first (car forced-mid)]
-            [second (cdr forced-mid)])
-       (Deep (Two elem f) 
-             (delay (cons (enqueue-front s first) (enqueue-front t second)))
-             r))]))
+     (Deep (Two elem f) 
+           (delay 
+             (let* ([forced-mid (force m)]
+                    [first (car forced-mid)]
+                    [second (cdr forced-mid)])
+               (cons (enqueue-front s first) (enqueue-front t second))))
+           r)]))
 
 ;; Inserts into the rear of the queue
 (: enqueue : (All (A) (A (Deque A) -> (Deque A))))
@@ -75,12 +76,12 @@
     [(struct Deep (f m (struct Two (a b)))) 
      (Deep f m (Three a b elem))]
     [(struct Deep (fi m (struct Three (f s t)))) 
-     (let* ([forced-mid (force m)]
-            [first (car forced-mid)]
-            [second (cdr forced-mid)])
-       (Deep fi
-             (delay (cons (enqueue f first) (enqueue s second)))
-             (Two t elem)))]))
+     (Deep fi 
+           (delay (let* ([forced-mid (force m)]
+                         [first (car forced-mid)]
+                         [second (cdr forced-mid)])
+                    (cons (enqueue f first) (enqueue s second))))
+           (Two t elem))]))
 
 ;; Returns the first element of the deque
 (: head : (All (A) ((Deque A) -> A)))
