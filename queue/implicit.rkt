@@ -44,10 +44,11 @@
                                                  (Zero))]
     [(struct Deep (f m (struct Zero ()))) (Deep f m (One elem))]
     [(struct Deep (f m (struct One (el))))
-     (let ([forced-mid (force m)])
-       (Deep f (delay (cons (enqueue el (car forced-mid))
-                            (enqueue elem (cdr forced-mid))))
-             (Zero)))]))
+     (Deep f (delay 
+               (let ([forced-mid (force m)])
+                 (cons (enqueue el (car forced-mid))
+                       (enqueue elem (cdr forced-mid)))))
+           (Zero))]))
 
 ;; Returns the first element of the queue
 (: head : (All (A) ((Queue A) -> A)))
