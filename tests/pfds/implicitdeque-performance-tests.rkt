@@ -1,5 +1,5 @@
 #lang racket
-(require "../deque/implicit.rkt")
+(require data/deque/implicit.rkt)
 
 
 ;; tests run with Racket 5.3.0.11, in DrRacket, 

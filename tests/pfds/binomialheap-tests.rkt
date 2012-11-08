@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../heap/binomial.rkt")
+(require data/heap/binomial)
 (require typed/test-engine/scheme-tests)
 
 

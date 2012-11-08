@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../heap/bootstrapped.rkt")
+(require data/heap/bootstrapped)
 (require typed/test-engine/scheme-tests)
 
 

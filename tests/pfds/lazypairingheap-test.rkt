@@ -1,5 +1,5 @@
 #lang typed/scheme
-(require "../heap/lazy-pairing.rkt")
+(require data/heap/lazy-pairing)
 (require typed/test-engine/scheme-tests)
 
 

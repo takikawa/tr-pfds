@@ -1,6 +1,6 @@
 #lang typed/scheme
 (require (prefix-in rk: racket/base))
-(require "../catenable-list.rkt")
+(require data/catenable-list)
 (require typed/test-engine/scheme-tests)
 
 (check-expect (first (list 1 2 3 4 5 6 7)) 1)

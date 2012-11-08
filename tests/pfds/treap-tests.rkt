@@ -1,5 +1,5 @@
 #lang typed/racket
-(require "../treap.rkt")
+(require data/treap)
 (require typed/test-engine/racket-tests)
 
 (: str-less-than? : (String String -> Boolean))

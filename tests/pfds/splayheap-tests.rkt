@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../heap/splay.rkt")
+(require data/heap/splay)
 (require typed/test-engine/scheme-tests)
 
 

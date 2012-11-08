@@ -1,5 +1,5 @@
 #lang typed-scheme
-(require "../trie.rkt")
+(require data/trie)
 (require typed/test-engine/scheme-tests)
 
 (check-expect

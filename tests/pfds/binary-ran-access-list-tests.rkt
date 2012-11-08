@@ -1,6 +1,6 @@
 #lang typed/scheme
 (require (prefix-in rk: racket/base))
-(require "../ralist/binary.rkt")
+(require data/ralist/binary)
 (require typed/test-engine/scheme-tests)
 
 (check-expect (head (list 1 2 3 4 5 6 7)) 1)

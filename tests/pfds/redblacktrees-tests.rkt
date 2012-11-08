@@ -1,6 +1,6 @@
 #lang typed/scheme
 
-(require "../red-black-tree.rkt")
+(require data/red-black-tree)
 (require typed/test-engine/scheme-tests)
 
 ;; NOTE:

@@ -1,6 +1,6 @@
 #lang typed-scheme
 (require (prefix-in sh: scheme/base))
-(require "../ralist/skew.rkt")
+(require data/ralist/skew)
 (require typed/test-engine/scheme-tests)
 
 (check-expect (empty? empty) #t)
