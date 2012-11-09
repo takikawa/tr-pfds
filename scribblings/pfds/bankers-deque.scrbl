@@ -11,13 +11,11 @@
 
 @title{Bankers Deque}
 
-Bankers Deques are Amortized double ended deques also known as deque
-developed using Bankers method. Provides amortized running time of 
-@bold{@italic{O(1)}} for the operations
-@scheme[head], @scheme[tail], @scheme[last], @scheme[init],
-@scheme[enqueue-front] and @scheme[enqueue].
-Uses lazy evaluation and memoization to achieve the amortized running time.
-
+Bankers deques are amortized double ended deques developed using the Bankers
+method. They provide an amortized running time of @bold{@italic{O(1)}} for the
+operations @scheme[head], @scheme[tail], @scheme[last], @scheme[init],
+@scheme[enqueue-front] and @scheme[enqueue].  They use lazy evaluation and
+memoization to achieve the amortized running time.
 
 @defform[(Deque A)]{A banker's deque of type @racket[A].}
 

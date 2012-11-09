@@ -11,7 +11,7 @@
 
 @title{Hood-Melville Queue}
 
-Similar to Real-Time Queues in many ways. But the implementation is
+Similar to real-time queues in many ways. But the implementation is
 much more complicated than Real-Time Queue. Uses a technique called 
 @italic{Global Rebuilding}. The data structure gives a worst case 
 running time of @bold{@italic{O(1)}} for the operations 

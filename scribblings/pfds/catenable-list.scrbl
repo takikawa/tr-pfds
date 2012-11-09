@@ -11,12 +11,11 @@
 
 @title{Catenable List}
 
-Catenable Lists are nothing but lists with efficient catenation. They use 
-a data-structucal bootstrapping technique called 
-@italic{Structucal Abstraction}. The data structure internally uses
-@secref["boot-que"] to realize an amortized running time of @bold{@italic{O(1)}}
-for the operations @scheme[first], @scheme[rest], @scheme[cons] and
-@scheme[cons-to-end].
+Catenable lists are a list-like data structure with efficient catenation. They
+use a bootstrapping technique called @italic{structucal abstraction}. The data
+structure internally uses @secref["boot-que"] to realize an amortized running
+time of @bold{@italic{O(1)}} for the operations @scheme[first], @scheme[rest],
+@scheme[cons] and @scheme[cons-to-end].
 
 @defform[(CatenableList A)]{A catenable list of type @racket[A].}
 

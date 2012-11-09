@@ -1,9 +1,11 @@
 #lang scribble/manual
 
 @title{Deques}
-Following Deque data structures implement and provide the functions
-deque, empty?, enqueue, enqueue-front, head, tail, last, init and deque->list.
-All the deque structures are polymorphic.
+
+Double ended queues (or deque) are queues where elements can be added or
+removed from either end. The deque data structures provided by this library
+implement and provide the following operations: deque, empty?, enqueue,
+enqueue-front, head, tail, last, init and deque->list.
 
 @local-table-of-contents[]
 @include-section{bankers-deque.scrbl}
