@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/ralist/skew))
+@(require (for-label data/ralist/skew))
 
-@defmodule/this-package[ralist/skew]
+@defmodule[data/ralist/skew]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/ralist/skew))
+@(evaluate '(require data/ralist/skew))
 
 @title[#:tag "sbral"]{Skew Binary Random Access List}
 

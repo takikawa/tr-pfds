@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/deque/real-time))
+@(require (for-label data/deque/real-time))
 
-@defmodule/this-package[deque/real-time]
+@defmodule[data/deque/real-time]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/deque/real-time))
+@(evaluate '(require data/deque/real-time))
 
 @title{Real-Time Deque}
 

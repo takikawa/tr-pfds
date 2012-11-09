@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/catenable-list))
+@(require (for-label data/catenable-list))
 
-@defmodule/this-package[catenable-list]
+@defmodule[data/catenable-list]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/catenable-list))
+@(evaluate '(require data/catenable-list))
 
 @title{Catenable List}
 

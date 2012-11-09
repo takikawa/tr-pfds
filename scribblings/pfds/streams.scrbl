@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/stream))
+@(require (for-label data/stream))
 
-@defmodule/this-package[stream]
+@defmodule[data/stream]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/stream))
+@(evaluate '(require data/stream))
 
 @title[#:tag "streams"]{Streams}
 

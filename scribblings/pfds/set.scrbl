@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/set))
+@(require (for-label data/set))
 
-@defmodule/this-package[set]
+@defmodule[data/set]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/set))
+@(evaluate '(require data/set))
 
 @title{Sets}
 

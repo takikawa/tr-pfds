@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/red-black-tree))
+@(require (for-label data/red-black-tree))
 
-@defmodule/this-package[red-black-tree]
+@defmodule[data/red-black-tree]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/red-black-tree))
+@(evaluate '(require data/red-black-tree))
 
 @title{Red-Black Trees}
 

@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/queue/physicists))
+@(require (for-label data/queue/physicists))
 
-@defmodule/this-package[queue/physicists]
+@defmodule[data/queue/physicists]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/queue/physicists))
+@(evaluate '(require data/queue/physicists))
 
 @title[#:tag "phy-que"]{Physicist's Queue}
 

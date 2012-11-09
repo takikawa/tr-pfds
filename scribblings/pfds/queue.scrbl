@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/queue/bankers))
+@(require (for-label data/queue/bankers))
 
-@defmodule/this-package[queue/bankers]
+@defmodule[queue/bankers]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/queue/bankers))
+@(evaluate '(require data/queue/bankers))
 
 @title{Banker's Queue}
 

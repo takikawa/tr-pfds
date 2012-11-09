@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/heap/bootstrapped))
+@(require (for-label data/heap/bootstrapped))
 
-@defmodule/this-package[heap/bootstrapped]
+@defmodule[data/heap/bootstrapped]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/heap/bootstrapped))
+@(evaluate '(require data/heap/bootstrapped))
 
 @title{Bootstrapped Heap}
 

@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/queue/hood-melville))
+@(require (for-label data/queue/hood-melville))
 
-@defmodule/this-package[queue/hood-melville]
+@defmodule[data/queue/hood-melville]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/queue/hood-melville))
+@(evaluate '(require data/queue/hood-melville))
 
 @title{Hood-Melville Queue}
 

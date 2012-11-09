@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/queue/bootstrapped))
+@(require (for-label data/queue/bootstrapped))
 
-@defmodule/this-package[queue/bootstrapped]
+@defmodule[data/queue/bootstrapped]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/queue/bootstrapped))
+@(evaluate '(require data/queue/bootstrapped))
 
 @title[#:tag "boot-que"]{Bootstraped Queue}
 

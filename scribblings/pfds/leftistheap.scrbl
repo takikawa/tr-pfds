@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/heap/leftist))
+@(require (for-label data/heap/leftist))
 
-@defmodule/this-package[heap/leftist]
+@defmodule[data/heap/leftist]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/heap/leftist))
+@(evaluate '(require data/heap/leftist))
 
 @title{Leftist Heap}
 

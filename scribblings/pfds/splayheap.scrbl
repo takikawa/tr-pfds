@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/heap/splay))
+@(require (for-label data/heap/splay))
 
-@defmodule/this-package[heap/splay]
+@defmodule[data/heap/splay]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/heap/splay))
+@(evaluate '(require data/heap/splay))
 
 @title{Splay Heap}
 

@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/heap/pairing))
+@(require (for-label data/heap/pairing))
 
-@defmodule/this-package[heap/pairing]
+@defmodule[heap/pairing]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/heap/pairing))
+@(evaluate '(require data/heap/pairing))
 
 @title{Pairing Heap}
 

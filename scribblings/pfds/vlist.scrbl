@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/vlist))
+@(require (for-label data/vlist))
 
-@defmodule/this-package[vlist]
+@defmodule[data/vlist]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/vlist))
+@(evaluate '(require data/vlist))
 
 @title{VList}
 

@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/deque/implicit))
+@(require (for-label data/deque/implicit))
 
-@defmodule/this-package[deque/implicit]
+@defmodule[data/deque/implicit]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/deque/implicit))
+@(evaluate '(require data/deque/implicit))
 
 @title{Implicit Deque}
 

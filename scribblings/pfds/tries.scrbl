@@ -1,13 +1,13 @@
 #lang scribble/manual
 
 @(require "helper.rkt")
-@(require (for-label tr-pfds/trie))
+@(require (for-label data/trie))
 
-@defmodule/this-package[trie]
+@defmodule[data/trie]
 
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
-@(evaluate '(require tr-pfds/trie))
+@(evaluate '(require data/trie))
 
 @title{Tries}
 
