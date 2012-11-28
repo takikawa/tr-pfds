@@ -11,14 +11,13 @@
 
 @title{Bootstrapped Heap}
 
-Bootstrapped Heaps are heaps with efficiant mergining. Bootstrapped Heap
-does structural abstraction over other less efficient heap implementation 
-to get a worst case running time of @bold{@italic{O(1)}} for the 
-operations @scheme[insert], @scheme[find-min/max] and @scheme[merge]
-and worst case running time of
-@bold{@italic{O(log(n))}} for @scheme[delete-min/max] operation. This 
-implementation abstracts over Skew Binomial Heaps. For Skew Binomial Heaps,
-see @secref["skewbh"].
+Bootstrapped heaps are heaps with efficient merging. The bootstrapped heap is
+implemented with structural abstraction over a less efficient heap
+implementation to get a worst case running time of @bold{@italic{O(1)}} for the
+operations @scheme[insert], @scheme[find-min/max] and @scheme[merge] and worst
+case running time of @bold{@italic{O(log(n))}} for @scheme[delete-min/max]
+operation. This implementation abstracts over skew binomial heaps. For skew
+binomial heaps, see @secref["skewbh"].
 
 @defform[(Heap A)]{A bootstrapped heap of type @racket[A].}
 
