@@ -1,0 +1,4 @@
+* text=author
+
+*.rkt text
+*.scrbl text
