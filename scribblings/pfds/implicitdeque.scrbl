@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/deque/implicit))
 
-@defmodule[data/deque/implicit]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/deque/implicit))
 
 @title{Implicit Deque}
+
+@defmodule[data/deque/implicit]
 
 Deques obtained by applying @italic{Implicit Recursive Slowdown}. 
 Provides amortized running time of @bold{@italic{O(1)}} for the 

@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/heap/pairing))
 
-@defmodule[heap/pairing]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/heap/pairing))
 
 @title{Pairing Heap}
+
+@defmodule[data/heap/pairing]
 
 Pairing Heap is a type of heap which has a very simple implementation 
 and has extremely good performance in practice. Pairing Heaps provide a

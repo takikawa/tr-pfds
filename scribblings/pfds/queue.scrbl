@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/queue/bankers))
 
-@defmodule[queue/bankers]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/queue/bankers))
 
 @title{Banker's Queue}
+
+@defmodule[data/queue/bankers]
 
 A Queue is nothing but a FIFO data structure. A Banker's Queue is a
 amortized queue obtained using Bankers method. It provides a amortized

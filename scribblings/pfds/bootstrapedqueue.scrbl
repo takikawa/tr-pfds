@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/queue/bootstrapped))
 
-@defmodule[data/queue/bootstrapped]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/queue/bootstrapped))
 
 @title[#:tag "boot-que"]{Bootstraped Queue}
+
+@defmodule[data/queue/bootstrapped]
 
 Bootstrapped Queue use a structural bootstrapping technique called 
 @italic{Structural Decomposition}. The data structure gives a worst 

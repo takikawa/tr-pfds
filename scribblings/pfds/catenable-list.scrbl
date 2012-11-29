@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/catenable-list))
 
-@defmodule[data/catenable-list]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/catenable-list))
 
 @title{Catenable List}
+
+@defmodule[data/catenable-list]
 
 Catenable lists are a list-like data structure with efficient catenation. They
 use a bootstrapping technique called @italic{structucal abstraction}. The data

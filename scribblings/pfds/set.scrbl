@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/set))
 
-@defmodule[data/set]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/set))
 
 @title{Sets}
+
+@defmodule[data/set]
 
 An simple implementation of sets based on binary trees.
 

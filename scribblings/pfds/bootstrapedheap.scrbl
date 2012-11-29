@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/heap/bootstrapped))
 
-@defmodule[data/heap/bootstrapped]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/heap/bootstrapped))
 
 @title{Bootstrapped Heap}
+
+@defmodule[data/heap/bootstrapped]
 
 Bootstrapped heaps are heaps with efficient merging. The bootstrapped heap is
 implemented with structural abstraction over a less efficient heap

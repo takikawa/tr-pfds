@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/heap/skew-binomial))
 
-@defmodule[data/heap/skew-binomial]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/heap/skew-binomial))
 
 @title[#:tag "skewbh"]{Skew Binomial Heap}
+
+@defmodule[data/heap/skew-binomial]
 
 Skew Binomial Heaps are Binomial Heaps with hybrid numerical representation
 for heaps based on both skew binary numbers. Skew binary number representation

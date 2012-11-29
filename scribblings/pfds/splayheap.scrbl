@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/heap/splay))
 
-@defmodule[data/heap/splay]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/heap/splay))
 
 @title{Splay Heap}
+
+@defmodule[data/heap/splay]
 
 Splay Heaps are very similar to balanced binary search trees. The difference
 between the two lies in the fact that Splay Heaps do not maintain any 

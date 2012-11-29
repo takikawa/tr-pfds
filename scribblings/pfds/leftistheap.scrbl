@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/heap/leftist))
 
-@defmodule[data/heap/leftist]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/heap/leftist))
 
 @title{Leftist Heap}
+
+@defmodule[data/heap/leftist]
 
 Leftist heaps are heap-ordered binary trees that satisfy the 
 leftist property: the rank of any left child is at least as large as the rank 

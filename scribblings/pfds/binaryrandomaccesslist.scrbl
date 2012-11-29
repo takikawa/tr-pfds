@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/ralist/binary))
 
-@defmodule[data/ralist/binary]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/ralist/binary))
 
 @title[#:tag "bral"]{Binary Random Access List}
+
+@defmodule[data/ralist/binary]
 
 Random Access Lists are list data structures that provide array-like lookup 
 and update operations. They have been implemented as a framework of binary 

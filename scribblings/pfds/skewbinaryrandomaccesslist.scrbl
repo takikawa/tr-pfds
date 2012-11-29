@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/ralist/skew))
 
-@defmodule[data/ralist/skew]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/ralist/skew))
 
 @title[#:tag "sbral"]{Skew Binary Random Access List}
+
+@defmodule[data/ralist/skew]
 
 Random Access Lists are list data structures that provide array-like lookup and
 update operations. Skew Binary Random Access Lists are implemented using skew

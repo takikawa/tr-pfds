@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/queue/real-time))
 
-@defmodule[data/queue/real-time]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/queue/real-time))
 
 @title[#:tag "rtq"]{Real-Time Queue}
+
+@defmodule[data/queue/real-time]
 
 Real-Time Queues eliminate the amortization by employing laziness and 
 a technique called @italic{Scheduling}. The data structure gives a worst

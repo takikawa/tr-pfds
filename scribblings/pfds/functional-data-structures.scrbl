@@ -16,7 +16,7 @@ And the data structures have been entirely implemented in Typed Racket.
 @include-section{deques.scrbl}
 @include-section{heaps.scrbl}
 @include-section{randomaccesslist.scrbl}
-@include-section{catenable-list.scrbl}
+@;@include-section{catenable-list.scrbl}
 @include-section{vlist.scrbl}
 @include-section{streams.scrbl}
 @include-section{redblacktrees.scrbl}

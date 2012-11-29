@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/trie))
 
-@defmodule[data/trie]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/trie))
 
 @title{Tries}
+
+@defmodule[data/trie]
 
 A Trie (also known as a Digital Search Tree) is a data structure
 which takes advantage of the structure of aggregate types to achieve

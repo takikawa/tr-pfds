@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/heap/binomial))
 
-@defmodule[data/heap/binomial]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/heap/binomial))
 
 @title{Binomial Heap}
+
+@defmodule[data/heap/binomial]
 
 Binomial Heaps are nothing but mergeable priority heaps. To avoid the
 confusion with FIFO queues, they are referred as heaps. Heaps are similar

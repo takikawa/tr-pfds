@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/queue/hood-melville))
 
-@defmodule[data/queue/hood-melville]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/queue/hood-melville))
 
 @title{Hood-Melville Queue}
+
+@defmodule[data/queue/hood-melville]
 
 Similar to real-time queues in many ways. But the implementation is
 much more complicated than Real-Time Queue. Uses a technique called 

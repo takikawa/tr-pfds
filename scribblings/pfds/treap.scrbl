@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/treap))
 
-@defmodule[data/treap]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/treap))
 
 @title{Treap}
+
+@defmodule[data/treap]
 
 Treaps are binary search trees in which each node has both a search key 
 and a priority. Its keys are sorted in inorder and its each node priority 

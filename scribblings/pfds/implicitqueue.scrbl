@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/queue/implicit))
 
-@defmodule[data/queue/implicit]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/queue/implicit))
 
 @title{Implicit Queue}
+
+@defmodule[data/queue/implicit]
 
 Queues obtained by applying the technique called 
 @italic{Implicit Recursive Slowdown}. Provides a amortized

@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/stream))
 
-@defmodule[data/stream]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/stream))
 
 @title[#:tag "streams"]{Streams}
+
+@defmodule[data/stream]
 
 Streams are nothing but lazy lists. They are similar to ordinary
 lists and they provide the same functionality as that of lists. The 

@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/red-black-tree))
 
-@defmodule[data/red-black-tree]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/red-black-tree))
 
 @title{Red-Black Trees}
+
+@defmodule[data/red-black-tree]
 
 Red-Black Tree is a binary search tree in which every node is colored either 
 red or black. The red black trees follow two balance invariants

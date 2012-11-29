@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/deque/real-time))
 
-@defmodule[data/deque/real-time]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/deque/real-time))
 
 @title{Real-Time Deque}
+
+@defmodule[data/deque/real-time]
 
 Real-Time Deques eliminate the amortization by using two 
 techniques @italic{Scheduling} and a variant of Global Rebuilding 

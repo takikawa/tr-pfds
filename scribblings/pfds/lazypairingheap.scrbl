@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/heap/lazy-pairing))
 
-@defmodule[data/heap/lazy-pairing]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/heap/lazy-pairing))
 
 @title{Lazy Pairing Heap}
+
+@defmodule[data/heap/lazy-pairing]
 
 Lazy Pairing Heap is very similar to Pairing Heap. The only difference between
 the two is, as the name suggests, Lazy Pairing Heap is lazy in nature.

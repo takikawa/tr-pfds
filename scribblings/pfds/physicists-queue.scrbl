@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/queue/physicists))
 
-@defmodule[data/queue/physicists]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/queue/physicists))
 
 @title[#:tag "phy-que"]{Physicist's Queue}
+
+@defmodule[data/queue/physicists]
 
 A Queue is nothing but a FIFO data structure. A Physicist's queue ia a
 Amortized queues obtained by Physicist's method. Provides a amortized

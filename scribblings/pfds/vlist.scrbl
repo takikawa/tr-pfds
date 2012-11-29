@@ -3,13 +3,13 @@
 @(require "helper.rkt")
 @(require (for-label data/vlist))
 
-@defmodule[data/vlist]
-
 @(define evaluate (make-base-eval))
 @(evaluate '(require typed/racket))
 @(evaluate '(require data/vlist))
 
 @title{VList}
+
+@defmodule[data/vlist]
 
 A VList is a data structure very similar to noraml Scheme List but the 
 corresponding operations are significantly faster for most of the List
