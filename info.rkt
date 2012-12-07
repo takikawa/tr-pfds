@@ -1,4 +1,8 @@
 #lang setup/infotab
+
+;; Planet 2
+(define deps '())
+
 (define name "Library of Functional Data Structures in Typed Racket")
 (define blurb
   '("A library of purely functional data structures in Typed Racket.
