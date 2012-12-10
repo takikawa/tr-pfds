@@ -4,7 +4,8 @@
          remove empty? member? insert set->list subset? intersection
          subset? Set)
 
-(require scheme/match)
+(require scheme/match
+         racket/bool)
 
 ;(define-struct: Mt ())
 (define-struct: (A) Tree ([left : (USet A)]
@@ -21,9 +22,6 @@
 (: empty? : (All (A) ((Set A) -> Boolean)))
 (define (empty? uset)
   (null? (Set-set uset)))
-
-(define-syntax-rule (xor l r)
-  (or (and l r) (and (not l) (not r))))
 
 (: member? : (All (A) (A (Set A) -> Boolean)))
 (define (member? key uset)
