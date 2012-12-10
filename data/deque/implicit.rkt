@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (provide filter remove Deque head+tail last+init build-deque
          empty empty? head tail last init deque->rev-list

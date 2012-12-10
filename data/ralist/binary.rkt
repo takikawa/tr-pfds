@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (require (prefix-in sh: scheme/base))
 

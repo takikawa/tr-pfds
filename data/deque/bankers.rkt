@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (require "../stream.rkt")
 

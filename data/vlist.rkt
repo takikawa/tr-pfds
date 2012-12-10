@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (provide empty empty? first rest last list-ref List
          (rename-out [vlist->list ->list] [vlist list] [vcons cons]

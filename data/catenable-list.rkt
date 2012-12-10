@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (provide clist empty? head tail reverse
          CatenableList append empty filter remove

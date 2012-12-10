@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (provide empty-stream? empty-stream stream-cons stream-car
          stream-cdr stream-append stream-reverse stream

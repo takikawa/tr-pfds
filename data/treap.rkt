@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (provide treap Treap treap->list empty? root insert delete size
          find-min/max delete delete-min/max fold filter remove build-treap

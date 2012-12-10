@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (provide (rename-out [heap-map map]
                      [heap-ormap ormap] [heap-andmap andmap]) 

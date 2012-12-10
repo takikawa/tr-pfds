@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (require (prefix-in pq: "physicists.rkt"))
 (provide filter remove Queue head+tail build-queue

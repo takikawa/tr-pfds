@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (provide filter remove build-queue head+tail
          empty empty? enqueue head tail queue->list queue

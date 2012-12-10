@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 
 (provide member? delete insert redblacktree
          redblacktree->list root delete-root empty? RedBlackTree

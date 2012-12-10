@@ -1,4 +1,4 @@
-#lang typed/racket #:optimize
+#lang typed/racket
 (require (prefix-in rk: racket/base))
 (provide filter remove reverse
          list ->list empty? cons empty head tail
