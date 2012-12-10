@@ -45,5 +45,4 @@ The following data structures are implemented:
 *  Streams          `stream`
 *  Red-Black Trees  `red-black-tree`
 *  Tries            `trie`
-*  Sets             `set`
 *  Treap            `treap`

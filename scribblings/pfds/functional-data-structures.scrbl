@@ -21,7 +21,6 @@ And the data structures have been entirely implemented in Typed Racket.
 @include-section{streams.scrbl}
 @include-section{redblacktrees.scrbl}
 @include-section{tries.scrbl}
-@include-section{set.scrbl}
 @include-section{treap.scrbl}
 
 
