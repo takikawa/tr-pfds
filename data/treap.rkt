@@ -81,7 +81,7 @@
 ;; Returns the min/max element of the given treap.
 (: find-min/max : (All (A) ((Treap A) -> A)))
 (define (find-min/max treap)
-  (: local : (All (A) ((Tree A) -> A)))
+  (: local : (Tree A) -> A)
   (define (local tree)
     (let: loop : A ([tree : (Tree A) tree])
           (if (null? tree)
@@ -167,7 +167,7 @@
 ;; Creates a list of elements from the given treap.
 (: treap->list : (All (A) (Treap A) -> (Listof A)))
 (define (treap->list treap)
-  (: helper : (All (A) (Tree A) -> (Listof A)))
+  (: helper : (Tree A) -> (Listof A))
   (define (helper tree)
     (if (null? tree)
         null
@@ -200,7 +200,7 @@
 
 (: map-single : (All (A C) ((C C -> Boolean) (A -> C) (Treap A) -> (Treap C))))
 (define (map-single comp func treap)
-  (: helper : (All (A C) ((Tree A) -> (Tree C))))
+  (: helper : (Tree A) -> (Tree C))
   (define (helper tree)
     (if (null? tree)
         empty
@@ -259,7 +259,7 @@
 ;; similar to list filter function
 (: filter : (All (A) ((A -> Boolean) (Treap A) -> (Treap A))))
 (define (filter func treap)
-  (: inner : (All (A) ((A -> Boolean) (Treap A) (Treap A) -> (Treap A))))
+  (: inner : (A -> Boolean) (Treap A) (Treap A) -> (Treap A))
   (define (inner func treap accum)
     (if (empty? treap)
         accum
@@ -273,7 +273,7 @@
 ;; similar to list filter function
 (: remove : (All (A) ((A -> Boolean) (Treap A) -> (Treap A))))
 (define (remove func treap)
-  (: inner : (All (A) ((A -> Boolean) (Treap A) (Treap A) -> (Treap A))))
+  (: inner : (A -> Boolean) (Treap A) (Treap A) -> (Treap A))
   (define (inner func treap accum)
     (if (empty? treap)
         accum

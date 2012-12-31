@@ -73,7 +73,7 @@
 (: tree-lookup : (All (A) (Integer (Tree A) Integer -> A)))
 (define (tree-lookup weight tree pos)
   (let ([pos0? (zero? pos)])
-    (: tl-help : (All (A) (Integer (Node A) -> A)))
+    (: tl-help : Integer (Node A) -> A)
     (define (tl-help new-weight tree)
       (cond
         [pos0? (Node-elem tree)]
@@ -90,7 +90,7 @@
 (: tree-update : (All (A) (Integer (Tree A) Integer A -> (Tree A))))
 (define (tree-update weight tree pos elem)
   (let ([pos0? (zero? pos)])
-    (: tu-help : (All (A) Integer (Node A) -> (Tree A)))
+    (: tu-help : Integer (Node A) -> (Tree A))
     (define (tu-help new-weight tree)
       (let ([left  (Node-left tree)]
             [right (Node-right tree)]
@@ -290,7 +290,7 @@
 ;; Similar to list reverse function
 (: reverse : (All (A) ((List A) -> (List A))))
 (define (reverse ral)
-  (: local-reverse : (All (A) ((List A) (List A) -> (List A))))
+  (: local-reverse : (List A) (List A) -> (List A))
   (define (local-reverse ral accum)
     (if (empty? ral)
         accum
