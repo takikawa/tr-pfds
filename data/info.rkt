@@ -37,6 +37,6 @@ work by Phil Bagwell and others"))
 (define categories '(datastructures))
 (define can-be-loaded-with 'all)
 (define release-notes
-  (list '(ul (li "Updated to Racket 5.2.1"))))
+  (list '(ul (li "Updated to Racket 5.3.1"))))
 (define version "2.0")
 (define scribblings '(("scribblings/functional-data-structures.scrbl" (multi-page))))
