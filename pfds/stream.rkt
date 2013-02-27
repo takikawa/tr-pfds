@@ -5,9 +5,6 @@
          stream->list drop take Stream
          #;stream-map #;stream-foldl #;stream-foldr)
 
-(provide empty-stream? empty-stream Stream stream-car stream-cdr
-         stream stream->list stream-cons stream-append stream-reverse)
-
 (define-type Stream
   (All (A) (Rec Stream (U Null (Boxof (U (-> (Pair A Stream))
                                          (Pair A Stream)))))))
