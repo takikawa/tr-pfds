@@ -44,16 +44,3 @@
                                 (PartialStreamof A)))]))
 
 
-;; tests
-;(: sum : ((PartialStreamof Integer) -> Integer))
-;(define (sum lst)
-;  (if (null? lst) 
-;      0
-;      (+ (pscar lst) (sum (pscdr lst)))))
-;
-;(sum
-; (psappend 
-;  (ann (delay (ann (reverse (list 1 2 3)) (PartialStreamof Integer))) 
-;       (PartialStreamof Integer))
-;  (ann (delay (ann (reverse (list 4 5 6)) (PartialStreamof Integer))) 
-;       (PartialStreamof Integer))))
