@@ -1,6 +1,19 @@
 #lang typed/racket
 
-(require "../stream.rkt")
+(require "../delay.rkt")
+(require "../partialstream.rkt")
+
+;; This banker's queue differs from Okasaki's in the following ways:
+;; 1) the front list is a "partial stream" instead of a stream
+;;    (see partialstream.rkt for an explanation of partial streams)
+;; 2) the rear list is an eager list instead of a stream
+
+;; Using partial streams builds many less suspensions than a standard 
+;; stream-based implementation. Specifically, since reversing a stream is
+;; monolithic, the result should not build any suspensions (and the reverse
+;; itself can be delayed with a single delay). Okasaki observes this as well
+;; in a footnote but says that the book emphasizes theoretical simplicity,
+;; sometimes at the expense of practicality.
 
 (provide filter remove head+tail build-queue
          Queue empty empty? enqueue head tail queue queue->list
@@ -10,15 +23,15 @@
 
 ;; A Banker's Queue (Maintains length of front >= length of rear)
 
-(struct: (A) Queue ([front : (Stream A)]
+(struct: (A) Queue ([front : (PartialStreamof A)]
                     [lenf  : Integer]
-                    [rear  : (Stream A)]
+                    [rear  : (Listof A)]
                     [lenr  : Integer]))
 
 
 ;; An empty queue
 (define-syntax-rule (empty A)
-  ((inst Queue A) empty-stream 0 empty-stream 0))
+  ((inst Queue A) null 0 null 0))
 
 ;; Checks if the given queue is empty
 (: empty? : (All (A) ((Queue A) -> Boolean)))
@@ -28,20 +41,21 @@
 
 ;; A Pseudo-constructor. Maintains the invariant lenf >= lenr
 (: internal-queue : 
-   (All (A) ((Stream A) Integer (Stream A) Integer -> (Queue A))))
+   (All (A) ((PartialStreamof A) Integer (Listof A) Integer -> (Queue A))))
 (define (internal-queue front lenf rear lenr)
   (if (>= lenf lenr)
       ((inst Queue A) front lenf rear lenr)
-      (Queue (stream-append front (stream-reverse rear))
+      (Queue (psappend front (ann (delay (ann (reverse rear) (PartialStreamof A)))
+                                  (PartialStreamof A)))
              (+ lenf lenr)
-             empty-stream 0)))
+             null 0)))
 
 ;; Pushes an element into the queue
 (: enqueue : (All (A) A (Queue A) -> (Queue A)))
 (define (enqueue elem que)
   (internal-queue (Queue-front que) 
                   (Queue-lenf que) 
-                  (ann (stream-cons elem (Queue-rear que)) (Stream A))
+                  (cons elem (Queue-rear que))
                   (add1 (Queue-lenr que))))
 
 ;; Retrieves the head element of the queue
@@ -49,7 +63,7 @@
 (define (head que)
   (if (zero? (Queue-lenf que))
       (error 'head "given queue is empty")
-      (stream-car (Queue-front que))))
+      (pscar (Queue-front que))))
 
 ;; Queueue operation. Removes the head and returns the rest of the queue
 (: tail : (All (A) ((Queue A) -> (Queue A))))
@@ -57,7 +71,7 @@
   (let ([lenf (Queue-lenf que)])
     (if (zero? lenf)
         (error 'tail "given queue is empty")
-        (internal-queue (stream-cdr (Queue-front que))
+        (internal-queue (pscdr (Queue-front que))
                         (sub1 lenf)
                         (Queue-rear que)
                         (Queue-lenr que)))))
@@ -73,13 +87,10 @@
   (pcase-lambda: (A C B ...)
                  [([func : (A -> C)]
                    [deq  : (Queue A)])
-                  (map-single ((inst Queue C) empty-stream 0 empty-stream 0) 
-                              func deq)]
+                  (map-single (empty C) func deq)]
                  [([func : (A B ... B -> C)]
                    [deq  : (Queue A)] . [deqs : (Queue B) ... B])
-                  (apply map-multiple 
-                         ((inst Queue C) empty-stream 0 empty-stream 0) 
-                         func deq deqs)]))
+                  (apply map-multiple (empty C) func deq deqs)]))
 
 
 (: map-single : (All (A C) ((Queue C) (A -> C) (Queue A) -> (Queue C))))
@@ -137,7 +148,7 @@
           (if (func head)
               (inner func tail (enqueue head accum))
               (inner func tail accum)))))
-  (inner func que ((inst Queue A) empty-stream 0 empty-stream 0) ))
+  (inner func que (empty A)))
 
 ;; similar to list remove function
 (: remove : (All (A) ((A -> Boolean) (Queue A) -> (Queue A))))
@@ -151,7 +162,7 @@
           (if (func head)
               (inner func tail accum)
               (inner func tail (enqueue head accum))))))
-  (inner func que ((inst Queue A) empty-stream 0 empty-stream 0) ))
+  (inner func que (empty A)))
 
 (: queue->list : (All (A) ((Queue A) -> (Listof A))))
 (define (queue->list que)
@@ -162,16 +173,14 @@
 ;; A Queue constructor with the given element
 (: queue : (All (A) (A * -> (Queue A))))
 (define (queue . lst)
-  (foldl (inst enqueue A) 
-         ((inst Queue A) empty-stream 0 empty-stream 0) 
-         lst))
+  (foldl (inst enqueue A) (empty A) lst))
 
 ;; Similar to build-list function
 (: build-queue : (All (A) (Natural (Natural -> A) -> (Queue A))))
 (define (build-queue size func)
   (let: loop : (Queue A) ([n : Natural size])
         (if (zero? n)
-            ((inst Queue A) empty-stream 0 empty-stream 0)
+            (empty A)
             (let ([nsub1 (sub1 n)])
               (enqueue (func nsub1) (loop nsub1))))))
 
@@ -183,8 +192,8 @@
     (if (zero? lenf)
         (error 'head+tail "given queue is empty")
         (let ([front (Queue-front que)])
-          (cons (stream-car front) 
-                (internal-queue (stream-cdr front)
+          (cons (pscar front) 
+                (internal-queue (pscdr front)
                                 (sub1 lenf)
                                 (Queue-rear que)
                                 (Queue-lenr que)))))))
