@@ -66,7 +66,7 @@
 #;(let ([q (build-queue (assert (- (expt 2 21) 2) positive?) add1)])
   (time (tail q)))
 
-;; 2013-03-10, on Steve's desktop (i7-2600k, 16GB)
+;; 2013-03-10, on Steve's desktop (i7-2600k, 16GB), in drracket
 ;; (I dont know why the gc time is so high, probably an anomaly, but the
 ;;  important number is 0 after the fix)
 ;; before fix: cpu time: 468 real time: 469 gc time: 400
@@ -92,7 +92,7 @@
         (loop (tail q) (add1 i))
         (time (tail q)))))
 
-;; 2013-03-10, on Steve's desktop (i7-2600k, 16GB)
+;; 2013-03-10, on Steve's desktop (i7-2600k, 16GB), in drracket
 ;; before fix: cpu time: cpu time: 0 real time: 0 gc time: 0
 ;;  after fix: cpu time: 56 real time: 60 gc time: 44
 
@@ -116,7 +116,26 @@
           (time (tail q))
           (time (tail q))))))
 
-;; 2013-03-10, on Steve's desktop (i7-2600k, 16GB)
+;; 2013-03-10, on Steve's desktop (i7-2600k, 16GB), in drracket
 ;; after fix: 
 ;;   cpu time: 60 real time: 61 gc time: 48
 ;;   cpu time: 0 real time: 0 gc time: 0
+
+
+;; Test to show performance improvement from less laziness
+;; (ie using partial stream instead of stream)
+;; -------------------------------------------------------
+
+#;(let ([q (time (build-queue (expt 2 21) add1))])
+    (time 
+     (let: loop : Integer ([q : (Queue Integer) q])
+       (if (empty? q) 0 (+ (head q) (loop (tail q)))))))
+
+;; 2013-03-11, on Steve's desktop (i7-2600k, 16GB), from racket cmd line
+;; before commit 98c2723e35326291fb6909c2217b3f7c4b89ce39
+;; (1st time is queue build, 2nd is summing queue elements)
+;cpu time: 1748 real time: 1752 gc time: 1464
+;cpu time: 1776 real time: 1779 gc time: 1072
+;; after: 
+;cpu time: 516 real time: 517 gc time: 336
+;cpu time: 1468 real time: 1470 gc time: 852
