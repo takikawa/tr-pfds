@@ -16,7 +16,7 @@
 ;; so the tail operation should be instantaneous (ie should take 0 time).
 
 ;; n = 21
-#;(let ([q (build-queue (assert (- (expt 2 21) 2) positive?) add1)])
+(let ([q (build-queue (assert (- (expt 2 21) 2) positive?) add1)])
   (time (tail q)))
 
 ;; 2013-03-10, on Steve's desktop (i7-2600k, 16GB), in drracket
@@ -37,7 +37,7 @@
 ;; of this queue should be an expensive operation in a correct implementation.
 
 ;; n = 21, 2^21 - 2 = 2097150; 2^20 - 1 = 1048575
-#;(let* ([n 21]
+(let* ([n 21]
        [thresh (sub1 (expt 2 (sub1 n)))])
   (let loop ([q (build-queue (assert (- (expt 2 n) 2) positive?) add1)] 
              [i 0])
@@ -59,7 +59,7 @@
 
 ;; This is the same as the second example above, except the "expensive" tail
 ;; is called twice. The second call should be instantaneous.
-#;(let* ([n 21]
+(let* ([n 21]
        [thresh (sub1 (expt 2 (sub1 n)))])
   (let loop ([q (build-queue (assert (- (expt 2 n) 2) positive?) add1)] 
              [i 0])
@@ -79,7 +79,7 @@
 ;; (ie using partial stream instead of stream)
 ;; -------------------------------------------------------
 
-#;(let ([q (time (build-queue (expt 2 21) add1))])
+(let ([q (time (build-queue (expt 2 21) add1))])
     (time 
      (let: loop : Integer ([q : (Queue Integer) q])
        (if (empty? q) 0 (+ (head q) (loop (tail q)))))))

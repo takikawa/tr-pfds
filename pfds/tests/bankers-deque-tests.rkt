@@ -1,5 +1,5 @@
-#lang typed-scheme
-(require pfds/deque/bankers)
+#lang typed/racket
+(require "../deque/bankers.rkt")
 (require typed/test-engine/scheme-tests)
 
 (check-expect (empty? (empty Nothing)) #t)
