@@ -1,8 +1,9 @@
 #lang typed/racket
 
-(require "../stream.rkt")
+(require "../delay.rkt")
+(require "../partialstream.rkt")
 
-(provide filter remove Deque build-deque
+(provide filter remove Deque build-deque build-deque build-deque-front
          empty? empty enqueue-front head tail deque enqueue last init
          deque->list foldr head+tail last+init
          (rename-out [deque-map map] [dqfoldl foldl]
@@ -10,15 +11,15 @@
 
 ;; A Banker's Deque (Maintains length of front >= length of rear)
 
-(struct: (A) Deque ([front : (Stream A)]
+(struct: (A) Deque ([front : (PartialStreamof A)]
                     [lenf  : Integer]
-                    [rear  : (Stream A)]
+                    [rear  : (PartialStreamof A)]
                     [lenr  : Integer]))
 
 (define inv-c 2)
 
 (define-syntax-rule (empty A)
-  ((inst Deque A) empty-stream 0 empty-stream 0))
+  ((inst Deque A) null 0 null 0))
 
 ;; Checks if the given deque is empty
 (: empty? : (All (A) ((Deque A) -> Boolean)))
@@ -30,7 +31,7 @@
 ;; 1. lenf <= inv-c * lenr
 ;; 2. lenr <= inv-c * lenf
 (: internal-deque : 
-   (All (A) ((Stream A) Integer (Stream A) Integer -> (Deque A))))
+   (All (A) ((PartialStreamof A) Integer (PartialStreamof A) Integer -> (Deque A))))
 (define (internal-deque front lenf rear lenr)
   (cond 
     [(> lenf (add1 (* lenr inv-c))) (maintainF front lenf rear lenr)]
@@ -39,29 +40,31 @@
 
 
 ;; Maintains invariant lenf <= inv-c * lenr
-(: maintainF : (All (A) ((Stream A) Integer (Stream A) Integer -> (Deque A))))
+(: maintainF : (All (A) ((PartialStreamof A) Integer (PartialStreamof A) Integer -> (Deque A))))
 (define (maintainF front lenf rear lenr)
   (let* ([new-lenf (arithmetic-shift (+ lenf lenr) -1)]
          [new-lenr (- (+ lenf lenr) new-lenf)]
-         [newF (take new-lenf front)]
-         [newR (stream-append rear (stream-reverse (drop new-lenf front)))])
+         [newF (pstake new-lenf front)]
+         [newR (psappend rear (ann (delay (psreverse (psdrop new-lenf front)))
+                                   (PartialStreamof A)))])
     (Deque newF new-lenf newR new-lenr)))
 
 
 ;; Maintains invariant lenr <= inv-c * lenf
-(: maintainR : (All (A) ((Stream A) Integer (Stream A) Integer -> (Deque A))))
+(: maintainR : (All (A) ((PartialStreamof A) Integer (PartialStreamof A) Integer -> (Deque A))))
 (define (maintainR front lenf rear lenr)
   (let* ([new-lenf (arithmetic-shift (+ lenf lenr) -1)]
          [new-lenr (- (+ lenf lenr) new-lenf)]
-         [newR (take (ann new-lenr Integer) rear)]
-         [newF (stream-append front (stream-reverse (drop new-lenr rear)))])
+         [newR (pstake (ann new-lenr Integer) rear)]
+         [newF (psappend front (ann (delay (psreverse (psdrop new-lenr rear)))
+                                    (PartialStreamof A)))])
     (Deque newF new-lenf newR new-lenr)))
 
 
 ;; Pushes an element into the Deque at the front end
 (: enqueue-front : (All (A) (A (Deque A) -> (Deque A))))
 (define (enqueue-front elem deq)
-  ((inst internal-deque A) (stream-cons elem (Deque-front deq))
+  ((inst internal-deque A) (cons elem (Deque-front deq))
                            (add1 (Deque-lenf deq))
                            (Deque-rear deq)
                            (Deque-lenr deq)))
@@ -72,7 +75,7 @@
 (define (enqueue elem deq)
   ((inst internal-deque A) (Deque-front deq)
                            (Deque-lenf deq)
-                           (stream-cons elem (Deque-rear deq))
+                           (cons elem (Deque-rear deq))
                            (add1 (Deque-lenr deq))))
 
 ;; Retrieves the head element of the queue
@@ -83,9 +86,11 @@
     (if (zero? (+ lenf lenr))
         (error 'head "given deque is empty")
         (let ([front (Deque-front deq)])
-          (if (empty-stream? front) 
-              (stream-car (Deque-rear deq))
-              (stream-car front))))))
+          (if (null? front) 
+              (pscar (Deque-rear deq))
+              (if (pair? front)
+                  (car front)
+                  (pscar (force front))))))))
 
 
 ;; Retrieves the last element of the queue
@@ -94,9 +99,11 @@
   (if (zero? (+ (Deque-lenf deq) (Deque-lenr deq)))
       (error 'last "given deque is empty")
       (let ([rear (Deque-rear deq)])
-        (if (empty-stream? rear) 
-            (stream-car (Deque-front deq))
-            (stream-car rear)))))
+        (if (null? rear) 
+            (pscar (Deque-front deq))
+            (if (pair? rear)
+                (car rear)
+                (pscar (force rear)))))))
 
 ;; Dequeue operation. Removes the head and returns the rest of the queue
 (: tail : (All (A) ((Deque A) -> (Deque A))))
@@ -106,9 +113,11 @@
     (if (zero? (+ lenf lenr))
         (error 'tail "given deque is empty")
         (let ([front (Deque-front deq)])
-          (if (empty-stream? front) 
+          (if (null? front) 
               (empty A)
-              (internal-deque (stream-cdr front) 
+              (internal-deque (if (pair? front)
+                                  (cdr front)
+                                  (pscdr (force front)))
                               (sub1 lenf)
                               (Deque-rear deq)
                               lenr))))))
@@ -121,11 +130,13 @@
     (if (zero? (+ lenf lenr))
         (error 'init "given deque is empty")
         (let ([rear (Deque-rear deq)])
-          (if (empty-stream? rear)
+          (if (null? rear)
               (empty A)
               (internal-deque (Deque-front deq) 
                               lenf
-                              (stream-cdr rear)
+                              (if (pair? rear)
+                                  (cdr rear)
+                                  (pscdr (force rear)))
                               (sub1 lenr)))))))
 
 ;; similar to list map function. apply is expensive so using case-lambda
@@ -262,6 +273,14 @@
             (let ([nsub1 (sub1 n)])
               (enqueue (func nsub1) (loop nsub1))))))
 
+(: build-deque-front : (All (A) (Natural (Natural -> A) -> (Deque A))))
+(define (build-deque-front size func)
+  (let: loop : (Deque A) ([n : Natural size])
+        (if (zero? n)
+            (empty A)
+            (let ([nsub1 (sub1 n)])
+              (enqueue-front (func nsub1) (loop nsub1))))))
+
 ;; Returns the pair head and tail of the given queue
 (: head+tail : (All (A) (Deque A) -> (Pair A (Deque A))))
 (define (head+tail deq)
@@ -270,10 +289,10 @@
     (if (zero? (+ lenf lenr))
         (error 'head+tail "given deque is empty")
         (let ([front (Deque-front deq)])
-          (if (empty-stream? front) 
-              (cons (stream-car (Deque-rear deq)) (empty A))
-              (cons (stream-car front)
-                    (internal-deque (stream-cdr front) 
+          (if (null? front) 
+              (cons (pscar (Deque-rear deq)) (empty A))
+              (cons (pscar front)
+                    (internal-deque (pscdr front) 
                                     (sub1 lenf)
                                     (Deque-rear deq)
                                     lenr)))))))
@@ -286,12 +305,12 @@
     (if (zero? (+ lenf lenr))
         (error 'last+init "given deque is empty")
         (let ([rear (Deque-rear deq)])
-          (if (empty-stream? rear)
-              (cons (stream-car (Deque-front deq)) (empty A))
-              (cons (stream-car rear)
+          (if (null? rear)
+              (cons (pscar (Deque-front deq)) (empty A))
+              (cons (pscar rear)
                     (internal-deque (Deque-front deq) 
                                     lenf
-                                    (stream-cdr rear)
+                                    (pscdr rear)
                                     (sub1 lenr))))))))
 
 ;; similar to list andmap function
