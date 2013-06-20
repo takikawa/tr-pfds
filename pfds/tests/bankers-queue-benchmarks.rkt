@@ -81,7 +81,7 @@
 
 (let ([q (time (build-queue (expt 2 21) add1))])
     (time 
-     (let: loop : Integer ([q : (Queue Integer) q])
+     (let: loop : Integer ([q : (Queue Positive-Integer) q])
        (if (empty? q) 0 (+ (head q) (loop (tail q)))))))
 
 ;; 2013-03-11, on Steve's desktop (i7-2600k, 16GB), from racket cmd line
