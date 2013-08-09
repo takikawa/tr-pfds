@@ -1,5 +1,7 @@
 #lang setup/infotab
 
 ;; Planet 2
-(define deps '())
+(define collection 'multi)
+(define deps '("base" "typed-racket-lib"))
+(define build-deps '("at-exp-lib" "htdp-lib" "racket-doc" "scribble-lib" "typed-racket-more"))
 
