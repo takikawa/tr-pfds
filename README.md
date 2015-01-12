@@ -6,11 +6,20 @@ of Chris Okasaki and Phil Bagwell.
 
 The original library was implemented by Hari Prashanth.
 
-How to use
-----------
+How to install
+--------------
 
-Use `raco` to link this repository as a Racket collection.
-Here are step-by-step instructions:
+Use one of:
+
+* `raco pkg install pfds`
+
+or
+
+* `git clone git://github.com/takikawa/tr-pfds.git`
+* `raco pkg install tr-pfds/`
+
+On Racket v5.3.1 or older, use `raco` to link this repository as
+a Racket collection. Here are step-by-step instructions:
 
 * `git clone git://github.com/takikawa/tr-pfds.git`
 * `cd tr-pfds/pfds`
@@ -20,16 +29,6 @@ Here are step-by-step instructions:
 This will link the `pfds` folder as a collection called `pfds`.
 Then you can require, for example, the Bankers Deque by using
 `(require pfds/deque/bankers)`.
-
-Alternatively, if you are using Racket 5.3.2, you can install
-it as a package:
-
-* `raco pkg install pfds`
-
-or
-
-* `git clone git://github.com/takikawa/tr-pfds.git`
-* `raco pkg install tr-pfds/`
 
 Data structures
 ---------------
