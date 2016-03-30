@@ -1,7 +1,7 @@
 #lang typed/racket
 
-(provide treap Treap treap->list empty? root insert delete size
-         find-min/max delete delete-min/max fold filter remove build-treap
+(provide treap Treap treap->list empty? insert delete size find-min/max delete delete-min/max
+         insert/priority root root/priority delete-root fold filter remove build-treap
          (rename-out [treap-map map] [treap-andmap andmap]
                      [treap-ormap ormap]))
 
@@ -35,14 +35,27 @@
         (error 'root "given treap is empty")
         (Node-elem tree))))
 
-;; inserts the given element into the treap
-(: insert : (All (A) (A (Treap A) -> (Treap A))))
-(define (insert elem treap)
+;; Returns the root priority of the given treap. 
+(: root/priority : (All (A) ((Treap A) -> Real)))
+(define (root/priority treap)
+  (let ([tree (Treap-tree treap)])
+    (if (null? tree)
+        (error 'root "given treap is empty")
+        (Node-prio tree))))
+
+;; inserts the given element into the treap with the given priority
+(: insert/priority : (All (A) (A Real (Treap A) -> (Treap A))))
+(define (insert/priority elem priority treap)
   (let ([comp (Treap-comparer treap)]
         [tree (Treap-tree treap)])
     (Treap comp
-           (insert-helper elem comp tree (random))
+           (insert-helper elem comp tree priority)
            (add1 (Treap-size treap)))))
+
+;; inserts the given element into the treap
+(: insert : (All (A) (A (Treap A) -> (Treap A))))
+(define (insert elem treap)
+  (insert/priority elem (random) treap))
 
 ;(: xor : Boolean Boolean -> Boolean)
 (define-syntax-rule (xor l r)
