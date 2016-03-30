@@ -1,7 +1,7 @@
 #lang typed/racket
 
-(provide treap Treap treap->list empty? insert delete size find-min/max delete delete-min/max
-         insert/priority root root/priority delete-root fold filter remove build-treap
+(provide treap Treap treap->list empty? contains? insert delete size find-min/max delete
+         delete-min/max insert/priority root root/priority delete-root fold filter remove build-treap
          (rename-out [treap-map map] [treap-andmap andmap]
                      [treap-ormap ormap]))
 
@@ -26,6 +26,21 @@
 (: empty? : (All (A) ((Treap A) -> Boolean)))
 (define (empty? treap)
   (null? (Treap-tree treap)))
+
+;; Checks if the given heap contains a specific element
+(: contains? (All (A) (A (Treap A) -> Boolean)))
+(define (contains? elem treap)
+  (define comp (Treap-comparer treap))
+  (let helper ([tree (Treap-tree treap)])
+    (if (null? tree)
+        #f
+        (let* ([node-elem (Node-elem tree)]
+               [lt (comp elem node-elem)]
+               [gt (comp node-elem elem)])
+          (cond
+            [(xor lt gt) #t]
+            [lt (helper (Node-left tree))]
+            [else (helper (Node-right tree))])))))
 
 ;; Returns the root element of the given treap. 
 (: root : (All (A) ((Treap A) -> A)))
