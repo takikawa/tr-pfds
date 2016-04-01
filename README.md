@@ -1,9 +1,11 @@
 Functional Data Structures for Typed Racket
 ===========================================
 
+[![Build Status](https://travis-ci.org/takikawa/pfds.svg?branch=master)](https://travis-ci.org/takikawa/pfds)
+[![Scribble](https://img.shields.io/badge/Docs-Scribble-blue.svg)](https://docs.racket-lang.org/functional-data-structures/index.html)
+
 This library provides several functional data structures based on the work
-of Chris Okasaki and Phil Bagwell. The documentation is available online
-[here](http://pkg-build.racket-lang.org/doc/functional-data-structures/index.html).
+of Chris Okasaki and Phil Bagwell. Click the badge above the documentation.
 
 The original library was implemented by Hari Prashanth.
 
