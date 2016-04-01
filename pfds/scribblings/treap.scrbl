@@ -26,7 +26,7 @@ operations @racket[insert], @racket[find-min/max] and
 
 @defproc[(treap [comp (A A -> Boolean)] [a A] ...) (Treap A)]{
 Function @racket[treap] creates a Treap with the given 
-inputs. Elements are assigned a random between from 0 to 1.
+inputs. Elements are assigned a random priority between from 0 to 1.
 @examples[#:eval evaluate
 (treap < 1 2 3 4 5 6)
 ]
@@ -240,7 +240,7 @@ they are paired with.
 (treap/priority < '(1 . 3) '(2 . 2) '(3 . 8) '(4 . 7) '(5 . 1) '(6 . 4))
 ]
 
-In the above example, the treap obtained will have elements 1 thru' 6 
+In the above example, the treap obtained will have elements 1 thru 6 
 with @racket[<] as the comparison function.
 }
 
