@@ -12,7 +12,7 @@ before_install:
 - sh installer.sh --in-place --dest ~/racket/
 
 install:
-- curl -L -o master.zip https://github.com/takikawa/pfds/archive/master.zip
+- curl -L -o master.zip https://github.com/takikawa/tr-pfds/archive/master.zip
 - unzip master.zip
 - raco pkg install -n pfds pfds/ 
 
