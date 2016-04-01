@@ -94,4 +94,42 @@
 (check-expect (ormap even? (treap < 5 29 15)) #f)
 (check-expect (andmap odd? (treap < 5 29 15)) #t)
 (check-expect (andmap odd? (treap < 5 29 14)) #f)
+
+;;; contains?
+(check-expect (contains? 'x ((inst treap Symbol) symbol<?)) #f)
+(check-expect (contains? 'x (treap symbol<? 'x)) #t)
+(check-expect (contains? 'x (treap symbol<? 'a 'b 'c 'd)) #f)
+(check-expect (contains? 4 (treap < 1 2 3 4 5 6)) #t)
+
+;;; treap/priority
+(check-expect (empty? ((inst treap/priority Symbol) symbol<?)) #t)
+(check-expect (empty? (treap/priority symbol<? '(a . 2) '(b . 6) '(c . 1))) #f)
+(check-expect (root (treap/priority symbol<? '(a . 2) '(b . 6) '(c . 1))) 'c)
+(check-expect (contains? 'a (treap/priority symbol<? '(a . 2) '(b . 6) '(c . 1))) #t)
+(check-expect (contains? 'b (treap/priority symbol<? '(a . 2) '(b . 6) '(c . 1))) #t)
+(check-expect (contains? 'c (treap/priority symbol<? '(a . 2) '(b . 6) '(c . 1))) #t)
+
+;;; insert/priority
+(check-expect (empty? ((inst insert/priority Integer) 4 2 (treap <))) #f)
+(check-expect (root ((inst insert/priority Integer) 4 2 (treap <))) 4)
+(check-expect (root (insert/priority 4 2 (treap/priority < '(6 . 1)))) 6)
+(check-expect (contains? 6 (insert/priority 4 2 ((inst treap/priority Integer) < '(6 . 1)))) #t)
+(check-expect (contains? 4 (insert/priority 4 2 ((inst treap/priority Integer) < '(6 . 1)))) #t)
+(check-expect (contains? 2 (insert/priority 4 2 ((inst treap/priority Integer) < '(6 . 1)))) #f)
+
+;;; root
+(check-expect (root (treap/priority symbol<? '(a . 2) '(b . 6) '(c . 1))) 'c)
+(check-expect (root (treap/priority symbol<? '(a . 2))) 'a)
+
+;;; root/priority
+(check-expect (root/priority (treap/priority symbol<? '(a . 2) '(b . 6) '(c . 1))) 1)
+(check-expect (root/priority (treap/priority symbol<? '(a . 2))) 2)
+
+;;; delete-root
+(check-expect (empty? (delete-root (treap < 6))) #t)
+(check-expect (contains? 3 (delete-root (treap/priority < '(4 . 5) '(3 . 2) '(6 . 1)))) #t)
+(check-expect (contains? 4 (delete-root (treap/priority < '(4 . 5) '(3 . 2) '(6 . 1)))) #t)
+(check-expect (contains? 6 (delete-root (treap/priority < '(4 . 5) '(3 . 2) '(6 . 1)))) #f)
+(check-expect (root (delete-root (treap/priority < '(4 . 5) '(3 . 2) '(6 . 1)))) 3)
+
 (test)

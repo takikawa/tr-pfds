@@ -1,7 +1,8 @@
 #lang typed/racket
 
-(provide treap Treap treap->list empty? root insert delete size
-         find-min/max delete delete-min/max fold filter remove build-treap
+(provide treap treap/priority Treap treap->list empty? contains? insert delete size find-min/max
+         delete delete-min/max insert/priority root root/priority delete-root fold filter remove
+         build-treap
          (rename-out [treap-map map] [treap-andmap andmap]
                      [treap-ormap ormap]))
 
@@ -27,6 +28,21 @@
 (define (empty? treap)
   (null? (Treap-tree treap)))
 
+;; Checks if the given heap contains a specific element
+(: contains? (All (A) (A (Treap A) -> Boolean)))
+(define (contains? elem treap)
+  (define comp (Treap-comparer treap))
+  (let helper ([tree (Treap-tree treap)])
+    (if (null? tree)
+        #f
+        (let* ([node-elem (Node-elem tree)]
+               [lt (comp elem node-elem)]
+               [gt (comp node-elem elem)])
+          (cond
+            [(not (or lt gt)) #t]
+            [lt (helper (Node-left tree))]
+            [else (helper (Node-right tree))])))))
+
 ;; Returns the root element of the given treap. 
 (: root : (All (A) ((Treap A) -> A)))
 (define (root treap)
@@ -35,14 +51,27 @@
         (error 'root "given treap is empty")
         (Node-elem tree))))
 
-;; inserts the given element into the treap
-(: insert : (All (A) (A (Treap A) -> (Treap A))))
-(define (insert elem treap)
+;; Returns the root priority of the given treap. 
+(: root/priority : (All (A) ((Treap A) -> Real)))
+(define (root/priority treap)
+  (let ([tree (Treap-tree treap)])
+    (if (null? tree)
+        (error 'root "given treap is empty")
+        (Node-prio tree))))
+
+;; inserts the given element into the treap with the given priority
+(: insert/priority : (All (A) (A Real (Treap A) -> (Treap A))))
+(define (insert/priority elem priority treap)
   (let ([comp (Treap-comparer treap)]
         [tree (Treap-tree treap)])
     (Treap comp
-           (insert-helper elem comp tree (random))
+           (insert-helper elem comp tree priority)
            (add1 (Treap-size treap)))))
+
+;; inserts the given element into the treap
+(: insert : (All (A) (A (Treap A) -> (Treap A))))
+(define (insert elem treap)
+  (insert/priority elem (random) treap))
 
 ;(: xor : Boolean Boolean -> Boolean)
 (define-syntax-rule (xor l r)
@@ -111,6 +140,13 @@
       (error 'delete-min/max "given treap is empty")
       (delete (find-min/max treap) treap)))
 
+;; Deletes the root element from the given treap.
+(: delete-root : (All (A) (Treap A) -> (Treap A)))
+(define (delete-root treap)
+  (if (empty? treap)
+      (error 'delete-root "given treap is empty")
+      (delete (root treap) treap)))
+
 ;; Helper function for the delete function. Operates on the tree from the 
 ;; treap(given to the delete function).
 (: delete-helper : (All (A) (A (A A -> Boolean) (Tree A) -> (Tree A))))
@@ -121,7 +157,7 @@
              [lt (comp elem node-elem)]
              [gt (comp node-elem elem)])
         (cond
-          [(xor lt gt) (delete-root tree)]
+          [(xor lt gt) (delete-node-root tree)]
           [lt (Node node-elem
                     (delete-helper elem comp (Node-left tree))
                     (Node-right tree)
@@ -132,8 +168,8 @@
                       (Node-prio tree))]))))
 
 ;; Actual delete operationtakes place in this function.
-(: delete-root : (All (A) (Node A) -> (Tree A)))
-(define (delete-root tree)
+(: delete-node-root : (All (A) (Node A) -> (Tree A)))
+(define (delete-node-root tree)
   (let ([left (Node-left tree)]
         [right (Node-right tree)])
     (cond
@@ -148,11 +184,11 @@
        (if (< lprio rprio) 
            (Node lelem 
                  (Node-left left)
-                 (delete-root (Node tree-elem (Node-right left) 
+                 (delete-node-root (Node tree-elem (Node-right left) 
                                     right tree-prio))
                  lprio)
            (Node (Node-elem right) 
-                 (delete-root (Node tree-elem left 
+                 (delete-node-root (Node tree-elem left 
                                     (Node-left right) tree-prio))
                  (Node-right right) 
                  rprio)))])))
@@ -163,6 +199,13 @@
 (: treap : (All (A) (A A -> Boolean) A * -> (Treap A)))
 (define (treap comp . list)
   (foldl (inst insert A) ((inst Treap A) comp null 0) list))
+
+;; Constructor function for the treap data structure with priorities.
+(: treap/priority : (All (A) (A A -> Boolean) (Pairof A Real) * -> (Treap A)))
+(define (treap/priority comp . list)
+  (foldl (λ ([p : (Pairof A Real)] [treap : (Treap A)])
+           (insert/priority (car p) (cdr p) treap))
+         ((inst Treap A) comp null 0) list))
 
 ;; Creates a list of elements from the given treap.
 (: treap->list : (All (A) (Treap A) -> (Listof A)))
