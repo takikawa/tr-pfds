@@ -54,7 +54,10 @@ not that element is contained within the treap.
 (contains? 4 (treap < 1 2 3 4 5 6))
 (contains? 4 (treap < 1 2 3 5 6 7))
 
-]}
+]
+
+@history[#:added "0.1"]
+}
 
 @defproc[(insert [a A] [treap (Treap A)]) (Treap A)]{
 Function @racket[insert] takes an element and a treap and inserts 
@@ -242,6 +245,8 @@ they are paired with.
 
 In the above example, the treap obtained will have elements 1 thru 6 
 with @racket[<] as the comparison function.
+
+@history[#:added "0.1"]
 }
 
 @defproc[(insert/priority [a A] [priority Real] [treap (Treap A)]) (Treap A)]{
@@ -256,7 +261,10 @@ the given element into the treap with a specified priority.
 ]
 
 In the above examples, @racket[insert/priority] adds the element 10 to 
-@racket[(treap < 1 2 3)] with varying priorities.}
+@racket[(treap < 1 2 3)] with varying priorities.
+
+@history[#:added "0.1"]
+}
 
 @defproc[(root [treap (Treap A)]) A]{
 Function @racket[root] returns the value of the node at the root of the given
@@ -268,7 +276,10 @@ treap.
 (root (treap/priority symbol<? '(a . 4) '(b . 7) '(c . 2)))
 ]
 
-The root node is always the node with the lowest priority.}
+The root node is always the node with the lowest priority.
+
+@history[#:added "0.1"]
+}
 
 @defproc[(root/priority [treap (Treap A)]) Real]{
 Function @racket[root/priority] gives the priority of the root node in the given
@@ -278,7 +289,10 @@ treap, which is the smallest priority in the treap.
 
 (root/priority (treap/priority symbol<? '(a . 4) '(b . 7) '(c . 2)))
 
-]}
+]
+
+@history[#:added "0.1"]
+}
 
 @defproc[(delete-root [treap (Treap A)]) (Treap A)]{
 Function @racket[delete-root] deletes the root node (with the smallest priority)
@@ -288,6 +302,9 @@ from the treap.
 
 (root (delete-root (treap/priority symbol<? '(a . 4) '(b . 7) '(c . 2))))
 
-]}
+]
+
+@history[#:added "0.1"]
+}
 
 @(close-eval evaluate)
