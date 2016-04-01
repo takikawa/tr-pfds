@@ -140,6 +140,13 @@
       (error 'delete-min/max "given treap is empty")
       (delete (find-min/max treap) treap)))
 
+;; Deletes the root element from the given treap.
+(: delete-root : (All (A) (Treap A) -> (Treap A)))
+(define (delete-root treap)
+  (if (empty? treap)
+      (error 'delete-root "given treap is empty")
+      (delete (root treap) treap)))
+
 ;; Helper function for the delete function. Operates on the tree from the 
 ;; treap(given to the delete function).
 (: delete-helper : (All (A) (A (A A -> Boolean) (Tree A) -> (Tree A))))
@@ -150,7 +157,7 @@
              [lt (comp elem node-elem)]
              [gt (comp node-elem elem)])
         (cond
-          [(xor lt gt) (delete-root tree)]
+          [(xor lt gt) (delete-node-root tree)]
           [lt (Node node-elem
                     (delete-helper elem comp (Node-left tree))
                     (Node-right tree)
@@ -161,8 +168,8 @@
                       (Node-prio tree))]))))
 
 ;; Actual delete operationtakes place in this function.
-(: delete-root : (All (A) (Node A) -> (Tree A)))
-(define (delete-root tree)
+(: delete-node-root : (All (A) (Node A) -> (Tree A)))
+(define (delete-node-root tree)
   (let ([left (Node-left tree)]
         [right (Node-right tree)])
     (cond
@@ -177,11 +184,11 @@
        (if (< lprio rprio) 
            (Node lelem 
                  (Node-left left)
-                 (delete-root (Node tree-elem (Node-right left) 
+                 (delete-node-root (Node tree-elem (Node-right left) 
                                     right tree-prio))
                  lprio)
            (Node (Node-elem right) 
-                 (delete-root (Node tree-elem left 
+                 (delete-node-root (Node tree-elem left 
                                     (Node-left right) tree-prio))
                  (Node-right right) 
                  rprio)))])))
