@@ -1,7 +1,7 @@
 Functional Data Structures for Typed Racket
 ===========================================
 
-[![Build Status](https://travis-ci.org/takikawa/pfds.svg?branch=master)](https://travis-ci.org/takikawa/pfds)
+[![Build Status](https://travis-ci.org/takikawa/tr-pfds.svg?branch=master)](https://travis-ci.org/takikawa/tr-pfds)
 [![Scribble](https://img.shields.io/badge/Docs-Scribble-blue.svg)](https://docs.racket-lang.org/functional-data-structures/index.html)
 
 This library provides several functional data structures based on the work
