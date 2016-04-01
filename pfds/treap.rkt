@@ -1,7 +1,8 @@
 #lang typed/racket
 
-(provide treap Treap treap->list empty? contains? insert delete size find-min/max delete
-         delete-min/max insert/priority root root/priority delete-root fold filter remove build-treap
+(provide treap treap/priority Treap treap->list empty? contains? insert delete size find-min/max
+         delete delete-min/max insert/priority root root/priority delete-root fold filter remove
+         build-treap
          (rename-out [treap-map map] [treap-andmap andmap]
                      [treap-ormap ormap]))
 
@@ -38,7 +39,7 @@
                [lt (comp elem node-elem)]
                [gt (comp node-elem elem)])
           (cond
-            [(xor lt gt) #t]
+            [(not (or lt gt)) #t]
             [lt (helper (Node-left tree))]
             [else (helper (Node-right tree))])))))
 
@@ -191,6 +192,13 @@
 (: treap : (All (A) (A A -> Boolean) A * -> (Treap A)))
 (define (treap comp . list)
   (foldl (inst insert A) ((inst Treap A) comp null 0) list))
+
+;; Constructor function for the treap data structure with priorities.
+(: treap/priority : (All (A) (A A -> Boolean) (Pairof A Real) * -> (Treap A)))
+(define (treap/priority comp . list)
+  (foldl (λ ([p : (Pairof A Real)] [treap : (Treap A)])
+           (insert/priority (car p) (cdr p) treap))
+         ((inst Treap A) comp null 0) list))
 
 ;; Creates a list of elements from the given treap.
 (: treap->list : (All (A) (Treap A) -> (Listof A)))

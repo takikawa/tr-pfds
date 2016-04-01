@@ -26,7 +26,7 @@ operations @racket[insert], @racket[find-min/max] and
 
 @defproc[(treap [comp (A A -> Boolean)] [a A] ...) (Treap A)]{
 Function @racket[treap] creates a Treap with the given 
-inputs.    
+inputs. Elements are assigned a random between from 0 to 1.
 @examples[#:eval evaluate
 (treap < 1 2 3 4 5 6)
 ]
@@ -45,9 +45,20 @@ Function @racket[empty?] checks if the given treap is empty or not.
 
 ]}
 
-@defproc[(insert [a A] [treap (Treap A)] ...) (Treap A)]{
+@defproc[(contains? [a A] [treap (Treap A)]) Boolean]{
+Function @racket[contains?] takes an element and a treap and checks whether or
+not that element is contained within the treap.
+
+@examples[#:eval evaluate
+
+(contains? 4 (treap < 1 2 3 4 5 6))
+(contains? 4 (treap < 1 2 3 5 6 7))
+
+]}
+
+@defproc[(insert [a A] [treap (Treap A)]) (Treap A)]{
 Function @racket[insert] takes an element and a treap and inserts 
-the given element into the treap.    
+the given element into the treap with a random priority between 0 and 1.
 @examples[#:eval evaluate
 
 (insert 10 (treap < 1 2 3))
@@ -212,6 +223,70 @@ function takes an extra comparison function.
 (treap->list (build-treap 5 (λ:([x : Integer]) (add1 x)) <))
 
 (treap->list (build-treap 5 (λ:([x : Integer]) (* x x)) <))
+
+]}
+
+@section{Priorities}
+
+The following functions allow the user to manipulate node priorities. Treaps
+containing nodes with manually set priorities cannot guarantee
+@bold{@italic{O(log(n))}} running times, and care should be taken in selecting
+appropriate priorities if one wants to avoid @bold{@italic{O(n)}} running times.
+
+@defproc[(treap/priority [comp (A A -> Boolean)] [a (Pairof A Real)] ...) (Treap A)]{
+Function @racket[treap] creates a Treap with the given inputs each assigned the priority
+they are paired with.
+@examples[#:eval evaluate
+(treap/priority < '(1 . 3) '(2 . 2) '(3 . 8) '(4 . 7) '(5 . 1) '(6 . 4))
+]
+
+In the above example, the treap obtained will have elements 1 thru' 6 
+with @racket[<] as the comparison function.
+}
+
+@defproc[(insert/priority [a A] [priority Real] [treap (Treap A)]) (Treap A)]{
+Function @racket[insert] takes an element, priority and a treap and inserts 
+the given element into the treap with a specified priority.
+@examples[#:eval evaluate
+
+(insert/priority 10 -4 (treap < 1 2 3))
+(root (insert/priority 10 -4 (treap < 1 2 3)))
+(root (insert/priority 10 4 (treap < 1 2 3)))
+
+]
+
+In the above examples, @racket[insert/priority] adds the element 10 to 
+@racket[(treap < 1 2 3)] with varying priorities.}
+
+@defproc[(root [treap (Treap A)]) A]{
+Function @racket[root] returns the value of the node at the root of the given
+treap.
+
+@examples[#:eval evaluate
+
+(root (treap < 1 2 3))
+(root (treap/priority symbol<? '(a . 4) '(b . 7) '(c . 2)))
+]
+
+The root node is always the node with the lowest priority.}
+
+@defproc[(root/priority [treap (Treap A)]) Real]{
+Function @racket[root/priority] gives the priority of the root node in the given
+treap, which is the smallest priority in the treap.
+
+@examples[#:eval evaluate
+
+(root/priority (treap/priority symbol<? '(a . 4) '(b . 7) '(c . 2)))
+
+]}
+
+@defproc[(delete-root [treap (Treap A)]) (Treap A)]{
+Function @racket[delete-root] deletes the root node (with the smallest priority)
+from the treap.
+
+@examples[#:eval evaluate
+
+(root (delete-root (treap/priority symbol<? '(a . 4) '(b . 7) '(c . 2))))
 
 ]}
 
