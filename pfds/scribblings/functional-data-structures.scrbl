@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@title[#:tag "top"]{@bold{Functional Data Structures} in Typed Racket}
+@title[#:tag "top"]{Functional Data Structures in Typed Racket}
 The data structures in this library are based on the work of
 Chris Okasaki and Phil Bagwell, including those in the
 @italic{Purely Functional Data Structures} by Okasaki.
