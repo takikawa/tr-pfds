@@ -105,3 +105,8 @@
                             (go-deep (hash-ref hash k) ks val))
                           (Trie K V))])
         (make-Trie (Trie-opt tri) (hash-set hash k insert)))))
+
+(module+ secret
+  (require typed/racket/unsafe)
+  (provide Trie)
+  (unsafe-provide tries lookup bind trie insert Trie?))
