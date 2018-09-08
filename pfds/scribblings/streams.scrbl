@@ -16,7 +16,7 @@ lists and they provide the same functionality as that of lists. The
 difference between Streams and lists is that they are lazy in nature and 
 each cell of a Stream is suspended and is forced only when required. Streams 
 have been used in some of the below mentioned data structures. Since
-each suspention comes with a little overhead, Streams should be used
+each suspension comes with a little overhead, Streams should be used
 only when there is a good enough reason to do so.
 
 @defform[(Stream A)]{A stream of type @racket[A].}
