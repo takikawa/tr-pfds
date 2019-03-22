@@ -11,12 +11,12 @@
 (define-type-alias (Option A) (U Mt (Some A)))
 
 (define-struct: (K V) Trie ([opt : (Option V)]
-                            [map : (HashTable K (Trie K V))]))
+                            [map : (Immutable-HashTable K (Trie K V))]))
 
 (: empty : (All (K V) (-> (Trie K V))))
 (define (empty) 
   (make-Trie (make-Mt) 
-             (ann (make-immutable-hash null) (HashTable K (Trie K V)))))
+             (ann (make-immutable-hash null) (Immutable-HashTable K (Trie K V)))))
 
 (: lookup : (All (K V) ((Key K) (Trie K V) -> V)))
 (define (lookup keys map)
@@ -50,7 +50,7 @@
   (if (null? lstk)
       (make-Trie (make-Some val) 
                  (ann (make-immutable-hash null) 
-                      (HashTable K (Trie K V))))
+                      (Immutable-HashTable K (Trie K V))))
       (make-Trie (make-Mt) 
                  (make-immutable-hash 
                   (list (cons (car lstk) (build val (cdr lstk))))))))
