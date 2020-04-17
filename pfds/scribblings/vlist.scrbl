@@ -11,7 +11,7 @@
 
 @defmodule[pfds/vlist]
 
-A VList is a data structure very similar to noraml Scheme List but the 
+A VList is a data structure very similar to a normal Scheme List but the 
 corresponding operations are significantly faster for most of the List
 operations. Indexing and length operations have a running time of
 @bold{@italic{O(1)}} and @bold{@italic{O(lg N)}} respectively compared to 
