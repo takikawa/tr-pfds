@@ -8,9 +8,8 @@
 ;; - Inner box is so TR can distinguished a forced promise from an unforced one
 ;;     I would have used a struct like Prom instead of the inner box, but TR
 ;;     cannnot distinguish structs from procedures?
-(define-type Promiseof
-  (All (A) (Boxof (U (-> (Boxof A))
-                     (Boxof A)))))
+(define-type (Promiseof A)
+  (Boxof (U (-> (Boxof A)) (Boxof A))))
 
 
 (define-syntax-rule (delay e) (box (λ () (box e))))

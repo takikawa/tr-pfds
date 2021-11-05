@@ -5,9 +5,8 @@
          stream->list drop take Stream
          #;stream-map #;stream-foldl #;stream-foldr)
 
-(define-type Stream
-  (All (A) (Rec Stream (U Null (Boxof (U (-> (Pair A Stream))
-                                         (Pair A Stream)))))))
+(define-type (Stream A) (Rec Stream (U Null (Boxof (U (-> (Pair A Stream))
+                                    (Pair A Stream))))))
 
 (define empty-stream null)
 
@@ -54,7 +53,7 @@
   (define (loop stream accum)
     (if (null? stream)
         accum
-        (loop (stream-cdr stream) 
+        (loop (stream-cdr stream)
               (ann (stream-cons (stream-car stream) accum) (Stream A)))))
   (loop stream empty-stream))
 
@@ -76,8 +75,8 @@
 
 (: drop : (All (A) (Integer (Stream A) -> (Stream A))))
 (define (drop num stream)
-  (cond 
-    [(zero? num)    stream] 
+  (cond
+    [(zero? num)    stream]
     [(null? stream) (error 'drop "not enough elements to drop")]
     [else (let ([forced (unbox stream)])
             (if (procedure? forced)
@@ -89,7 +88,7 @@
 
 (: take : (All (A) (Integer (Stream A) -> (Stream A))))
 (define (take num stream)
-  (cond 
+  (cond
     [(zero? num)    empty-stream]
     [(null? stream) (error 'take "not enough elements to take")]
     [else (let ([forced (unbox stream)])
@@ -102,44 +101,44 @@
 
 
 
-;(: stream-map : (All (A C B ...) ((A B ... B -> C) (Stream A) 
-;                                                   (Stream B) ... B -> 
+;(: stream-map : (All (A C B ...) ((A B ... B -> C) (Stream A)
+;                                                   (Stream B) ... B ->
 ;                                                   (Stream C))))
 ;(define (stream-map func strm . strms)
 ;  (if (or (empty? strm) (ormap empty? strms))
 ;      empty
-;      (delay (make-InStream (apply func 
-;                                   (stream-car strm) 
-;                                   (map stream-car strms)) 
-;                            (apply stream-map 
-;                                   func 
-;                                   (stream-cdr strm) 
+;      (delay (make-InStream (apply func
+;                                   (stream-car strm)
+;                                   (map stream-car strms))
+;                            (apply stream-map
+;                                   func
+;                                   (stream-cdr strm)
 ;                                   (map stream-cdr strms))))))
 ;
-;(: stream-foldl : 
-;   (All (C A B ...) ((C A B ... B -> C) C (Stream A) 
+;(: stream-foldl :
+;   (All (C A B ...) ((C A B ... B -> C) C (Stream A)
 ;                                        (Stream B) ... B -> C)))
 ;(define (stream-foldl func base fst . rst)
 ;  (if (or (empty? fst) (ormap empty? rst))
 ;      base
-;      (apply stream-foldl 
-;             func 
+;      (apply stream-foldl
+;             func
 ;             (apply func base (stream-car fst) (map stream-car rst))
 ;             (stream-cdr fst)
 ;             (map stream-cdr rst))))
 ;
-;(: stream-foldr : 
-;   (All (C A B ...) ((C A B ... B -> C) C (Stream A) 
+;(: stream-foldr :
+;   (All (C A B ...) ((C A B ... B -> C) C (Stream A)
 ;                                        (Stream B) ... B -> C)))
 ;(define (stream-foldr func base fst . rst)
 ;  (if (or (empty? fst) (ormap empty? rst))
 ;      base
-;      (apply func (apply stream-foldr 
-;                         func 
+;      (apply func (apply stream-foldr
+;                         func
 ;                         base
 ;                         (stream-cdr fst)
-;                         (map stream-cdr rst)) 
-;             (stream-car fst) 
+;                         (map stream-cdr rst))
+;             (stream-car fst)
 ;             (map stream-car rst))))
 ;
 
