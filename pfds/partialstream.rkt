@@ -1,12 +1,12 @@
 #lang typed/racket
 
-;; A "partial stream" is a list where the tail of each of the segments may or 
+;; A "partial stream" is a list where the tail of each of the segments may or
 ;; may not be delayed. Thus, both a completely eager list and a standard stream
 ;; (where all tails are delayed) are instances of a partial stream.
 
 ;; A partial stream is practically advantageous over a standard stream in cases
 ;; where delaying the tail has no benefit. An example is when the tail is null.
-;; Since null is already a value, delaying it has no advantages. Another example 
+;; Since null is already a value, delaying it has no advantages. Another example
 ;; is when the tail is the result of reversing a stream. Since reverse is a
 ;; monolithic operation, ie it traverses the entire list or stream regardless
 ;; of laziness, any suspensions in the result have no benefit (but still incur
@@ -17,9 +17,10 @@
 
 (provide PartialStreamof pscar pscdr psappend pstake psdrop psreverse)
 
-(define-type PartialStreamof (All (A) (Rec X (U Null
-                                                (Pair A X)
-                                                (Promiseof X)))))
+(define-type (PartialStreamof A)
+  (Rec X (U Null
+            (Pair A X)
+            (Promiseof X))))
 
 (: pscar : (All (A) ((PartialStreamof A) -> A)))
 (define (pscar lst)
@@ -33,12 +34,12 @@
         [(pair? lst) (cdr lst)]
         [else (pscdr (force lst))]))
 
-(: psappend : 
+(: psappend :
    (All (A) (PartialStreamof A) (PartialStreamof A) -> (PartialStreamof A)))
 (define (psappend l1 l2)
   (cond [(null? l1) l2]
         [(null? l2) l1]
-        [(pair? l1) (cons (car l1) (ann (delay (psappend (cdr l1) l2)) 
+        [(pair? l1) (cons (car l1) (ann (delay (psappend (cdr l1) l2))
                                         (PartialStreamof A)))]
         [else (psappend (force l1) l2)]))
 
